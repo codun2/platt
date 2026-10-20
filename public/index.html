@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ركائز — منصّة الأعمال المتكاملة</title>
+  <meta name="description" content="ركائز: نظام واحد لكل قطاع. منصّة سحابية متعددة المستأجرين تدير المحاسبة، المخزون، نقاط البيع، الموارد البشرية والمزيد — بوحدات تتفعّل حسب نشاطك." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --blue:#2563eb;
+      --blue-dark:#1d4ed8;
+      --navy:#0f172a;
+      --emerald:#10b981;
+      --amber:#f59e0b;
+      --violet:#7c3aed;
+      --rose:#f43f5e;
+      --ink:#0f172a;
+      --muted:#64748b;
+      --bg:#f1f5f9;
+      --card:#ffffff;
+      --ring:rgba(37,99,235,.1);
+      --shadow:0 18px 40px -18px rgba(15,23,42,.22);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Cairo',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+    a{text-decoration:none;color:inherit}
+    .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+    header{position:sticky;top:0;z-index:50;background:rgba(241,245,249,.82);backdrop-filter:blur(14px);border-bottom:1px solid rgba(15,23,42,.06)}
+    nav{display:flex;align-items:center;justify-content:space-between;height:74px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:900;font-size:23px}
+    .logo{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--blue),#60a5fa);display:grid;place-items:center;color:#fff;box-shadow:0 8px 20px -6px var(--blue)}
+    .nav-links{display:flex;gap:30px;align-items:center;font-weight:600;color:var(--muted)}
+    .nav-links a:hover{color:var(--blue)}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:12px;font-weight:700;font-family:inherit;cursor:pointer;border:none;transition:.2s;font-size:15px}
+    .btn-primary{background:var(--blue);color:#fff;box-shadow:0 10px 24px -10px var(--blue)}
+    .btn-primary:hover{background:var(--blue-dark);transform:translateY(-2px)}
+    .btn-ghost{background:transparent;color:var(--ink)}
+    .btn-ghost:hover{background:var(--ring)}
+    @media(max-width:860px){.nav-links{display:none}}
+
+    .hero{padding:76px 0 44px}
+    .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+    .pill{display:inline-flex;align-items:center;gap:8px;background:var(--ring);color:var(--blue);font-weight:700;font-size:14px;padding:8px 16px;border-radius:999px;margin-bottom:22px}
+    .hero h1{font-size:clamp(34px,5vw,56px);font-weight:900;line-height:1.2;letter-spacing:-.5px}
+    .hero h1 .grad{background:linear-gradient(120deg,var(--blue),var(--emerald));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .hero p.lead{font-size:19px;color:var(--muted);margin:22px 0 32px;max-width:520px}
+    .hero-cta{display:flex;gap:14px;flex-wrap:wrap}
+    .stats{display:flex;gap:34px;margin-top:42px;flex-wrap:wrap}
+    .stat b{display:block;font-size:30px;font-weight:900;color:var(--blue)}
+    .stat span{color:var(--muted);font-size:14px;font-weight:600}
+    @media(max-width:860px){.hero-grid{grid-template-columns:1fr;gap:36px}}
+
+    /* module bento */
+    .bento{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    .tile{background:var(--card);border-radius:20px;padding:22px;box-shadow:var(--shadow);border:1px solid rgba(15,23,42,.05)}
+    .tile .ti{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;margin-bottom:14px;color:#fff}
+    .tile h4{font-size:16px;font-weight:800}
+    .tile p{font-size:13px;color:var(--muted);margin-top:4px}
+    .tile.big{grid-column:span 2;display:flex;align-items:center;justify-content:space-between;gap:16px;background:linear-gradient(135deg,var(--navy),#334155);color:#fff}
+    .tile.big h4{color:#fff;font-size:18px}
+    .tile.big p{color:rgba(255,255,255,.8)}
+    .toggles{display:flex;flex-direction:column;gap:10px;min-width:150px}
+    .tgl{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;color:rgba(255,255,255,.9)}
+    .sw{width:38px;height:22px;border-radius:999px;background:rgba(255,255,255,.25);position:relative;flex-shrink:0}
+    .sw.on{background:var(--emerald)}
+    .sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s}
+    .sw.on::after{left:auto;right:3px}
+    .bg-blue{background:var(--blue)} .bg-emerald{background:var(--emerald)}
+    .bg-amber{background:var(--amber)} .bg-violet{background:var(--violet)} .bg-rose{background:var(--rose)}
+
+    section{padding:72px 0}
+    .sec-head{text-align:center;max-width:680px;margin:0 auto 52px}
+    .sec-head .pill{margin-bottom:16px}
+    .sec-head h2{font-size:clamp(28px,4vw,40px);font-weight:900;letter-spacing:-.5px}
+    .sec-head p{color:var(--muted);font-size:17px;margin-top:14px}
+
+    /* sectors grid */
+    .sectors{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .sector{background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);border:1px solid rgba(15,23,42,.05);display:flex;align-items:center;gap:12px;transition:.2s;font-weight:700;font-size:15px}
+    .sector:hover{transform:translateY(-4px);border-color:var(--blue)}
+    .sector .si{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;font-size:22px;flex-shrink:0;background:var(--ring)}
+    @media(max-width:860px){.sectors{grid-template-columns:repeat(2,1fr)}}
+
+    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+    .feat{background:var(--card);border-radius:20px;padding:30px;box-shadow:var(--shadow);border:1px solid rgba(15,23,42,.05);transition:.25s}
+    .feat:hover{transform:translateY(-6px)}
+    .feat .fi{width:56px;height:56px;border-radius:15px;display:grid;place-items:center;color:#fff;margin-bottom:20px}
+    .feat h3{font-size:19px;font-weight:800;margin-bottom:8px}
+    .feat p{color:var(--muted);font-size:15px}
+    @media(max-width:860px){.features{grid-template-columns:1fr}}
+
+    .cta{background:linear-gradient(135deg,var(--blue),var(--blue-dark));border-radius:28px;padding:60px;text-align:center;color:#fff}
+    .cta h2{font-size:clamp(26px,4vw,38px);font-weight:900}
+    .cta p{color:rgba(255,255,255,.85);font-size:18px;margin:16px 0 30px}
+    .cta .btn-primary{background:#fff;color:var(--blue)}
+    .cta .btn-primary:hover{background:#eff6ff}
+
+    footer{padding:48px 0 32px;color:var(--muted);text-align:center}
+    footer .brand{justify-content:center;margin-bottom:14px;color:var(--ink)}
+    .svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .svg-sm{width:22px;height:22px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <div class="brand">
+          <div class="logo"><svg class="svg" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg></div>
+          ركائز
+        </div>
+        <div class="nav-links">
+          <a href="#sectors">القطاعات</a>
+          <a href="#modules">الوحدات</a>
+          <a href="#how">كيف تعمل</a>
+          <a href="#contact">تواصل</a>
+        </div>
+        <a href="#contact" class="btn btn-primary">اطلب عرضاً</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="pill">⚡ منصّة سحابية متعددة القطاعات</span>
+        <h1>نظام واحد <span class="grad">لكل قطاع</span></h1>
+        <p class="lead">ركائز منصّة أعمال متكاملة: أساس واحد قوي (محاسبة، مخزون، نقاط بيع، موارد بشرية، فواتير) ووحدات متخصّصة تتفعّل حسب نشاطك — من المتاجر والمعارض إلى العقارات والمدارس وورش الصيانة.</p>
+        <div class="hero-cta">
+          <a href="#contact" class="btn btn-primary">ابدأ تجربتك المجانية</a>
+          <a href="#sectors" class="btn btn-ghost">شوف القطاعات ←</a>
+        </div>
+        <div class="stats">
+          <div class="stat"><b>+۲۰</b><span>قطاع مدعوم</span></div>
+          <div class="stat"><b>وحدة واحدة</b><span>قاعدة بيانات موحّدة</span></div>
+          <div class="stat"><b>تفعيل فوري</b><span>بالباقة حسب النشاط</span></div>
+        </div>
+      </div>
+      <div class="bento">
+        <div class="tile big">
+          <div>
+            <h4>فعّل وحداتك</h4>
+            <p>اختر نشاطك، وركائز تجهّز لك الوحدات</p>
+          </div>
+          <div class="toggles">
+            <div class="tgl"><span>المحاسبة</span><div class="sw on"></div></div>
+            <div class="tgl"><span>نقاط البيع</span><div class="sw on"></div></div>
+            <div class="tgl"><span>العقارات</span><div class="sw"></div></div>
+            <div class="tgl"><span>التصنيع</span><div class="sw"></div></div>
+          </div>
+        </div>
+        <div class="tile"><div class="ti bg-blue"><svg class="svg svg-sm" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div><h4>المحاسبة</h4><p>قيود وتقارير</p></div>
+        <div class="tile"><div class="ti bg-emerald"><svg class="svg svg-sm" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg></div><h4>المخزون</h4><p>أصناف ومستودعات</p></div>
+        <div class="tile"><div class="ti bg-amber"><svg class="svg svg-sm" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg></div><h4>نقاط البيع</h4><p>POS سريع</p></div>
+        <div class="tile"><div class="ti bg-violet"><svg class="svg svg-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><h4>الموارد البشرية</h4><p>موظفون ورواتب</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTORS -->
+  <section id="sectors">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="pill">القطاعات</span>
+        <h2>اختر نشاطك — والباقي جاهز</h2>
+        <p>كل قطاع = نفس الأساس القوي + محرّك متخصّص يتفعّل تلقائياً. منصّة واحدة تخدمهم جميعاً.</p>
+      </div>
+      <div class="sectors">
+        <div class="sector"><div class="si">🛒</div>المتاجر ونقاط البيع</div>
+        <div class="sector"><div class="si">🚗</div>معارض السيارات</div>
+        <div class="sector"><div class="si">🏢</div>العقارات والأملاك</div>
+        <div class="sector"><div class="si">🔑</div>تأجير السيارات</div>
+        <div class="sector"><div class="si">🔧</div>ورش الصيانة</div>
+        <div class="sector"><div class="si">🧺</div>مغاسل الملابس</div>
+        <div class="sector"><div class="si">🎓</div>المدارس ورياض الأطفال</div>
+        <div class="sector"><div class="si">⚖️</div>مكاتب المحاماة</div>
+        <div class="sector"><div class="si">🏨</div>الفنادق والحجوزات</div>
+        <div class="sector"><div class="si">🏝️</div>الشاليهات والاستراحات</div>
+        <div class="sector"><div class="si">✂️</div>الخياطة والتفصيل</div>
+        <div class="sector"><div class="si">🕋</div>الحج والعمرة والسفر</div>
+        <div class="sector"><div class="si">🎉</div>القاعات والمناسبات</div>
+        <div class="sector"><div class="si">🐣</div>المزارع والمواشي</div>
+        <div class="sector"><div class="si">📐</div>الاستشارات الهندسية</div>
+        <div class="sector"><div class="si">🍬</div>الحلوى والتصنيع</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODULES / WHY -->
+  <section id="modules" style="background:#fff">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="pill">لماذا ركائز</span>
+        <h2>قوّة المنصّة الموحّدة</h2>
+        <p>بدل عشرات الأنظمة المنفصلة — نظام واحد يكبر ويتحسّن في مكان واحد.</p>
+      </div>
+      <div class="features">
+        <div class="feat">
+          <div class="fi bg-blue"><svg class="svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
+          <h3>وحدات تتفعّل عند الطلب</h3>
+          <p>فعّل ما يحتاجه نشاطك فقط — القائمة الجانبية تتشكّل تلقائياً حسب وحداتك.</p>
+        </div>
+        <div class="feat">
+          <div class="fi bg-emerald"><svg class="svg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <h3>عزل آمن لكل مشترك</h3>
+          <p>كل شركة بياناتها معزولة تماماً (Multi-Tenant) بصلاحيات دقيقة لكل مستخدم.</p>
+        </div>
+        <div class="feat">
+          <div class="fi bg-amber"><svg class="svg" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+          <h3>باقات جاهزة حسب النشاط</h3>
+          <p>اختر قطاعك، فتُفعّل لك حزمة الوحدات المناسبة فوراً — بدون إعداد معقّد.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW -->
+  <section id="how">
+    <div class="wrap">
+      <div class="sec-head"><span class="pill">كيف تعمل</span><h2>ابدأ خلال دقائق</h2></div>
+      <div class="features">
+        <div class="feat"><div class="fi bg-blue" style="font-weight:900;font-size:22px">۱</div><h3>سجّل شركتك</h3><p>أنشئ حساب مؤسستك واختر قطاع نشاطك من القائمة.</p></div>
+        <div class="feat"><div class="fi bg-amber" style="font-weight:900;font-size:22px">۲</div><h3>تُفعّل وحداتك</h3><p>ركائز تجهّز لك الوحدات المناسبة لنشاطك تلقائياً.</p></div>
+        <div class="feat"><div class="fi bg-emerald" style="font-weight:900;font-size:22px">۳</div><h3>ابدأ الإدارة</h3><p>أدِر عملك بالكامل من منصّة واحدة على أي جهاز.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="wrap">
+      <div class="cta">
+        <h2>جاهز تدير عملك بنظام واحد؟</h2>
+        <p>ابدأ تجربتك المجانية اليوم — بدون بطاقة ائتمان.</p>
+        <a href="mailto:hello@rakeez.app" class="btn btn-primary">اطلب عرضاً الآن</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div class="brand"><div class="logo"><svg class="svg" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg></div>ركائز</div>
+      <p>منصّة الأعمال المتكاملة © ۲۰۲۶ — جميع الحقوق محفوظة.</p>
+    </div>
+  </footer>
+</body>
+</html>

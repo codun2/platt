@@ -1,0 +1,7 @@
+services:
+  web:
+    build: .
+    container_name: platt-web
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8014:80"
