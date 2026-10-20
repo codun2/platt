@@ -7,3 +7,4 @@ vendor/
 .output/
 .nuxt/
 .claude/settings.local.json
+.git-credentials
