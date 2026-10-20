@@ -23,6 +23,8 @@ class PermissionSeeder extends Seeder
             ['key' => 'crm.manage', 'name_ar' => 'إضافة/تعديل العملاء', 'group_key' => 'crm'],
             ['key' => 'inventory.manage', 'name_ar' => 'إدارة الأصناف والمخزون والمشتريات', 'group_key' => 'inventory'],
             ['key' => 'pos.manage', 'name_ar' => 'إلغاء الفواتير', 'group_key' => 'pos'],
+            ['key' => 'bookings.manage', 'name_ar' => 'إدارة الوحدات والخدمات', 'group_key' => 'bookings'],
+            ['key' => 'travel.manage', 'name_ar' => 'إدارة الرحلات والباقات والمصروفات', 'group_key' => 'travel'],
         ];
         foreach ($management as $p) {
             Permission::updateOrCreate(['key' => $p['key']], $p);

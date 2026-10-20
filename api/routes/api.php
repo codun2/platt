@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Api\App;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\Bookings;
 use App\Http\Controllers\Api\Inventory;
+use App\Http\Controllers\Api\Travel;
 use App\Http\Controllers\Api\Pos;
 use App\Http\Controllers\Api\PublicController;
 use App\Http\Controllers\Api\Super;
@@ -118,6 +120,48 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant'])->prefix('app')->gro
         Route::post('shifts/{id}/close', [Pos\ShiftController::class, 'close'])->whereNumber('id');
 
         Route::get('reports/summary', [Pos\ReportController::class, 'summary'])->middleware('perm:pos_reports.view');
+    });
+
+    /* ---- Engine: Bookings ---- */
+    Route::prefix('bookings')->middleware('perm:bookings.view')->group(function () {
+        Route::get('calendar', [Bookings\BookingController::class, 'calendar']);
+        Route::get('availability', [Bookings\BookingController::class, 'availability']);
+        Route::get('list', [Bookings\BookingController::class, 'index']);
+        Route::get('list/{id}', [Bookings\BookingController::class, 'show'])->whereNumber('id');
+        Route::post('list', [Bookings\BookingController::class, 'store']);
+        Route::match(['put', 'patch'], 'list/{id}', [Bookings\BookingController::class, 'update'])->whereNumber('id');
+        Route::post('list/{id}/status', [Bookings\BookingController::class, 'setStatus'])->whereNumber('id');
+        Route::post('list/{id}/pay', [Bookings\BookingController::class, 'pay'])->whereNumber('id');
+
+        Route::get('{kind}', [Bookings\CatalogController::class, 'index'])->where('kind', 'units|services');
+        Route::middleware('perm:bookings.manage')->group(function () {
+            Route::post('{kind}', [Bookings\CatalogController::class, 'store'])->where('kind', 'units|services');
+            Route::match(['put', 'patch'], '{kind}/{id}', [Bookings\CatalogController::class, 'update'])->where('kind', 'units|services')->whereNumber('id');
+            Route::delete('{kind}/{id}', [Bookings\CatalogController::class, 'destroy'])->where('kind', 'units|services')->whereNumber('id');
+        });
+    });
+
+    /* ---- Engine: Travel (hajj / umrah / tourism) ---- */
+    Route::prefix('travel')->middleware('perm:travel.view')->group(function () {
+        Route::get('trips', [Travel\TripController::class, 'index']);
+        Route::get('trips/{id}', [Travel\TripController::class, 'show'])->whereNumber('id');
+        Route::get('packages', [Travel\TripController::class, 'packages']);
+        Route::get('travelers', [Travel\TravelerController::class, 'index']);
+        Route::get('travelers/{id}', [Travel\TravelerController::class, 'show'])->whereNumber('id');
+        Route::post('travelers', [Travel\TravelerController::class, 'store']);
+        Route::match(['put', 'patch'], 'travelers/{id}', [Travel\TravelerController::class, 'update'])->whereNumber('id');
+        Route::post('travelers/{id}/pay', [Travel\TravelerController::class, 'pay'])->whereNumber('id');
+        Route::middleware('perm:travel.manage')->group(function () {
+            Route::post('trips', [Travel\TripController::class, 'store']);
+            Route::match(['put', 'patch'], 'trips/{id}', [Travel\TripController::class, 'update'])->whereNumber('id');
+            Route::delete('trips/{id}', [Travel\TripController::class, 'destroy'])->whereNumber('id');
+            Route::post('trips/{id}/expenses', [Travel\TripController::class, 'addExpense'])->whereNumber('id');
+            Route::delete('trips/{id}/expenses/{expenseId}', [Travel\TripController::class, 'deleteExpense'])->whereNumber('id')->whereNumber('expenseId');
+            Route::delete('travelers/{id}', [Travel\TravelerController::class, 'destroy'])->whereNumber('id');
+            Route::post('packages', [Travel\TripController::class, 'storePackage']);
+            Route::match(['put', 'patch'], 'packages/{id}', [Travel\TripController::class, 'updatePackage'])->whereNumber('id');
+            Route::delete('packages/{id}', [Travel\TripController::class, 'destroyPackage'])->whereNumber('id');
+        });
     });
 });
 

@@ -66,6 +66,7 @@ class ModuleSeeder extends Seeder
 
             // ---- Engine: Bookings ----
             ['key' => 'bookings', 'engine' => 'bookings', 'name_ar' => 'الحجوزات', 'name_en' => 'Bookings', 'icon' => 'ti-calendar-event', 'route' => '/bookings'],
+            ['key' => 'bookings_list', 'parent_key' => 'bookings', 'engine' => 'bookings', 'name_ar' => 'قائمة الحجوزات', 'name_en' => 'Bookings', 'icon' => 'ti-list-check', 'route' => '/bookings'],
             ['key' => 'bookings_calendar', 'parent_key' => 'bookings', 'engine' => 'bookings', 'name_ar' => 'تقويم الحجوزات', 'name_en' => 'Calendar', 'icon' => 'ti-calendar', 'route' => '/bookings/calendar'],
             ['key' => 'bookings_units', 'parent_key' => 'bookings', 'engine' => 'bookings', 'name_ar' => 'القاعات / الغرف / الوحدات', 'name_en' => 'Units', 'icon' => 'ti-door', 'route' => '/bookings/units'],
             ['key' => 'bookings_services', 'parent_key' => 'bookings', 'engine' => 'bookings', 'name_ar' => 'الخدمات الإضافية', 'name_en' => 'Services', 'icon' => 'ti-sparkles', 'route' => '/bookings/services'],
