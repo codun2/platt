@@ -5,6 +5,12 @@ cd /opt/platt
 exec 9>/tmp/platt-deploy.lock
 flock -n 9 || exit 0
 
+# Safety: if the working tree has uncommitted changes (a live session is editing),
+# skip this cycle so `git reset --hard` never wipes in-progress work.
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  exit 0
+fi
+
 git fetch -q origin main
 REMOTE=$(git rev-parse origin/main)
 LOCAL=$(cat .last_deployed 2>/dev/null || echo none)
