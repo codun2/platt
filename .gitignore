@@ -6,3 +6,4 @@ vendor/
 .last_deployed
 .output/
 .nuxt/
+.claude/settings.local.json

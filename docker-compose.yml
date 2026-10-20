@@ -1,7 +1,67 @@
+# ركائز (Rakeez) — Laravel API + Nuxt SPA (static) + MySQL.
+# Host nginx (:8100 public) reverse-proxies → 127.0.0.1:8014 (platt-web).
+name: platt
+
 services:
-  web:
-    build: .
+  platt-db:
+    image: mysql:8.0
+    container_name: platt-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: platt
+      MYSQL_USER: platt
+      MYSQL_PASSWORD: Platt_pr0d_9mX4q
+      MYSQL_ROOT_PASSWORD: Platt_root_2kT7w
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - platt-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pPlatt_root_2kT7w"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    networks: [platt-net]
+
+  platt-api:
+    build: ./api
+    container_name: platt-api
+    restart: unless-stopped
+    working_dir: /app
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: http://109.199.98.171:8100
+      DB_CONNECTION: mysql
+      DB_HOST: platt-db
+      DB_PORT: "3306"
+      DB_DATABASE: platt
+      DB_USERNAME: platt
+      DB_PASSWORD: Platt_pr0d_9mX4q
+      SUPER_ADMIN_EMAIL: admin@rakeez.app
+      SUPER_ADMIN_PASSWORD: Rakeez@2026
+    volumes:
+      - ./api:/app
+      - platt-api-storage:/app/storage/app/public
+    depends_on:
+      platt-db:
+        condition: service_healthy
+    networks: [platt-net]
+
+  platt-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: platt-web
     restart: unless-stopped
     ports:
       - "127.0.0.1:8014:80"
+    depends_on:
+      - platt-api
+    networks: [platt-net]
+
+volumes:
+  platt-db-data:
+  platt-api-storage:
+
+networks:
+  platt-net:

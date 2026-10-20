@@ -39,9 +39,9 @@
 ## 4) خطة المراحل
 
 - **المرحلة 0 (الحالية):** واجهة رئيسية + هذا المخطط + حاوية منشورة. ✅
-- **المرحلة 1 — Core:** Laravel+Nuxt scaffold · tenants + عزل tenant_id · auth · super-admin · جداول modules/tenant_modules/presets · **سايدبار ديناميكي** · صلاحيات.
+- **المرحلة 1 — Core:** Laravel+Nuxt scaffold · tenants + عزل tenant_id · auth · super-admin · جداول modules/tenant_modules/presets · **سايدبار ديناميكي** · صلاحيات. ✅
 - **المرحلة 2 — محرّك Inventory + POS:** أصناف · مخزون/مستودعات · فواتير بيع · POS. (يفتح 5 قطاعات)
 - **المرحلة 3+:** محرّك تلو الآخر حسب الأولوية (Bookings / Rental / Service / Education ...).
 
 ## التشغيل محلياً
-المرحلة 0 حالياً صفحة ثابتة عبر nginx. لاحقاً: `docker compose up -d --build`.
+`docker compose up -d --build` — راجع README.md للحسابات الافتراضية والمسارات.
