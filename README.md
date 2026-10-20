@@ -7,6 +7,7 @@
 ## الحالة
 - المرحلة ۰: الواجهة الرئيسية + مخطط المعمارية ✅
 - المرحلة ۱ (Core): Laravel API + Nuxt SPA + MySQL · Multi-Tenant · auth · أدوار وصلاحيات · سايدبار ديناميكي · لوحة Super-Admin ✅
+- المرحلة ۲ (Inventory + POS): أصناف · مستودعات · مشتريات · حركات مخزون · عملاء · شاشة بيع · فواتير · ورديات · تقارير ✅
 
 ## الهيكل
 ```
@@ -32,6 +33,7 @@ docker compose up -d --build        # http://localhost:8014
 - `/` صفحة الهبوط · `/app/login` · `/app/register` (اختيار القطاع → تفعيل وحدات الباقة)
 - `/app/` لوحة المشترك (سايدبار مولّد من `modules` ∩ `tenant_modules` ∩ صلاحيات المستخدم)
 - `/app/super` لوحة المنصّة: المشتركون، الوحدات، الباقات، الخطط، الاشتراكات
+- `/app/pos` شاشة البيع · `/app/pos/sales` الفواتير · `/app/inventory/*` المخزون · `/app/crm/customers` العملاء
 
 ## النشر
 Contabo VPS، `/opt/platt`، منفذ داخلي `127.0.0.1:8014` خلف nginx (:8100)، auto-deploy (edit→push→live) عبر `deploy.sh` (cron كل دقيقة).

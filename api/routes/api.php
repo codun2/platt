@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\App;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\Inventory;
+use App\Http\Controllers\Api\Pos;
 use App\Http\Controllers\Api\PublicController;
 use App\Http\Controllers\Api\Super;
 use Illuminate\Support\Facades\Route;
@@ -53,6 +55,69 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant'])->prefix('app')->gro
         Route::post('roles', [App\RoleController::class, 'store']);
         Route::match(['put', 'patch'], 'roles/{id}', [App\RoleController::class, 'update'])->whereNumber('id');
         Route::delete('roles/{id}', [App\RoleController::class, 'destroy'])->whereNumber('id');
+    });
+
+    /* ---- CRM: customers (core) ---- */
+    Route::middleware('perm:crm_customers.view')->group(function () {
+        Route::get('customers', [App\CustomerController::class, 'index']);
+        Route::get('customers/{id}', [App\CustomerController::class, 'show'])->whereNumber('id');
+        Route::middleware('perm:crm.manage')->group(function () {
+            Route::post('customers', [App\CustomerController::class, 'store']);
+            Route::match(['put', 'patch'], 'customers/{id}', [App\CustomerController::class, 'update'])->whereNumber('id');
+            Route::delete('customers/{id}', [App\CustomerController::class, 'destroy'])->whereNumber('id');
+        });
+    });
+
+    /* ---- Engine: Inventory ---- */
+    Route::prefix('inventory')->group(function () {
+        Route::get('items/meta', [Inventory\ItemController::class, 'meta']);
+        Route::get('items/lookup', [Inventory\ItemController::class, 'lookup']);          // POS + purchase lines
+        Route::middleware('perm:inventory_items.view')->group(function () {
+            Route::get('items', [Inventory\ItemController::class, 'index']);
+            Route::get('items/{id}', [Inventory\ItemController::class, 'show'])->whereNumber('id');
+            Route::get('low-stock', [Inventory\StockController::class, 'lowStock']);
+            Route::get('stock', [Inventory\StockController::class, 'levels']);
+            Route::get('movements', [Inventory\StockController::class, 'movements']);
+            Route::get('{kind}', [Inventory\SimpleCrudController::class, 'index'])->where('kind', 'categories|units|warehouses|suppliers');
+        });
+        Route::middleware('perm:inventory.manage')->group(function () {
+            Route::post('items', [Inventory\ItemController::class, 'store']);
+            Route::match(['put', 'patch'], 'items/{id}', [Inventory\ItemController::class, 'update'])->whereNumber('id');
+            Route::delete('items/{id}', [Inventory\ItemController::class, 'destroy'])->whereNumber('id');
+            Route::post('stock/adjust', [Inventory\StockController::class, 'adjust']);
+            Route::post('stock/transfer', [Inventory\StockController::class, 'transfer']);
+            Route::post('{kind}', [Inventory\SimpleCrudController::class, 'store'])->where('kind', 'categories|units|warehouses|suppliers');
+            Route::match(['put', 'patch'], '{kind}/{id}', [Inventory\SimpleCrudController::class, 'update'])->where('kind', 'categories|units|warehouses|suppliers')->whereNumber('id');
+            Route::delete('{kind}/{id}', [Inventory\SimpleCrudController::class, 'destroy'])->where('kind', 'categories|units|warehouses|suppliers')->whereNumber('id');
+        });
+        Route::middleware('perm:inventory_purchases.view')->group(function () {
+            Route::get('purchases', [Inventory\PurchaseController::class, 'index']);
+            Route::get('purchases/{id}', [Inventory\PurchaseController::class, 'show'])->whereNumber('id');
+            Route::middleware('perm:inventory.manage')->group(function () {
+                Route::post('purchases', [Inventory\PurchaseController::class, 'store']);
+                Route::match(['put', 'patch'], 'purchases/{id}', [Inventory\PurchaseController::class, 'update'])->whereNumber('id');
+                Route::post('purchases/{id}/receive', [Inventory\PurchaseController::class, 'receive'])->whereNumber('id');
+                Route::post('purchases/{id}/cancel', [Inventory\PurchaseController::class, 'cancel'])->whereNumber('id');
+                Route::post('purchases/{id}/pay', [Inventory\PurchaseController::class, 'pay'])->whereNumber('id');
+            });
+        });
+    });
+
+    /* ---- Engine: POS ---- */
+    Route::prefix('pos')->middleware('perm:pos.view')->group(function () {
+        Route::get('sales', [Pos\SaleController::class, 'index']);
+        Route::get('sales/{id}', [Pos\SaleController::class, 'show'])->whereNumber('id');
+        Route::post('sales', [Pos\SaleController::class, 'store']);
+        Route::post('sales/{id}/pay', [Pos\SaleController::class, 'pay'])->whereNumber('id');
+        Route::post('sales/{id}/cancel', [Pos\SaleController::class, 'cancel'])->whereNumber('id')->middleware('perm:pos.manage');
+
+        Route::get('shifts', [Pos\ShiftController::class, 'index']);
+        Route::get('shifts/current', [Pos\ShiftController::class, 'current']);
+        Route::get('shifts/{id}', [Pos\ShiftController::class, 'show'])->whereNumber('id');
+        Route::post('shifts/open', [Pos\ShiftController::class, 'open']);
+        Route::post('shifts/{id}/close', [Pos\ShiftController::class, 'close'])->whereNumber('id');
+
+        Route::get('reports/summary', [Pos\ReportController::class, 'summary'])->middleware('perm:pos_reports.view');
     });
 });
 

@@ -56,9 +56,12 @@ class ModuleSeeder extends Seeder
             ['key' => 'inventory_items', 'parent_key' => 'inventory', 'engine' => 'inventory', 'name_ar' => 'الأصناف', 'name_en' => 'Items', 'icon' => 'ti-box', 'route' => '/inventory/items'],
             ['key' => 'inventory_warehouses', 'parent_key' => 'inventory', 'engine' => 'inventory', 'name_ar' => 'المستودعات', 'name_en' => 'Warehouses', 'icon' => 'ti-building-warehouse', 'route' => '/inventory/warehouses'],
             ['key' => 'inventory_purchases', 'parent_key' => 'inventory', 'engine' => 'inventory', 'name_ar' => 'المشتريات والموردون', 'name_en' => 'Purchases', 'icon' => 'ti-truck-delivery', 'route' => '/inventory/purchases'],
+            ['key' => 'inventory_movements', 'parent_key' => 'inventory', 'engine' => 'inventory', 'name_ar' => 'حركات المخزون', 'name_en' => 'Stock Movements', 'icon' => 'ti-arrows-exchange', 'route' => '/inventory/movements'],
             ['key' => 'pos', 'engine' => 'inventory', 'name_ar' => 'نقطة البيع', 'name_en' => 'POS', 'icon' => 'ti-cash-register', 'route' => '/pos'],
-            ['key' => 'pos_sales', 'parent_key' => 'pos', 'engine' => 'inventory', 'name_ar' => 'المبيعات', 'name_en' => 'Sales', 'icon' => 'ti-shopping-cart', 'route' => '/pos/sales'],
+            ['key' => 'pos_screen', 'parent_key' => 'pos', 'engine' => 'inventory', 'name_ar' => 'شاشة البيع', 'name_en' => 'POS Screen', 'icon' => 'ti-device-desktop', 'route' => '/pos'],
+            ['key' => 'pos_sales', 'parent_key' => 'pos', 'engine' => 'inventory', 'name_ar' => 'الفواتير', 'name_en' => 'Sales', 'icon' => 'ti-shopping-cart', 'route' => '/pos/sales'],
             ['key' => 'pos_shifts', 'parent_key' => 'pos', 'engine' => 'inventory', 'name_ar' => 'الورديات', 'name_en' => 'Shifts', 'icon' => 'ti-clock', 'route' => '/pos/shifts'],
+            ['key' => 'pos_reports', 'parent_key' => 'pos', 'engine' => 'inventory', 'name_ar' => 'تقارير المبيعات', 'name_en' => 'Sales Reports', 'icon' => 'ti-report-analytics', 'route' => '/pos/reports'],
             ['key' => 'vehicles', 'engine' => 'inventory', 'name_ar' => 'معرض السيارات', 'name_en' => 'Vehicles', 'icon' => 'ti-car', 'route' => '/vehicles'],
 
             // ---- Engine: Bookings ----

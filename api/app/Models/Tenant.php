@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Tenant extends Model
 {
     protected $fillable = [
-        'name', 'slug', 'sector_preset_id', 'plan_id', 'phone', 'email', 'country', 'currency',
+        'name', 'slug', 'sector_preset_id', 'plan_id', 'phone', 'email', 'country', 'currency', 'tax_rate', 'settings',
         'logo', 'status', 'subscription_status', 'trial_ends_at', 'subscription_renews_at', 'notes',
     ];
 
@@ -19,6 +19,8 @@ class Tenant extends Model
         return [
             'trial_ends_at' => 'date:Y-m-d',
             'subscription_renews_at' => 'date:Y-m-d',
+            'tax_rate' => 'decimal:2',
+            'settings' => 'array',
         ];
     }
 

@@ -4,11 +4,13 @@ namespace Database\Seeders;
 
 use App\Models\Module;
 use App\Models\Permission;
+use App\Models\Role;
 use Illuminate\Database\Seeder;
 
 /**
- * One `<module>.view` permission per module (gates the sidebar) plus a few
- * management permissions. Idempotent — safe to re-run after adding modules.
+ * One `<module>.view` permission per module (gates the sidebar) plus
+ * management permissions per engine. Idempotent — safe to re-run after adding
+ * modules; every tenant's system `admin` role is re-synced to hold everything.
  */
 class PermissionSeeder extends Seeder
 {
@@ -18,6 +20,9 @@ class PermissionSeeder extends Seeder
             ['key' => 'settings.manage', 'name_ar' => 'إدارة إعدادات الشركة', 'group_key' => 'core'],
             ['key' => 'users.manage', 'name_ar' => 'إدارة المستخدمين', 'group_key' => 'core'],
             ['key' => 'roles.manage', 'name_ar' => 'إدارة الأدوار والصلاحيات', 'group_key' => 'core'],
+            ['key' => 'crm.manage', 'name_ar' => 'إضافة/تعديل العملاء', 'group_key' => 'crm'],
+            ['key' => 'inventory.manage', 'name_ar' => 'إدارة الأصناف والمخزون والمشتريات', 'group_key' => 'inventory'],
+            ['key' => 'pos.manage', 'name_ar' => 'إلغاء الفواتير', 'group_key' => 'pos'],
         ];
         foreach ($management as $p) {
             Permission::updateOrCreate(['key' => $p['key']], $p);
@@ -29,5 +34,9 @@ class PermissionSeeder extends Seeder
                 ['name_ar' => 'عرض: '.$m->name_ar, 'group_key' => $m->parent_key ?: $m->key],
             );
         }
+
+        // Keep every tenant's admin role complete as new permissions appear.
+        $all = Permission::pluck('id');
+        Role::withoutGlobalScopes()->where('key', 'admin')->where('is_system', true)->each(fn (Role $r) => $r->permissions()->sync($all));
     }
 }
