@@ -25,7 +25,7 @@ async function remove(p: any) { if (!confirm(`حذف ${p.name}؟`)) return; try 
     <UiModal v-if="modal" :title="editing ? 'تعديل باقة' : 'باقة جديدة'" @close="modal = false">
       <div v-if="err" class="alert bad">{{ err }}</div>
       <div class="field"><label>الاسم</label><input v-model="form.name" /></div>
-      <div class="grid grid-2"><div class="field"><label>النوع</label><select v-model="form.type"><option v-for="(l, k) in typeLabel" :key="k" :value="k">{{ l }}</option></select></div><div class="field"><label>السعر للمسافر</label><input v-model.number="form.price" type="number" step="0.001" dir="ltr" /></div></div>
+      <div class="grid grid-2"><div class="field"><label>النوع</label><UiSelect v-model="form.type"><option v-for="(l, k) in typeLabel" :key="k" :value="k">{{ l }}</option></UiSelect></div><div class="field"><label>السعر للمسافر</label><input v-model.number="form.price" type="number" step="0.001" dir="ltr" /></div></div>
       <div class="field"><label>تشمل (فندق، طيران، نقل...)</label><textarea v-model="form.includes" rows="3" /></div>
       <label class="switch"><input v-model="form.is_active" type="checkbox" /><span /> نشطة</label>
       <template #footer><button class="btn ghost" @click="modal = false">إلغاء</button><button class="btn" @click="save">حفظ</button></template>

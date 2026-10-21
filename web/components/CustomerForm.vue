@@ -14,10 +14,10 @@ const isCompany = computed(() => props.form.customer_type === 'company')
     <div class="grid grid-3">
       <div class="field">
         <label>نوع العميل</label>
-        <select v-model="form.customer_type">
+        <UiSelect v-model="form.customer_type">
           <option value="individual">فرد</option>
           <option value="company">شركة / جهة</option>
-        </select>
+        </UiSelect>
       </div>
       <div class="field"><label>الاسم <span style="color:var(--primary)">*</span></label><input v-model="form.name" placeholder="اسم العميل" /></div>
       <div class="field"><label>كود العميل</label><input v-model="form.code" dir="ltr" placeholder="اختياري" /></div>
@@ -35,13 +35,13 @@ const isCompany = computed(() => props.form.customer_type === 'company')
     <div class="grid grid-3">
       <div class="field">
         <label>نوع الهوية</label>
-        <select v-model="form.id_type">
+        <UiSelect v-model="form.id_type">
           <option value="">—</option>
           <option value="national_id">بطاقة مدنية / هوية</option>
           <option value="passport">جواز سفر</option>
           <option value="resident_id">إقامة</option>
           <option value="commercial_reg">سجل تجاري</option>
-        </select>
+        </UiSelect>
       </div>
       <div class="field">
         <label>رقم الهوية / المستند <span v-if="needsId" class="muted" style="font-weight:400">(مطلوب للعقود)</span></label>
@@ -52,7 +52,7 @@ const isCompany = computed(() => props.form.customer_type === 'company')
       <div class="field"><label>تاريخ الميلاد</label><input v-model="form.birth_date" type="date" dir="ltr" /></div>
       <div class="field">
         <label>الجنس</label>
-        <select v-model="form.gender"><option value="">—</option><option value="male">ذكر</option><option value="female">أنثى</option></select>
+        <UiSelect v-model="form.gender"><option value="">—</option><option value="male">ذكر</option><option value="female">أنثى</option></UiSelect>
       </div>
     </div>
 
@@ -74,13 +74,13 @@ const isCompany = computed(() => props.form.customer_type === 'company')
     <div class="grid grid-4">
       <div class="field">
         <label>التصنيف</label>
-        <select v-model="form.category">
+        <UiSelect v-model="form.category">
           <option value="">عادي</option>
           <option value="vip">مميّز (VIP)</option>
           <option value="wholesale">جملة</option>
           <option value="retail">تجزئة</option>
           <option value="government">جهة حكومية</option>
-        </select>
+        </UiSelect>
       </div>
       <div class="field"><label>حد الائتمان</label><input v-model="form.credit_limit" type="number" step="0.001" min="0" dir="ltr" /></div>
       <div class="field"><label>رصيد افتتاحي</label><input v-model="form.opening_balance" type="number" step="0.001" dir="ltr" /></div>

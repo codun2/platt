@@ -18,8 +18,8 @@ onMounted(load)
     <div class="card">
       <div class="row between" style="margin-bottom:14px">
         <div class="row">
-          <select v-model="filt.type" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">جميع الأنواع</option><option v-for="(l, k) in typeLabel" :key="k" :value="k">{{ l }}</option></select>
-          <select v-model="filt.status" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">جميع الحالات</option><option v-for="(l, k) in stLabel" :key="k" :value="k">{{ l }}</option></select>
+          <UiSelect v-model="filt.type" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">جميع الأنواع</option><option v-for="(l, k) in typeLabel" :key="k" :value="k">{{ l }}</option></UiSelect>
+          <UiSelect v-model="filt.status" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">جميع الحالات</option><option v-for="(l, k) in stLabel" :key="k" :value="k">{{ l }}</option></UiSelect>
           <input v-model="filt.q" placeholder="البحث بالاسم أو الوجهة..." style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @keyup.enter="load" /><button class="btn ghost" @click="load"><i class="ti ti-search" /></button>
         </div>
         <NuxtLink v-if="canManage" class="btn" to="/travel/trips/new"><i class="ti ti-plus" /> إضافة رحلة</NuxtLink>

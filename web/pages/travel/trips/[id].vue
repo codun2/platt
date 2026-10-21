@@ -138,8 +138,8 @@ async function remove() {
           <div class="field" style="margin:0"><label>هاتف</label><input v-model="trav.phone" dir="ltr" style="width:120px" /></div>
           <div class="field" style="margin:0"><label>جواز</label><input v-model="trav.passport_no" dir="ltr" style="width:110px" /></div>
           <div class="field" style="margin:0"><label>الجنسية</label><input v-model="trav.nationality" style="width:100px" /></div>
-          <div class="field" style="margin:0"><label>الجنس</label><select v-model="trav.gender" style="width:90px"><option value="">—</option><option value="male">ذكر</option><option value="female">أنثى</option></select></div>
-          <div class="field" style="margin:0"><label>باقة</label><select v-model="trav.package_id" style="width:130px"><option value="">—</option><option v-for="p in packages" :key="p.id" :value="p.id">{{ p.name }}</option></select></div>
+          <div class="field" style="margin:0"><label>الجنس</label><UiSelect v-model="trav.gender" style="width:90px"><option value="">—</option><option value="male">ذكر</option><option value="female">أنثى</option></UiSelect></div>
+          <div class="field" style="margin:0"><label>باقة</label><UiSelect v-model="trav.package_id" style="width:130px"><option value="">—</option><option v-for="p in packages" :key="p.id" :value="p.id">{{ p.name }}</option></UiSelect></div>
           <div class="field" style="margin:0"><label>سعر</label><input v-model="trav.price" type="number" step="0.001" dir="ltr" style="width:100px" :placeholder="f.money(trip.price)" /></div>
           <button class="btn" :disabled="!trav.name" @click="addTraveler"><i class="ti ti-plus" /></button>
         </div>
@@ -159,7 +159,7 @@ async function remove() {
         </table>
         <p v-if="!trip.expenses.length" class="empty">لا توجد مصروفات.</p>
         <div v-if="canManage" class="row mt" style="align-items:flex-end">
-          <div class="field" style="margin:0"><label>الفئة</label><select v-model="exp.category"><option v-for="(l, k) in catLabel" :key="k" :value="k">{{ l }}</option></select></div>
+          <div class="field" style="margin:0"><label>الفئة</label><UiSelect v-model="exp.category"><option v-for="(l, k) in catLabel" :key="k" :value="k">{{ l }}</option></UiSelect></div>
           <div class="field" style="margin:0"><label>المبلغ</label><input v-model.number="exp.amount" type="number" step="0.001" dir="ltr" style="width:120px" /></div>
           <div class="field" style="margin:0;flex:1"><label>ملاحظة</label><input v-model="exp.note" /></div>
           <button class="btn ghost" :disabled="!exp.amount" @click="addExpense"><i class="ti ti-plus" /> مصروف</button>

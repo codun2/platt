@@ -24,8 +24,8 @@ async function remove() { if (!confirm('حذف/إلغاء المسافر؟')) re
     <div class="card">
       <div class="row" style="margin-bottom:14px">
         <input v-model="filt.q" placeholder="اسم / هاتف / جواز" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @keyup.enter="load" />
-        <select v-model="filt.trip_id" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">كل الرحلات</option><option v-for="t in trips" :key="t.id" :value="t.id">{{ t.name }}</option></select>
-        <select v-model="filt.status" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">كل الحالات</option><option v-for="(l, k) in stLabel" :key="k" :value="k">{{ l }}</option></select>
+        <UiSelect v-model="filt.trip_id" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">كل الرحلات</option><option v-for="t in trips" :key="t.id" :value="t.id">{{ t.name }}</option></UiSelect>
+        <UiSelect v-model="filt.status" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">كل الحالات</option><option v-for="(l, k) in stLabel" :key="k" :value="k">{{ l }}</option></UiSelect>
         <label class="switch"><input v-model="filt.unpaid" type="checkbox" @change="load" /><span /> لم يسددوا</label>
         <button class="btn ghost" @click="load"><i class="ti ti-search" /></button>
         <NuxtLink to="/travel/trips" class="btn ghost" style="margin-right:auto">إضافة مسافر من صفحة الرحلة ←</NuxtLink>
@@ -61,10 +61,10 @@ async function remove() { if (!confirm('حذف/إلغاء المسافر؟')) re
       </template>
       <template v-else>
         <div class="grid grid-3">
-          <div class="field"><label>الاسم</label><input v-model="form.name" /></div><div class="field"><label>الهاتف</label><input v-model="form.phone" dir="ltr" /></div><div class="field"><label>الجنس</label><select v-model="form.gender"><option value="">—</option><option value="male">ذكر</option><option value="female">أنثى</option></select></div>
+          <div class="field"><label>الاسم</label><input v-model="form.name" /></div><div class="field"><label>الهاتف</label><input v-model="form.phone" dir="ltr" /></div><div class="field"><label>الجنس</label><UiSelect v-model="form.gender"><option value="">—</option><option value="male">ذكر</option><option value="female">أنثى</option></UiSelect></div>
           <div class="field"><label>رقم الجواز</label><input v-model="form.passport_no" dir="ltr" /></div><div class="field"><label>انتهاء الجواز</label><input v-model="form.passport_expiry" type="date" /></div><div class="field"><label>الجنسية</label><input v-model="form.nationality" /></div>
-          <div class="field"><label>تاريخ الميلاد</label><input v-model="form.birth_date" type="date" /></div><div class="field"><label>الباقة</label><select v-model="form.package_id"><option value="">—</option><option v-for="p in packages" :key="p.id" :value="p.id">{{ p.name }}</option></select></div><div class="field"><label>السعر</label><input v-model.number="form.price" type="number" step="0.001" dir="ltr" /></div>
-          <div class="field"><label>الحالة</label><select v-model="form.status"><option v-for="(l, k) in stLabel" :key="k" :value="k">{{ l }}</option></select></div>
+          <div class="field"><label>تاريخ الميلاد</label><input v-model="form.birth_date" type="date" /></div><div class="field"><label>الباقة</label><UiSelect v-model="form.package_id"><option value="">—</option><option v-for="p in packages" :key="p.id" :value="p.id">{{ p.name }}</option></UiSelect></div><div class="field"><label>السعر</label><input v-model.number="form.price" type="number" step="0.001" dir="ltr" /></div>
+          <div class="field"><label>الحالة</label><UiSelect v-model="form.status"><option v-for="(l, k) in stLabel" :key="k" :value="k">{{ l }}</option></UiSelect></div>
         </div>
         <div class="field"><label>ملاحظات</label><textarea v-model="form.notes" rows="2" /></div>
       </template>
@@ -76,7 +76,7 @@ async function remove() { if (!confirm('حذف/إلغاء المسافر؟')) re
           </div>
           <div v-if="!editing && view.status !== 'cancelled' && Number(view.price) - Number(view.paid) > 0" class="row">
             <input v-model.number="pay.amount" type="number" step="0.001" dir="ltr" style="width:110px;padding:7px;border:1px solid var(--line);border-radius:8px" />
-            <select v-model="pay.method" style="padding:7px;border:1px solid var(--line);border-radius:8px"><option value="cash">نقدي</option><option value="card">بطاقة</option><option value="transfer">تحويل</option></select>
+            <UiSelect v-model="pay.method" style="padding:7px;border:1px solid var(--line);border-radius:8px"><option value="cash">نقدي</option><option value="card">بطاقة</option><option value="transfer">تحويل</option></UiSelect>
             <button class="btn info" @click="doPay">تسجيل دفعة</button>
           </div>
         </div>

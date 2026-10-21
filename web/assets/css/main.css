@@ -78,7 +78,7 @@ h1, h2, h3 { margin: 0; }
 .field input, .field select, .field textarea { padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; width: 100%; }
 .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(225, 29, 72, .12); }
 
-/* ---- Unified dropdowns: single custom chevron + styled option list (all selects, app-wide) ---- */
+/* ---- Native selects not yet migrated: single custom chevron + styled options ---- */
 select {
   appearance: none; -webkit-appearance: none; -moz-appearance: none;
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
@@ -90,10 +90,39 @@ select:hover { border-color: #cbd5e1; }
 select:disabled { opacity: .6; cursor: default; background-color: var(--bg); }
 select option { background: #fff; color: var(--ink); padding: 10px 12px; font-weight: 500; }
 select option:checked { background: var(--primary-50); color: var(--primary); font-weight: 700; }
-select option:hover { background: var(--primary-50); }
-@supports (-moz-appearance: none) {        /* Firefox: give the popup breathing room */
-  select { line-height: 1.6; }
+
+/* ---- UiSelect: fully custom modern dropdown ---- */
+.ui-select { position: relative; display: inline-block; width: auto; vertical-align: middle; }
+.field .ui-select { display: block; width: 100%; }
+.ui-select-native { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); border: 0; opacity: 0; pointer-events: none; }
+.ui-select-btn {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  width: 100%; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px;
+  background: #fff; color: var(--ink); cursor: pointer; font: inherit; text-align: right; line-height: 1.4;
+  transition: border-color .12s, box-shadow .12s;
 }
+.ui-select-btn:hover { border-color: #cbd5e1; }
+.ui-select.open .ui-select-btn { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(225, 29, 72, .12); }
+.ui-select-ph { color: var(--muted); }
+.ui-select-caret { color: var(--muted); font-size: 16px; transition: transform .15s; flex-shrink: 0; }
+.ui-select.open .ui-select-caret { transform: rotate(180deg); }
+.ui-select-pop {
+  position: absolute; z-index: 60; top: calc(100% + 6px); right: 0; left: 0;
+  min-width: 100%; width: max-content; max-width: 320px; max-height: 260px; overflow: auto;
+  background: #fff; border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, .14); padding: 6px;
+  animation: uiSelPop .12s ease;
+}
+@keyframes uiSelPop { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.ui-select-opt {
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 9px 10px;
+  border: none; background: none; border-radius: 8px; cursor: pointer; font: inherit;
+  color: var(--ink); text-align: right; white-space: nowrap;
+}
+.ui-select-opt:hover:not(.dis) { background: var(--primary-50); }
+.ui-select-opt.sel { background: var(--primary-50); color: var(--primary); font-weight: 700; }
+.ui-select-opt.dis { opacity: .5; cursor: default; }
+.ui-select-opt .ti-check { font-size: 15px; color: var(--primary); flex-shrink: 0; }
 .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 .row.between { justify-content: space-between; }
 .row.end { justify-content: flex-end; }
