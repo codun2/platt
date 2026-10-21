@@ -38,7 +38,7 @@ const typeLabel = (t: string) => (t === 'company' ? 'شركة / جهة' : 'فر�
 
     <div class="grid grid-4" style="margin-bottom:16px">
       <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-user" /></div><div><b style="font-size:15px">{{ typeLabel(detail.customer.customer_type) }}</b><small>{{ detail.customer.category || 'عميل' }}</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-file-invoice" /></div><div><b>{{ detail.sales.length }}</b><small>الفواتير</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-file-invoice" /></div><div><b>{{ (detail.invoices?.length || 0) + detail.sales.length }}</b><small>فاتورة · {{ detail.quotes?.length || 0 }} عرض سعر</small></div></div>
       <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-wallet" /></div><div><b style="font-size:15px">{{ f.money(detail.customer.credit_limit, true) }}</b><small>حد الائتمان</small></div></div>
       <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-receipt" /></div><div><b style="font-size:15px">{{ f.money(detail.balance_due, true) }}</b><small>الرصيد المستحق</small></div></div>
     </div>
@@ -47,7 +47,7 @@ const typeLabel = (t: string) => (t === 'company' ? 'شركة / جهة' : 'فر�
       <div class="row between" style="margin-bottom:4px">
         <div class="tabs" style="margin-bottom:0;border:none">
           <button :class="{ on: tab === 'profile' }" @click="tab = 'profile'">الملف</button>
-          <button :class="{ on: tab === 'invoices' }" @click="tab = 'invoices'">الفواتير ({{ detail.sales.length }})</button>
+          <button :class="{ on: tab === 'invoices' }" @click="tab = 'invoices'">الفواتير والعروض ({{ (detail.invoices?.length || 0) + detail.sales.length + (detail.quotes?.length || 0) }})</button>
         </div>
         <div v-if="canManage && tab === 'profile'" class="row" style="gap:8px">
           <button v-if="!editing" class="btn ghost sm" @click="editing = true"><i class="ti ti-pencil" /> تعديل</button>
@@ -86,19 +86,52 @@ const typeLabel = (t: string) => (t === 'company' ? 'شركة / جهة' : 'فر�
         <div style="grid-column:1/-1" v-if="detail.customer.notes"><small class="muted">ملاحظات</small><br /><b>{{ detail.customer.notes }}</b></div>
       </div>
 
-      <!-- Invoices -->
+      <!-- Invoices + quotes + POS sales -->
       <div v-else-if="tab === 'invoices'">
+        <div class="row between" style="margin-bottom:10px">
+          <div class="card-title" style="margin:0"><i class="ti ti-file-invoice" /> الفواتير ({{ detail.invoices?.length || 0 }})</div>
+          <div v-if="canManage" class="row" style="gap:8px">
+            <NuxtLink class="btn sm" :to="`/crm/invoices/new?customer_id=${detail.customer.id}`"><i class="ti ti-plus" /> فاتورة</NuxtLink>
+            <NuxtLink class="btn ghost sm" :to="`/crm/quotes/new?customer_id=${detail.customer.id}`"><i class="ti ti-plus" /> عرض سعر</NuxtLink>
+          </div>
+        </div>
         <table class="table">
-          <thead><tr><th>الفاتورة</th><th>التاريخ</th><th>الإجمالي</th><th>المدفوع</th><th>الدفع</th><th>الحالة</th></tr></thead>
+          <thead><tr><th>الرقم</th><th>التاريخ</th><th>الاستحقاق</th><th>الموضوع</th><th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th><th>الحالة</th></tr></thead>
           <tbody>
-            <tr v-for="s in detail.sales" :key="s.id">
-              <td><NuxtLink :to="`/pos/sales?open=${s.id}`" style="color:var(--info)">{{ s.number }}</NuxtLink></td><td>{{ f.d(s.date) }}</td>
-              <td class="num">{{ f.money(s.total) }}</td><td class="num">{{ f.money(s.paid) }}</td><td>{{ f.methodLabel(s.payment_method) }}</td>
-              <td><span class="badge" :class="s.status === 'completed' ? 'ok' : 'bad'">{{ s.status === 'completed' ? 'مكتملة' : 'ملغاة' }}</span></td>
+            <tr v-for="inv in detail.invoices" :key="inv.id">
+              <td><NuxtLink :to="`/crm/invoices/${inv.id}`" style="color:var(--info);font-weight:700" dir="ltr">{{ inv.number }}</NuxtLink></td><td>{{ f.d(inv.date) }}</td><td>{{ f.d(inv.due_date) }}</td><td class="muted">{{ inv.subject || '—' }}</td>
+              <td class="num">{{ f.money(inv.total) }}</td><td class="num" style="color:var(--ok)">{{ f.money(inv.paid) }}</td><td class="num" :style="+inv.balance > 0 && inv.status !== 'cancelled' ? 'color:var(--primary);font-weight:700' : ''">{{ f.money(inv.balance) }}</td>
+              <td><span class="badge" :class="invoiceStatus[inv.status]?.cls">{{ invoiceStatus[inv.status]?.label }}</span> <span v-if="inv.is_overdue" class="badge bad">متأخرة</span></td>
             </tr>
           </tbody>
         </table>
-        <p v-if="!detail.sales.length" class="empty">لا توجد فواتير.</p>
+        <p v-if="!detail.invoices?.length" class="empty" style="padding:16px 0">لا توجد فواتير.</p>
+
+        <div class="card-title mt"><i class="ti ti-file-dollar" /> عروض الأسعار ({{ detail.quotes?.length || 0 }})</div>
+        <table class="table">
+          <thead><tr><th>الرقم</th><th>التاريخ</th><th>صالح حتى</th><th>الموضوع</th><th>الإجمالي</th><th>الحالة</th></tr></thead>
+          <tbody>
+            <tr v-for="q in detail.quotes" :key="q.id">
+              <td><NuxtLink :to="`/crm/quotes/${q.id}`" style="color:var(--info);font-weight:700" dir="ltr">{{ q.number }}</NuxtLink></td><td>{{ f.d(q.date) }}</td><td>{{ f.d(q.valid_until) }}</td><td class="muted">{{ q.subject || '—' }}</td>
+              <td class="num">{{ f.money(q.total) }}</td><td><span class="badge" :class="quoteStatus[q.status]?.cls">{{ quoteStatus[q.status]?.label }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <p v-if="!detail.quotes?.length" class="empty" style="padding:16px 0">لا توجد عروض أسعار.</p>
+
+        <template v-if="detail.sales.length">
+          <div class="card-title mt"><i class="ti ti-cash-register" /> فواتير نقطة البيع ({{ detail.sales.length }})</div>
+          <table class="table">
+            <thead><tr><th>الفاتورة</th><th>التاريخ</th><th>الإجمالي</th><th>المدفوع</th><th>الدفع</th><th>الحالة</th></tr></thead>
+            <tbody>
+              <tr v-for="s in detail.sales" :key="s.id">
+                <td><NuxtLink :to="`/pos/sales?open=${s.id}`" style="color:var(--info)" dir="ltr">{{ s.number }}</NuxtLink></td><td>{{ f.d(s.date) }}</td>
+                <td class="num">{{ f.money(s.total) }}</td><td class="num">{{ f.money(s.paid) }}</td><td>{{ f.methodLabel(s.payment_method) }}</td>
+                <td><span class="badge" :class="s.status === 'completed' ? 'ok' : 'bad'">{{ s.status === 'completed' ? 'مكتملة' : 'ملغاة' }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </template>
       </div>
     </div>
   </div>

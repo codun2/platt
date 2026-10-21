@@ -20,7 +20,7 @@ class PermissionSeeder extends Seeder
             ['key' => 'settings.manage', 'name_ar' => 'إدارة إعدادات الشركة', 'group_key' => 'core'],
             ['key' => 'users.manage', 'name_ar' => 'إدارة المستخدمين', 'group_key' => 'core'],
             ['key' => 'roles.manage', 'name_ar' => 'إدارة الأدوار والصلاحيات', 'group_key' => 'core'],
-            ['key' => 'crm.manage', 'name_ar' => 'إضافة/تعديل العملاء', 'group_key' => 'crm'],
+            ['key' => 'crm.manage', 'name_ar' => 'إدارة العملاء والفواتير وعروض الأسعار', 'group_key' => 'crm'],
             ['key' => 'inventory.manage', 'name_ar' => 'إدارة الأصناف والمخزون والمشتريات', 'group_key' => 'inventory'],
             ['key' => 'pos.manage', 'name_ar' => 'إلغاء الفواتير', 'group_key' => 'pos'],
             ['key' => 'bookings.manage', 'name_ar' => 'إدارة الوحدات والخدمات', 'group_key' => 'bookings'],

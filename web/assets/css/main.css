@@ -91,6 +91,49 @@ select:disabled { opacity: .6; cursor: default; background-color: var(--bg); }
 select option { background: #fff; color: var(--ink); padding: 10px 12px; font-weight: 500; }
 select option:checked { background: var(--primary-50); color: var(--primary); font-weight: 700; }
 
+/* ---- Documents (invoices / quotes): line editor, totals, payment panel ---- */
+.lines-editor input { padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; width: 100%; background: #fff; }
+.lines-editor input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(225, 29, 72, .12); }
+.lines-editor td { vertical-align: top; }
+.line-search { margin-top: 6px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 8px; }
+.line-results { max-height: 220px; overflow: auto; margin-top: 6px; display: flex; flex-direction: column; gap: 2px; }
+.line-results button { text-align: right; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; cursor: pointer; font: inherit; }
+.line-results button:hover { border-color: var(--primary); background: var(--primary-50); }
+.totals-box { background: var(--bg); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.totals-box .total { border-top: 1px dashed var(--line); padding-top: 8px; font-size: 17px; color: var(--primary); }
+.pay-panel { background: var(--primary-50); border: 1px solid #fecdd3; border-radius: 12px; padding: 14px 16px; }
+
+/* ---- Printable sheet (DocPrint) ---- */
+.print-only { display: none; }
+.doc-print { color: #111; font-size: 13px; }
+.dp-head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #111; padding-bottom: 12px; margin-bottom: 16px; }
+.dp-head h1 { font-size: 22px; margin: 0 0 4px; }
+.dp-meta { display: flex; flex-wrap: wrap; gap: 4px 14px; color: #444; font-size: 12px; }
+.dp-title { text-align: left; }
+.dp-title h2 { margin: 0; font-size: 20px; letter-spacing: .5px; }
+.dp-title b { display: block; font-size: 15px; }
+.dp-title small { color: #666; }
+.dp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 16px; }
+.dp-grid h4 { margin: 0 0 6px; font-size: 12px; color: #666; text-transform: uppercase; }
+.dp-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+.dp-table th, .dp-table td { border: 1px solid #ccc; padding: 7px 9px; text-align: right; }
+.dp-table th { background: #f1f1f1; font-size: 12px; }
+.dp-bottom { display: grid; grid-template-columns: 1.2fr .8fr; gap: 24px; align-items: start; }
+.dp-notes h4 { margin: 8px 0 2px; font-size: 12px; color: #666; }
+.dp-notes p { margin: 0 0 6px; white-space: pre-wrap; }
+.dp-totals { display: flex; flex-direction: column; gap: 6px; border: 1px solid #ccc; border-radius: 8px; padding: 10px 12px; }
+.dp-totals .total { border-top: 1px solid #111; padding-top: 6px; font-size: 16px; }
+.dp-totals .due b { color: #b91c1c; }
+.dp-foot { margin-top: 28px; text-align: center; color: #666; font-size: 12px; border-top: 1px solid #ddd; padding-top: 10px; }
+@media print {
+  @page { margin: 12mm; }
+  body { background: #fff; }
+  .no-print, .sidebar, .topbar, .footer { display: none !important; }
+  .print-only { display: block !important; }
+  .shell { display: block; }
+  .content { padding: 0 !important; }
+}
+
 /* ---- UiSelect: fully custom modern dropdown ---- */
 .ui-select { position: relative; display: inline-block; width: auto; vertical-align: middle; }
 .field .ui-select { display: block; width: 100%; }

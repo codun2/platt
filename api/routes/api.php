@@ -70,6 +70,35 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant'])->prefix('app')->gro
         });
     });
 
+    /* ---- CRM: invoices (core) ---- */
+    Route::middleware('perm:crm_invoices.view')->group(function () {
+        Route::get('invoices', [App\InvoiceController::class, 'index']);
+        Route::get('invoices/{id}', [App\InvoiceController::class, 'show'])->whereNumber('id');
+        Route::middleware('perm:crm.manage')->group(function () {
+            Route::post('invoices', [App\InvoiceController::class, 'store']);
+            Route::match(['put', 'patch'], 'invoices/{id}', [App\InvoiceController::class, 'update'])->whereNumber('id');
+            Route::delete('invoices/{id}', [App\InvoiceController::class, 'destroy'])->whereNumber('id');
+            Route::post('invoices/{id}/send', [App\InvoiceController::class, 'markSent'])->whereNumber('id');
+            Route::post('invoices/{id}/cancel', [App\InvoiceController::class, 'cancel'])->whereNumber('id');
+            Route::post('invoices/{id}/duplicate', [App\InvoiceController::class, 'duplicate'])->whereNumber('id');
+            Route::post('invoices/{id}/pay', [App\InvoiceController::class, 'pay'])->whereNumber('id');
+            Route::delete('invoices/{id}/payments/{paymentId}', [App\InvoiceController::class, 'deletePayment'])->whereNumber('id')->whereNumber('paymentId');
+        });
+    });
+
+    /* ---- CRM: quotes (core) ---- */
+    Route::middleware('perm:crm_quotes.view')->group(function () {
+        Route::get('quotes', [App\QuoteController::class, 'index']);
+        Route::get('quotes/{id}', [App\QuoteController::class, 'show'])->whereNumber('id');
+        Route::middleware('perm:crm.manage')->group(function () {
+            Route::post('quotes', [App\QuoteController::class, 'store']);
+            Route::match(['put', 'patch'], 'quotes/{id}', [App\QuoteController::class, 'update'])->whereNumber('id');
+            Route::delete('quotes/{id}', [App\QuoteController::class, 'destroy'])->whereNumber('id');
+            Route::post('quotes/{id}/status', [App\QuoteController::class, 'setStatus'])->whereNumber('id');
+            Route::post('quotes/{id}/convert', [App\QuoteController::class, 'convert'])->whereNumber('id');
+        });
+    });
+
     /* ---- Engine: Inventory ---- */
     Route::prefix('inventory')->group(function () {
         Route::get('items/meta', [Inventory\ItemController::class, 'meta']);

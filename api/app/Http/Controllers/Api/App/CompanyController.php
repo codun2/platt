@@ -32,7 +32,19 @@ class CompanyController extends Controller
             'phone' => ['nullable', 'string', 'max:30'],
             'email' => ['nullable', 'email'],
             'currency' => ['nullable', 'string', 'max:8'],
+            'tax_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            // Printed on invoices / quotes (stored in tenants.settings JSON).
+            'settings' => ['nullable', 'array'],
+            'settings.address' => ['nullable', 'string', 'max:255'],
+            'settings.tax_number' => ['nullable', 'string', 'max:50'],
+            'settings.cr_number' => ['nullable', 'string', 'max:50'],
+            'settings.bank_details' => ['nullable', 'string', 'max:500'],
+            'settings.invoice_terms' => ['nullable', 'string', 'max:1000'],
+            'settings.invoice_footer' => ['nullable', 'string', 'max:255'],
         ]);
+        if (array_key_exists('settings', $data)) {
+            $data['settings'] = array_merge((array) ($tenant->settings ?? []), (array) ($data['settings'] ?? []));
+        }
         $tenant->fill($data)->save();
 
         return response()->json($tenant->fresh());

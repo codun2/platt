@@ -26,9 +26,12 @@ class CustomerController extends Controller
     {
         $c = Customer::findOrFail($id);
         $sales = $c->sales()->orderByDesc('id')->limit(50)->get(['id', 'number', 'date', 'status', 'total', 'paid', 'payment_method']);
-        $due = (float) $c->sales()->where('status', 'completed')->selectRaw('coalesce(sum(total - paid),0) as d')->value('d');
+        $invoices = $c->invoices()->orderByDesc('date')->orderByDesc('id')->limit(50)->get(['id', 'number', 'date', 'due_date', 'status', 'subject', 'total', 'paid']);
+        $quotes = $c->quotes()->orderByDesc('date')->orderByDesc('id')->limit(50)->get(['id', 'number', 'date', 'valid_until', 'status', 'subject', 'total']);
+        $due = (float) $c->sales()->where('status', 'completed')->selectRaw('coalesce(sum(total - paid),0) as d')->value('d')
+             + (float) $c->invoices()->whereIn('status', ['sent', 'partial'])->selectRaw('coalesce(sum(total - paid),0) as d')->value('d');
 
-        return response()->json(['customer' => $c, 'sales' => $sales, 'balance_due' => $due]);
+        return response()->json(['customer' => $c, 'sales' => $sales, 'invoices' => $invoices, 'quotes' => $quotes, 'balance_due' => round($due, 3)]);
     }
 
     public function store(Request $request): JsonResponse
