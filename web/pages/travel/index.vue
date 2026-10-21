@@ -25,7 +25,7 @@ const sum = (k: string) => upcoming.value.reduce((s, t) => s + Number(t[k] || 0)
     <div class="card mt">
       <div class="card-title"><i class="ti ti-calendar" /> الرحلات القادمة</div>
       <table class="table"><thead><tr><th>الرحلة</th><th>النوع</th><th>الوجهة</th><th>المغادرة</th><th>العودة</th><th>المسافرون</th><th>الحالة</th></tr></thead>
-        <tbody><tr v-for="t in upcoming" :key="t.id"><td><NuxtLink :to="`/travel/trips?open=${t.id}`" style="color:var(--info);font-weight:700">{{ t.name }}</NuxtLink></td><td>{{ typeLabel[t.type] }}</td><td>{{ t.destination }}</td><td>{{ f.d(t.departure_date) }}</td><td>{{ f.d(t.return_date) }}</td><td>{{ t.travelers_count }} / {{ t.capacity || '∞' }}</td><td><span class="badge" :class="stClass[t.status]">{{ stLabel[t.status] }}</span></td></tr></tbody></table>
+        <tbody><tr v-for="t in upcoming" :key="t.id"><td><NuxtLink :to="`/travel/trips/${t.id}`" style="color:var(--info);font-weight:700">{{ t.name }}</NuxtLink></td><td>{{ typeLabel[t.type] }}</td><td>{{ t.destination }}</td><td>{{ f.d(t.departure_date) }}</td><td>{{ f.d(t.return_date) }}</td><td>{{ t.travelers_count }} / {{ t.capacity || '∞' }}</td><td><span class="badge" :class="stClass[t.status]">{{ stLabel[t.status] }}</span></td></tr></tbody></table>
       <p v-if="!upcoming.length" class="empty">لا توجد رحلات قادمة.</p>
     </div>
   </div>

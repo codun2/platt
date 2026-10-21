@@ -11,11 +11,22 @@ class Trip extends Model
 {
     use BelongsToTenant;
 
-    protected $fillable = ['tenant_id', 'name', 'type', 'destination', 'departure_date', 'return_date', 'capacity', 'price', 'package_id', 'status', 'note'];
+    protected $fillable = [
+        'tenant_id', 'name', 'code', 'type', 'destination', 'transport', 'airline', 'flight_no',
+        'boarding_point', 'hotel_makkah', 'nights_makkah', 'hotel_madinah', 'nights_madinah',
+        'supervisor', 'supervisor_phone', 'departure_date', 'return_date', 'capacity', 'price',
+        'package_id', 'status', 'note',
+    ];
 
     protected function casts(): array
     {
-        return ['departure_date' => 'date:Y-m-d', 'return_date' => 'date:Y-m-d', 'price' => 'decimal:3'];
+        return [
+            'departure_date' => 'date:Y-m-d',
+            'return_date' => 'date:Y-m-d',
+            'price' => 'decimal:3',
+            'nights_makkah' => 'integer',
+            'nights_madinah' => 'integer',
+        ];
     }
 
     public function travelers(): HasMany
