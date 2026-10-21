@@ -17,11 +17,16 @@ let mo: MutationObserver | null = null
 
 function refresh() {
   if (!sel.value) return
-  opts.value = Array.from(sel.value.options).map((o: any) => ({
+  const next = Array.from(sel.value.options).map((o: any) => ({
     value: '_value' in o ? o._value : o.value,
     label: (o.textContent || '').trim(),
     disabled: o.disabled,
   }))
+  // Equality guard: only reassign when the option set actually changed.
+  // Without this, a MutationObserver → reactive write → re-render → mutation
+  // cycle can loop forever and freeze the tab.
+  const sig = (a: any[]) => a.map(o => `${o.value}\u0001${o.label}\u0001${o.disabled ? 1 : 0}`).join('\u0002')
+  if (sig(next) !== sig(opts.value)) opts.value = next
 }
 const current = computed(() => opts.value.find(o => String(o.value) === String(props.modelValue ?? '')))
 
@@ -38,7 +43,7 @@ function onKey(e: KeyboardEvent) { if (e.key === 'Escape') open.value = false }
 
 onMounted(() => {
   refresh(); nextTick(refresh)
-  if (sel.value) { mo = new MutationObserver(refresh); mo.observe(sel.value, { childList: true, subtree: true, attributes: true, characterData: true }) }
+  if (sel.value) { mo = new MutationObserver(refresh); mo.observe(sel.value, { childList: true, subtree: true, characterData: true }) }
   document.addEventListener('click', onDocClick)
   document.addEventListener('keydown', onKey)
 })
