@@ -1,10 +1,10 @@
 <script setup lang="ts">
 definePageMeta({ title: 'الرحلات', titleEn: 'Trips' })
-const api = useApi(); const auth = useAuth(); const f = useFmt()
+const api = useApi(); const auth = useAuth(); const f = useFmt(); const { tt } = useI18n()
 const page = ref<any>(null)
 const filt = reactive({ q: '', type: '', status: '' })
-const typeLabel: any = { umrah: 'عمرة', hajj: 'حج', tourism: 'سياحة' }
-const stLabel: any = { scheduled: 'مجدولة', ongoing: 'جارية', completed: 'مكتملة', cancelled: 'ملغاة' }
+const typeLabel: any = { umrah: L('عمرة','Umrah'), hajj: L('حج','Hajj'), tourism: L('سياحة','Tourism') }
+const stLabel: any = { scheduled: L('مجدولة','Scheduled'), ongoing: L('جارية','Ongoing'), completed: L('مكتملة','Completed'), cancelled: L('ملغاة','Cancelled') }
 const stClass: any = { scheduled: 'info', ongoing: 'ok', completed: 'muted', cancelled: 'bad' }
 const canManage = computed(() => auth.can('travel.manage'))
 
@@ -14,18 +14,18 @@ onMounted(load)
 
 <template>
   <div>
-    <div class="breadcrumb"><NuxtLink to="/travel">الحج والعمرة والسفر</NuxtLink> › <b>الرحلات</b></div>
+    <div class="breadcrumb"><NuxtLink to="/travel">{{ tt('الحج والعمرة والسفر','Hajj, Umrah & Travel') }}</NuxtLink> › <b>{{ tt('الرحلات','Trips') }}</b></div>
     <div class="card">
       <div class="row between" style="margin-bottom:14px">
         <div class="row">
-          <UiSelect v-model="filt.type" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">جميع الأنواع</option><option v-for="(l, k) in typeLabel" :key="k" :value="k">{{ l }}</option></UiSelect>
-          <UiSelect v-model="filt.status" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">جميع الحالات</option><option v-for="(l, k) in stLabel" :key="k" :value="k">{{ l }}</option></UiSelect>
-          <input v-model="filt.q" placeholder="البحث بالاسم أو الوجهة..." style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @keyup.enter="load" /><button class="btn ghost" @click="load"><i class="ti ti-search" /></button>
+          <UiSelect v-model="filt.type" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">{{ tt('جميع الأنواع','All types') }}</option><option v-for="(l, k) in typeLabel" :key="k" :value="k">{{ l }}</option></UiSelect>
+          <UiSelect v-model="filt.status" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">{{ tt('جميع الحالات','All statuses') }}</option><option v-for="(l, k) in stLabel" :key="k" :value="k">{{ l }}</option></UiSelect>
+          <input v-model="filt.q" :placeholder="tt('البحث بالاسم أو الوجهة...','Search by name or destination...')" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @keyup.enter="load" /><button class="btn ghost" @click="load"><i class="ti ti-search" /></button>
         </div>
-        <NuxtLink v-if="canManage" class="btn" to="/travel/trips/new"><i class="ti ti-plus" /> إضافة رحلة</NuxtLink>
+        <NuxtLink v-if="canManage" class="btn" to="/travel/trips/new"><i class="ti ti-plus" /> {{ tt('إضافة رحلة','New trip') }}</NuxtLink>
       </div>
       <table class="table">
-        <thead><tr><th>#</th><th>الاسم</th><th>النوع</th><th>الحالة</th><th>المغادرة</th><th>الإرجاع</th><th>الوجهة</th><th>الطاقة</th><th>المسافرون</th><th>الإيراد</th><th>المحصّل</th><th>المصروفات</th><th></th></tr></thead>
+        <thead><tr><th>#</th><th>{{ tt('الاسم','Name') }}</th><th>{{ tt('النوع','Type') }}</th><th>{{ tt('الحالة','Status') }}</th><th>{{ tt('المغادرة','Departure') }}</th><th>{{ tt('الإرجاع','Return') }}</th><th>{{ tt('الوجهة','Destination') }}</th><th>{{ tt('الطاقة','Capacity') }}</th><th>{{ tt('المسافرون','Travelers') }}</th><th>{{ tt('الإيراد','Revenue') }}</th><th>{{ tt('المحصّل','Collected') }}</th><th>{{ tt('المصروفات','Expenses') }}</th><th></th></tr></thead>
         <tbody>
           <tr v-for="(t, i) in page?.data" :key="t.id">
             <td>{{ i + 1 }}</td>
@@ -39,7 +39,7 @@ onMounted(load)
           </tr>
         </tbody>
       </table>
-      <p v-if="page && !page.data.length" class="empty">لا توجد رحلات.</p>
+      <p v-if="page && !page.data.length" class="empty">{{ tt('لا توجد رحلات.','No trips.') }}</p>
     </div>
   </div>
 </template>
