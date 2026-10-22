@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({ title: 'حجز جديد', titleEn: 'New Booking' })
-const api = useApi(); const auth = useAuth(); const route = useRoute()
+const api = useApi(); const auth = useAuth(); const route = useRoute(); const { tt } = useI18n()
 if (!auth.can('bookings.manage')) navigateTo('/bookings')
 const units = ref<any[]>([]); const services = ref<any[]>([]); const customers = ref<any[]>([])
 const err = ref(''); const saving = ref(false); const formRef = ref<any>(null)
@@ -19,14 +19,14 @@ async function save() {
 
 <template>
   <div>
-    <div class="breadcrumb"><NuxtLink to="/bookings">الحجوزات</NuxtLink> › <b>حجز جديد</b></div>
+    <div class="breadcrumb"><NuxtLink to="/bookings">{{ tt('الحجوزات','Bookings') }}</NuxtLink> › <b>{{ tt('حجز جديد','New booking') }}</b></div>
     <div class="card">
       <div v-if="err" class="alert bad">{{ err }}</div>
       <BookingForm ref="formRef" :form="form" :units="units" :services="services" :customers="customers" is-new />
       <div class="row" style="gap:10px;margin-top:18px;border-top:1px solid var(--line);padding-top:16px">
-        <button class="btn" :disabled="saving || blocked" @click="save"><i class="ti ti-check" /> {{ form.status === 'confirmed' ? 'حفظ وتأكيد الحجز' : 'حفظ الحجز' }}</button>
-        <NuxtLink class="btn ghost" to="/bookings">إلغاء</NuxtLink>
-        <small v-if="blocked" class="muted">لا يمكن التأكيد: الوحدة محجوزة في هذه الفترة.</small>
+        <button class="btn" :disabled="saving || blocked" @click="save"><i class="ti ti-check" /> {{ form.status === 'confirmed' ? tt('حفظ وتأكيد الحجز','Save & confirm') : tt('حفظ الحجز','Save booking') }}</button>
+        <NuxtLink class="btn ghost" to="/bookings">{{ tt('إلغاء','Cancel') }}</NuxtLink>
+        <small v-if="blocked" class="muted">{{ tt('لا يمكن التأكيد: الوحدة محجوزة في هذه الفترة.','Cannot confirm: unit is booked in this period.') }}</small>
       </div>
     </div>
   </div>
