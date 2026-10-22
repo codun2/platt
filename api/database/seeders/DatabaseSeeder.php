@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             SectorPresetSeeder::class,
             SuperAdminSeeder::class,
             DemoTenantSeeder::class,
+            SectorDemoSeeder::class,
         ]);
     }
 }
