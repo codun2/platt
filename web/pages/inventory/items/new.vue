@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'صنف جديد' })
+definePageMeta({ title: 'صنف جديد', titleEn: 'New Item' })
 const api = useApi(); const auth = useAuth()
 if (!auth.can('inventory.manage')) navigateTo('/inventory/items')
 const meta = ref<any>({ categories: [], units: [], warehouses: [] }); const suppliers = ref<any[]>([])

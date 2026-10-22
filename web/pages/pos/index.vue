@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // POS screen: item grid + cart + checkout. Keyboard: Enter in search = barcode scan.
-definePageMeta({ title: 'نقطة البيع' })
+definePageMeta({ title: 'نقطة البيع', titleEn: 'Point of Sale' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const meta = ref<any>({ categories: [], warehouses: [] })
 const items = ref<any[]>([]); const q = ref(''); const cat = ref('')

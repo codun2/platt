@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'الفاتورة' })
+definePageMeta({ title: 'الفاتورة', titleEn: 'Invoice' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const route = useRoute(); const id = Number(route.params.id)
 

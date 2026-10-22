@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'تقويم الحجوزات' })
+definePageMeta({ title: 'تقويم الحجوزات', titleEn: 'Bookings Calendar' })
 const api = useApi(); const f = useFmt()
 const cur = ref(new Date()); const events = ref<any[]>([]); const units = ref<any[]>([]); const unitId = ref('')
 const stLabel: any = { pending: 'معلّق', confirmed: 'مؤكد', completed: 'مكتمل' }

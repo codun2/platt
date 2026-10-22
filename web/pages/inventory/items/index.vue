@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'الأصناف' })
+definePageMeta({ title: 'الأصناف', titleEn: 'Items' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const page = ref<any>(null); const meta = ref<any>({ categories: [], units: [], warehouses: [] }); const pg = ref(1)
 const filt = reactive({ q: '', category_id: '', low_stock: false })

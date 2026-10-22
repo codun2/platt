@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'موظف جديد' })
+definePageMeta({ title: 'موظف جديد', titleEn: 'New Employee' })
 const api = useApi(); const auth = useAuth()
 if (!auth.can('hr.manage')) navigateTo('/hr/employees')
 const departments = ref<string[]>([]); const users = ref<any[]>([])

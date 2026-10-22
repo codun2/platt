@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'المسافرون' })
+definePageMeta({ title: 'المسافرون', titleEn: 'Travelers' })
 const api = useApi(); const auth = useAuth(); const f = useFmt(); const route = useRoute()
 const page = ref<any>(null); const trips = ref<any[]>([]); const packages = ref<any[]>([])
 const filt = reactive({ q: '', trip_id: '', status: '', unpaid: false })

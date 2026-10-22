@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'كشف حساب' })
+definePageMeta({ title: 'كشف حساب', titleEn: 'Account Statement' })
 const api = useApi(); const f = useFmt()
 const route = useRoute(); const id = Number(route.params.id)
 const d = ref<any>(null); const from = ref(monthStart()); const to = ref(todayStr()); const notFound = ref(false)

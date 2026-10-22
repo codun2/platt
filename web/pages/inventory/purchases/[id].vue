@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'فاتورة الشراء' })
+definePageMeta({ title: 'فاتورة الشراء', titleEn: 'Purchase Invoice' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const route = useRoute(); const id = Number(route.params.id)
 const p = ref<any>(null); const suppliers = ref<any[]>([]); const meta = ref<any>({ warehouses: [] })

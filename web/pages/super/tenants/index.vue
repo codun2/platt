@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'super', title: 'المشتركون' })
+definePageMeta({ layout: 'super', title: 'المشتركون', titleEn: 'Tenants' })
 const api = useApi()
 const page = ref<any>(null)
 const q = ref(''); const status = ref('')

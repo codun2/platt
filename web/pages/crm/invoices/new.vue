@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'فاتورة جديدة' })
+definePageMeta({ title: 'فاتورة جديدة', titleEn: 'New Invoice' })
 const api = useApi(); const auth = useAuth(); const route = useRoute()
 if (!auth.can('crm.manage')) navigateTo('/crm/invoices')
 

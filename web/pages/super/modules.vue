@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'super', title: 'سجل الوحدات' })
+definePageMeta({ layout: 'super', title: 'سجل الوحدات', titleEn: 'Modules Registry' })
 const api = useApi()
 const modules = ref<any[]>([])
 const modal = ref(false); const editing = ref<any>(null); const err = ref('')

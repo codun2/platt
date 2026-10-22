@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'الموردون' })
+definePageMeta({ title: 'الموردون', titleEn: 'Suppliers' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const rows = ref<any[]>([]); const q = ref(''); const activeOnly = ref(false)
 const canManage = computed(() => auth.can('inventory.manage'))

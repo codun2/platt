@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'عروض الأسعار' })
+definePageMeta({ title: 'عروض الأسعار', titleEn: 'Quotes' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const page = ref<any>(null); const customers = ref<any[]>([]); const pg = ref(1)
 const filt = reactive({ q: '', status: '', customer_id: '', from: '', to: '' })

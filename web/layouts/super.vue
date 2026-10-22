@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { SidebarItem } from '~/composables/useAuth'
 const route = useRoute()
-const title = computed(() => (route.meta.title as string) || 'إدارة المنصّة')
+const { t, isEn } = useI18n()
+const title = computed(() => (isEn.value && (route.meta.titleEn as string)) || (route.meta.title as string) || t('app.platformAdmin'))
 
 // Platform admin menu is static on purpose: it is not a tenant module.
 const items: SidebarItem[] = [

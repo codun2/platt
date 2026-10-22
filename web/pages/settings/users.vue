@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'المستخدمون' })
+definePageMeta({ title: 'المستخدمون', titleEn: 'Users' })
 const api = useApi()
 const users = ref<any[]>([])
 const roles = ref<any[]>([])

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'القاعات / الغرف / الوحدات' })
+definePageMeta({ title: 'القاعات / الغرف / الوحدات', titleEn: 'Halls / Rooms / Units' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const rows = ref<any[]>([]); const modal = ref(false); const editing = ref<any>(null); const err = ref('')
 const blank = () => ({ name: '', name_en: '', type: 'hall', capacity: '', price_day: 0, price_night: 0, price_hour: 0, deposit: 0, location: '', color: '#e11d48', description: '', is_active: true })

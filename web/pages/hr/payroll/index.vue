@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'الرواتب' })
+definePageMeta({ title: 'الرواتب', titleEn: 'Payroll' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const d = ref<any>(null); const period = ref(thisMonth()); const err = ref(''); const generating = ref(false)
 const canManage = computed(() => auth.can('hr.manage'))

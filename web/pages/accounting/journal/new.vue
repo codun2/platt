@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'قيد يدوي جديد' })
+definePageMeta({ title: 'قيد يدوي جديد', titleEn: 'New Journal Entry' })
 const api = useApi(); const auth = useAuth()
 if (!auth.can('accounting.manage')) navigateTo('/accounting/journal')
 const accounts = ref<any[]>([]); const err = ref(''); const saving = ref(false)

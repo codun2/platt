@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'كشف الرواتب' })
+definePageMeta({ title: 'كشف الرواتب', titleEn: 'Payroll Run' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const route = useRoute(); const id = Number(route.params.id)
 const p = ref<any>(null); const money = ref<any[]>([]); const err = ref(''); const msg = ref(''); const saving = ref(false); const notFound = ref(false)

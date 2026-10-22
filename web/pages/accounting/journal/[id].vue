@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'القيد' })
+definePageMeta({ title: 'القيد', titleEn: 'Journal Entry' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const route = useRoute(); const id = Number(route.params.id)
 const e = ref<any>(null); const accounts = ref<any[]>([]); const editing = ref(route.query.edit === '1')

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'عرض سعر جديد' })
+definePageMeta({ title: 'عرض سعر جديد', titleEn: 'New Quote' })
 const api = useApi(); const auth = useAuth(); const route = useRoute()
 if (!auth.can('crm.manage')) navigateTo('/crm/quotes')
 

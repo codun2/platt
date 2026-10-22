@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'الأدوار والصلاحيات' })
+definePageMeta({ title: 'الأدوار والصلاحيات', titleEn: 'Roles & Permissions' })
 const api = useApi()
 const roles = ref<any[]>([])
 const groups = ref<any[]>([])

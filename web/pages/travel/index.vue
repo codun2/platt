@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'الحج والعمرة والسفر' })
+definePageMeta({ title: 'الحج والعمرة والسفر', titleEn: 'Hajj, Umrah & Travel' })
 const api = useApi(); const f = useFmt()
 const trips = ref<any[]>([]); const unpaid = ref<any>(null)
 onMounted(async () => { trips.value = await api.get('/app/travel/trips', { all: 1 }); unpaid.value = await api.get('/app/travel/travelers', { unpaid: 1 }) })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'الحضور والإجازات' })
+definePageMeta({ title: 'الحضور والإجازات', titleEn: 'Attendance & Leaves' })
 const api = useApi(); const auth = useAuth(); const f = useFmt(); const route = useRoute()
 const tab = ref<'day' | 'month' | 'leaves'>(route.query.tab === 'leaves' ? 'leaves' : 'day')
 const canManage = computed(() => auth.can('hr.manage'))

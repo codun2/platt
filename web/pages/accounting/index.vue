@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'المحاسبة' })
+definePageMeta({ title: 'المحاسبة', titleEn: 'Accounting' })
 const api = useApi(); const f = useFmt()
 const d = ref<any>(null); const from = ref(monthStart()); const to = ref(todayStr())
 async function load() { d.value = await api.get('/app/accounting/summary', { from: from.value, to: to.value }) }

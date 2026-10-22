@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'القيود اليومية' })
+definePageMeta({ title: 'القيود اليومية', titleEn: 'Journal' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const page = ref<any>(null); const pg = ref(1)
 const filt = reactive({ q: '', source_type: '', from: '', to: '' })

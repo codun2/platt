@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'شجرة الحسابات' })
+definePageMeta({ title: 'شجرة الحسابات', titleEn: 'Chart of Accounts' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const rows = ref<any[]>([]); const from = ref(''); const to = ref(''); const q = ref('')
 const modal = ref(false); const editing = ref<any>(null); const err = ref('')

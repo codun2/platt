@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'ملف الموظف' })
+definePageMeta({ title: 'ملف الموظف', titleEn: 'Employee Profile' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const route = useRoute(); const id = Number(route.params.id)
 const d = ref<any>(null); const departments = ref<string[]>([]); const users = ref<any[]>([])

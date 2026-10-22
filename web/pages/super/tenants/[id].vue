@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'super', title: 'ملف المشترك' })
+definePageMeta({ layout: 'super', title: 'ملف المشترك', titleEn: 'Tenant Profile' })
 const api = useApi()
 const route = useRoute()
 const id = route.params.id

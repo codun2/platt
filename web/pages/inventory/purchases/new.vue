@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'فاتورة شراء جديدة' })
+definePageMeta({ title: 'فاتورة شراء جديدة', titleEn: 'New Purchase' })
 const api = useApi(); const auth = useAuth(); const route = useRoute()
 if (!auth.can('inventory.manage')) navigateTo('/inventory/purchases')
 const suppliers = ref<any[]>([]); const meta = ref<any>({ warehouses: [] })

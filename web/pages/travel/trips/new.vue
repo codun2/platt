@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'رحلة جديدة' })
+definePageMeta({ title: 'رحلة جديدة', titleEn: 'New Trip' })
 const api = useApi(); const auth = useAuth()
 if (!auth.can('travel.manage')) navigateTo('/travel/trips')
 

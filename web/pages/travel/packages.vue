@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'الباقات' })
+definePageMeta({ title: 'الباقات', titleEn: 'Packages' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const rows = ref<any[]>([]); const modal = ref(false); const editing = ref<any>(null); const err = ref('')
 const form = reactive<any>({ name: '', type: 'umrah', price: 0, includes: '', is_active: true })

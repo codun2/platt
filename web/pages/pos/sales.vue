@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'فواتير المبيعات' })
+definePageMeta({ title: 'فواتير المبيعات', titleEn: 'Sales Invoices' })
 const api = useApi(); const auth = useAuth(); const f = useFmt(); const route = useRoute()
 const page = ref<any>(null)
 const filt = reactive({ q: '', status: '', from: '', to: '', unpaid: false })

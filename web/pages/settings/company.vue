@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'بيانات الشركة' })
+definePageMeta({ title: 'بيانات الشركة', titleEn: 'Company Settings' })
 const api = useApi()
 const auth = useAuth()
 const data = ref<any>(null)

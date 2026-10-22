@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'super', title: 'نظرة عامة على المنصّة' })
+definePageMeta({ layout: 'super', title: 'نظرة عامة على المنصّة', titleEn: 'Platform Overview' })
 const api = useApi()
 const s = ref<any>(null)
 onMounted(async () => { s.value = await api.get('/super/stats') })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'ملف الصنف' })
+definePageMeta({ title: 'ملف الصنف', titleEn: 'Item Profile' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const route = useRoute(); const id = Number(route.params.id)
 const d = ref<any>(null); const meta = ref<any>({ categories: [], units: [], warehouses: [] }); const suppliers = ref<any[]>([])

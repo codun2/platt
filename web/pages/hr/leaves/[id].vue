@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'طلب الإجازة' })
+definePageMeta({ title: 'طلب الإجازة', titleEn: 'Leave Request' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const route = useRoute(); const id = Number(route.params.id)
 const d = ref<any>(null); const err = ref(''); const msg = ref(''); const saving = ref(false); const notFound = ref(false); const note = ref('')

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'الخدمات الإضافية' })
+definePageMeta({ title: 'الخدمات الإضافية', titleEn: 'Add-on Services' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const rows = ref<any[]>([]); const units = ref<any[]>([]); const modal = ref(false); const editing = ref<any>(null); const err = ref('')
 const form = reactive<any>({ name: '', name_en: '', price: 0, unit_id: '', is_active: true })

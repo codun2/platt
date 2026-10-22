@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'التقارير المالية' })
+definePageMeta({ title: 'التقارير المالية', titleEn: 'Financial Reports' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const tab = ref<'tb' | 'is' | 'bs'>('is')
 const from = ref(monthStart()); const to = ref(todayStr())

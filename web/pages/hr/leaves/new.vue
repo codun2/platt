@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'طلب إجازة' })
+definePageMeta({ title: 'طلب إجازة', titleEn: 'New Leave' })
 const api = useApi(); const auth = useAuth(); const route = useRoute()
 if (!auth.can('hr.manage')) navigateTo('/hr/attendance?tab=leaves')
 const employees = ref<any[]>([]); const err = ref(''); const saving = ref(false)

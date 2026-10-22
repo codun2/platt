@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'الموارد البشرية' })
+definePageMeta({ title: 'الموارد البشرية', titleEn: 'Human Resources' })
 const api = useApi(); const f = useFmt()
 const emp = ref<any>(null); const day = ref<any>(null); const leaves = ref<any>(null); const pay = ref<any>(null)
 onMounted(async () => {

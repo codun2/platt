@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'super', title: 'خطط الأسعار' })
+definePageMeta({ layout: 'super', title: 'خطط الأسعار', titleEn: 'Pricing Plans' })
 const api = useApi()
 const plans = ref<any[]>([])
 const modal = ref(false); const editing = ref<any>(null); const err = ref('')

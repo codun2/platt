@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'الورديات' })
+definePageMeta({ title: 'الورديات', titleEn: 'Shifts' })
 const api = useApi(); const f = useFmt()
 const page = ref<any>(null); const current = ref<any>(null); const view = ref<any>(null)
 const openCash = ref(0); const closing = ref(0); const note = ref('')

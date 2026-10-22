@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'الموظفون' })
+definePageMeta({ title: 'الموظفون', titleEn: 'Employees' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const page = ref<any>(null); const pg = ref(1)
 const filt = reactive({ q: '', department: '', status: '' })

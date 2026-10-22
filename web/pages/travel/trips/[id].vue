@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'ملف الرحلة' })
+definePageMeta({ title: 'ملف الرحلة', titleEn: 'Trip Profile' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const route = useRoute(); const id = Number(route.params.id)
 

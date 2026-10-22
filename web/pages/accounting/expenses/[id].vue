@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'المصروف' })
+definePageMeta({ title: 'المصروف', titleEn: 'Expense' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const route = useRoute(); const id = Number(route.params.id)
 const e = ref<any>(null); const meta = ref<any>({ categories: [], money: [] }); const suppliers = ref<any[]>([])

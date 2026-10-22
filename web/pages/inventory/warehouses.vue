@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'المستودعات' })
+definePageMeta({ title: 'المستودعات', titleEn: 'Warehouses' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const tab = ref<'wh' | 'adjust'>('wh')
 const warehouses = ref<any[]>([])

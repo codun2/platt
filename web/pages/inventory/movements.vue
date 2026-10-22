@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'حركات المخزون' })
+definePageMeta({ title: 'حركات المخزون', titleEn: 'Stock Movements' })
 const api = useApi(); const f = useFmt()
 const page = ref<any>(null); const meta = ref<any>({ warehouses: [] })
 const filt = reactive({ warehouse_id: '', type: '', from: '', to: '' })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'ملف العميل' })
+definePageMeta({ title: 'ملف العميل', titleEn: 'Customer Profile' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const route = useRoute(); const id = route.params.id
 

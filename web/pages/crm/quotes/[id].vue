@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'عرض السعر' })
+definePageMeta({ title: 'عرض السعر', titleEn: 'Quote' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const route = useRoute(); const id = Number(route.params.id)
 

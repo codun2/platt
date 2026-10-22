@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'حجز جديد' })
+definePageMeta({ title: 'حجز جديد', titleEn: 'New Booking' })
 const api = useApi(); const auth = useAuth(); const route = useRoute()
 if (!auth.can('bookings.manage')) navigateTo('/bookings')
 const units = ref<any[]>([]); const services = ref<any[]>([]); const customers = ref<any[]>([])

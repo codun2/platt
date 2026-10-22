@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'ملف الحجز' })
+definePageMeta({ title: 'ملف الحجز', titleEn: 'Booking' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const route = useRoute(); const id = Number(route.params.id)
 const b = ref<any>(null); const units = ref<any[]>([]); const services = ref<any[]>([]); const customers = ref<any[]>([])

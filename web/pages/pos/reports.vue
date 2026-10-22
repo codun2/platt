@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'تقارير المبيعات' })
+definePageMeta({ title: 'تقارير المبيعات', titleEn: 'Sales Reports' })
 const api = useApi(); const f = useFmt()
 const from = ref(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10)); const to = ref(f.today())
 const r = ref<any>(null)

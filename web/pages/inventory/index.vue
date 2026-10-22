@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'المخزون' })
+definePageMeta({ title: 'المخزون', titleEn: 'Inventory' })
 const api = useApi(); const f = useFmt()
 const data = ref<any>(null); const low = ref<any[]>([]); const wh = ref(''); const meta = ref<any>(null); const q = ref('')
 async function load() { data.value = await api.get('/app/inventory/stock', { warehouse_id: wh.value, q: q.value }) }

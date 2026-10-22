@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'المصروفات' })
+definePageMeta({ title: 'المصروفات', titleEn: 'Expenses' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
 const page = ref<any>(null); const meta = ref<any>({ categories: [], money: [] }); const pg = ref(1)
 const filt = reactive({ q: '', account_id: '', from: '', to: '' })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'super', title: 'الاشتراكات الشهرية' })
+definePageMeta({ layout: 'super', title: 'الاشتراكات الشهرية', titleEn: 'Monthly Subscriptions' })
 const api = useApi()
 const rows = ref<any[]>([]); const history = ref<any>(null)
 const status = ref(''); const dueSoon = ref(false); const tab = ref<'current' | 'history'>('current')

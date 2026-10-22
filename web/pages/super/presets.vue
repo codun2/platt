@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ layout: 'super', title: 'الباقات حسب النشاط' })
+definePageMeta({ layout: 'super', title: 'الباقات حسب النشاط', titleEn: 'Sector Presets' })
 const api = useApi()
 const presets = ref<any[]>([]); const modules = ref<any[]>([])
 const modal = ref(false); const editing = ref<any>(null); const err = ref('')

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'مصروف جديد' })
+definePageMeta({ title: 'مصروف جديد', titleEn: 'New Expense' })
 const api = useApi(); const auth = useAuth()
 if (!auth.can('accounting.manage')) navigateTo('/accounting/expenses')
 const meta = ref<any>({ categories: [], money: [] }); const suppliers = ref<any[]>([])

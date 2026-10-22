@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ title: 'عميل جديد' })
+definePageMeta({ title: 'عميل جديد', titleEn: 'New Customer' })
 const api = useApi(); const auth = useAuth()
 if (!auth.can('crm.manage')) navigateTo('/crm/customers')
 
