@@ -1,7 +1,9 @@
 // Shared formatters: money (3 decimals, Omani style), qty, dates.
 export function useFmt() {
   const auth = useAuth()
-  const cur = computed(() => auth.state.value.tenant?.currency || 'ر.ع')
+  // Currency code → Arabic label shown next to amounts. Default is "ريال".
+  const labels: Record<string, string> = { SAR: 'ريال', YER: 'ريال', QAR: 'ر.ق', OMR: 'ر.ع', AED: 'د.إ', KWD: 'د.ك', BHD: 'د.ب', EGP: 'ج.م', JOD: 'د.أ', USD: '$', EUR: '€' }
+  const cur = computed(() => { const c = String(auth.state.value.tenant?.currency || 'SAR').toUpperCase(); return labels[c] || 'ريال' })
   const money = (v: any, withCur = false) => {
     const n = Number(v || 0)
     const s = n.toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })

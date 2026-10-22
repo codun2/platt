@@ -177,6 +177,12 @@ class BookingController extends Controller
             'customer_id' => ['nullable', Rule::exists('customers', 'id')->where('tenant_id', $tenantId)],
             'customer_name' => ['nullable', 'string', 'max:150'],
             'customer_phone' => ['nullable', 'string', 'max:30'],
+            'customer_email' => ['nullable', 'email', 'max:150'],
+            'source' => ['nullable', Rule::in(['walk_in', 'phone', 'whatsapp', 'online', 'agent'])],
+            'adults' => ['nullable', 'integer', 'min:0'],
+            'children' => ['nullable', 'integer', 'min:0'],
+            'special_requests' => ['nullable', 'string'],
+            'internal_note' => ['nullable', 'string'],
             'period' => ['required', Rule::in(['day', 'night', 'hour'])],
             'start_at' => ['required', 'date'],
             'end_at' => ['required', 'date', 'after:start_at'],
@@ -226,7 +232,28 @@ class BookingController extends Controller
             'tax_rate' => $data['tax_rate'] ?? app('currentTenant')->tax_rate ?? 0,
             'deposit' => $data['deposit'] ?? $unit->deposit,
             'event_type' => $data['event_type'] ?? null, 'guests' => $data['guests'] ?? null, 'note' => $data['note'] ?? null,
+            'customer_email' => $data['customer_email'] ?? null, 'source' => $data['source'] ?? null,
+            'adults' => $data['adults'] ?? null, 'children' => $data['children'] ?? null,
+            'special_requests' => $data['special_requests'] ?? null, 'internal_note' => $data['internal_note'] ?? null,
         ]);
+    }
+
+    /** Guest check-in / check-out stamps (hotels, chalets). */
+    public function checkin(Request $request, int $id): JsonResponse
+    {
+        $b = Booking::findOrFail($id);
+        $data = $request->validate(['action' => ['required', Rule::in(['in', 'out', 'clear'])]]);
+        if ($b->status === 'cancelled') {
+            return response()->json(['message' => 'الحجز ملغى.'], 422);
+        }
+        match ($data['action']) {
+            'in' => $b->fill(['checked_in_at' => now(), 'status' => $b->status === 'pending' ? 'confirmed' : $b->status]),
+            'out' => $b->fill(['checked_out_at' => now(), 'status' => 'completed']),
+            'clear' => $b->fill(['checked_in_at' => null, 'checked_out_at' => null]),
+        };
+        $b->save();
+
+        return response()->json($b->fresh());
     }
 
     private function syncLines(Booking $b, array $lines): void

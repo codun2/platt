@@ -26,13 +26,13 @@ const todayStr = ymd(new Date())
     <div class="card">
       <div class="row between" style="margin-bottom:12px">
         <div class="row"><button class="btn ghost sm" @click="move(1)"><i class="ti ti-chevron-right" /></button><b style="font-size:16px;min-width:140px;text-align:center">{{ title }}</b><button class="btn ghost sm" @click="move(-1)"><i class="ti ti-chevron-left" /></button><button class="btn ghost sm" @click="cur = new Date(); load()">اليوم</button></div>
-        <div class="row"><select v-model="unitId" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px" @change="load"><option value="">كل الوحدات</option><option v-for="u in units" :key="u.id" :value="u.id">{{ u.name }}</option></select><NuxtLink to="/bookings?new=1" class="btn sm"><i class="ti ti-plus" /> حجز</NuxtLink></div>
+        <div class="row"><UiSelect v-model="unitId" style="min-width:150px" @change="load"><option value="">كل الوحدات</option><option v-for="u in units" :key="u.id" :value="u.id">{{ u.name }}</option></UiSelect><NuxtLink to="/bookings/new" class="btn sm"><i class="ti ti-plus" /> حجز جديد</NuxtLink></div>
       </div>
       <div class="cal-head"><span v-for="d in ['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة']" :key="d">{{ d }}</span></div>
       <div class="cal">
         <div v-for="d in days" :key="d.date" class="cell" :class="{ out: !d.inMonth, today: d.date === todayStr }">
-          <div class="row between"><b>{{ d.day }}</b><NuxtLink :to="`/bookings?new=1&date=${d.date}`" class="add" title="حجز جديد">+</NuxtLink></div>
-          <NuxtLink v-for="e in forDay(d.date)" :key="e.id" :to="`/bookings?open=${e.id}`" class="ev" :style="{ background: e.color, opacity: e.status === 'pending' ? .55 : 1 }" :title="`${e.number} · ${e.unit} · ${e.customer || ''} · ${stLabel[e.status]}`">{{ e.unit }} — {{ e.customer || e.number }}</NuxtLink>
+          <div class="row between"><b>{{ d.day }}</b><NuxtLink :to="`/bookings/new?date=${d.date}${unitId ? `&unit_id=${unitId}` : ''}`" class="add" title="حجز جديد في هذا اليوم">+</NuxtLink></div>
+          <NuxtLink v-for="e in forDay(d.date)" :key="e.id" :to="`/bookings/${e.id}`" class="ev" :style="{ background: e.color, opacity: e.status === 'pending' ? .55 : 1 }" :title="`${e.number} · ${e.unit} · ${e.customer || ''} · ${stLabel[e.status]}`">{{ e.unit }} — {{ e.customer || e.number }}</NuxtLink>
         </div>
       </div>
       <div class="chips mt"><span v-for="u in units" :key="u.id" class="chip"><span :style="`display:inline-block;width:10px;height:10px;border-radius:50%;background:${u.color};margin-left:6px`" />{{ u.name }}</span><span class="chip muted">باهت = معلّق</span></div>

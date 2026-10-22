@@ -57,7 +57,7 @@ const resetPass = () => act(() => api.post(`/super/tenants/${id}/reset-owner-pas
           <div class="field"><label>البريد</label><input v-model="form.email" dir="ltr" /></div>
           <div class="field"><label>الهاتف</label><input v-model="form.phone" dir="ltr" /></div>
           <div class="field"><label>القطاع</label><select v-model="form.sector_preset_id"><option value="">—</option><option v-for="p in presets" :key="p.id" :value="p.id">{{ p.name_ar }}</option></select></div>
-          <div class="field"><label>الخطة</label><select v-model="form.plan_id"><option value="">—</option><option v-for="p in plans" :key="p.id" :value="p.id">{{ p.name_ar }} ({{ p.price_monthly }} ر.ع/شهر)</option></select></div>
+          <div class="field"><label>الخطة</label><select v-model="form.plan_id"><option value="">—</option><option v-for="p in plans" :key="p.id" :value="p.id">{{ p.name_ar }} ({{ p.price_monthly }} ريال/شهر)</option></select></div>
         </div>
         <div>
           <div class="field"><label>حالة الحساب</label><select v-model="form.status"><option value="active">نشط</option><option value="suspended">موقوف</option></select></div>
@@ -95,7 +95,7 @@ const resetPass = () => act(() => api.post(`/super/tenants/${id}/reset-owner-pas
         <div>
           <div class="card-title"><i class="ti ti-refresh" /> تجديد الاشتراك</div>
           <div class="field"><label>عدد الأشهر</label><input v-model.number="renew.months" type="number" min="1" max="24" /></div>
-          <div class="field"><label>الخطة</label><select v-model="renew.plan_id"><option value="">الخطة الحالية</option><option v-for="p in plans" :key="p.id" :value="p.id">{{ p.name_ar }} ({{ p.price_monthly }} ر.ع)</option></select></div>
+          <div class="field"><label>الخطة</label><select v-model="renew.plan_id"><option value="">الخطة الحالية</option><option v-for="p in plans" :key="p.id" :value="p.id">{{ p.name_ar }} ({{ p.price_monthly }} ريال)</option></select></div>
           <div class="field"><label>المبلغ (اتركه فارغاً للحساب التلقائي)</label><input v-model="renew.amount" type="number" step="0.001" dir="ltr" /></div>
           <div class="field"><label>ملاحظة</label><input v-model="renew.note" /></div>
           <button class="btn ok" @click="doRenew"><i class="ti ti-check" /> تسجيل الدفع والتجديد</button>

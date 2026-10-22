@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Accounting;
 use App\Http\Controllers\Api\App;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Bookings;
@@ -109,6 +110,7 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant'])->prefix('app')->gro
             Route::get('low-stock', [Inventory\StockController::class, 'lowStock']);
             Route::get('stock', [Inventory\StockController::class, 'levels']);
             Route::get('movements', [Inventory\StockController::class, 'movements']);
+            Route::get('suppliers/{id}', [Inventory\SupplierController::class, 'show'])->whereNumber('id');
             Route::get('{kind}', [Inventory\SimpleCrudController::class, 'index'])->where('kind', 'categories|units|warehouses|suppliers');
         });
         Route::middleware('perm:inventory.manage')->group(function () {
@@ -164,6 +166,7 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant'])->prefix('app')->gro
 
         Route::get('{kind}', [Bookings\CatalogController::class, 'index'])->where('kind', 'units|services');
         Route::middleware('perm:bookings.manage')->group(function () {
+            Route::post('list/{id}/checkin', [Bookings\BookingController::class, 'checkin'])->whereNumber('id');
             Route::post('{kind}', [Bookings\CatalogController::class, 'store'])->where('kind', 'units|services');
             Route::match(['put', 'patch'], '{kind}/{id}', [Bookings\CatalogController::class, 'update'])->where('kind', 'units|services')->whereNumber('id');
             Route::delete('{kind}/{id}', [Bookings\CatalogController::class, 'destroy'])->where('kind', 'units|services')->whereNumber('id');

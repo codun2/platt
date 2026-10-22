@@ -60,10 +60,12 @@ h1, h2, h3 { margin: 0; }
 .grid-2 { grid-template-columns: repeat(2, 1fr); }
 @media (max-width: 1100px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 700px) { .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; } .sidebar { display: none; } }
-.stat { display: flex; align-items: center; gap: 14px; }
-.stat .ic { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 22px; }
-.stat b { font-size: 22px; display: block; }
-.stat small { color: var(--muted); }
+/* Stat cards: identical height everywhere regardless of value length or inline font-size overrides. */
+.stat { display: flex; align-items: center; gap: 14px; min-height: 96px; box-sizing: border-box; height: 100%; }
+.stat .ic { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 22px; flex-shrink: 0; }
+.stat > div:not(.ic) { display: flex; flex-direction: column; justify-content: center; min-height: 50px; min-width: 0; }
+.stat b { font-size: 20px; line-height: 1.25; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+.stat small { color: var(--muted); line-height: 1.3; }
 .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 10px; border: 1px solid transparent; cursor: pointer; font-weight: 600; background: var(--primary); color: #fff; }
 .btn:hover { background: var(--primary-600); }
 .btn:disabled { opacity: .6; cursor: default; }
@@ -100,7 +102,7 @@ select option:checked { background: var(--primary-50); color: var(--primary); fo
 .line-results button { text-align: right; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; cursor: pointer; font: inherit; }
 .line-results button:hover { border-color: var(--primary); background: var(--primary-50); }
 .totals-box { background: var(--bg); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-.totals-box .total { border-top: 1px dashed var(--line); padding-top: 8px; font-size: 17px; color: var(--primary); }
+.totals-box .total { border-top: 1px dashed var(--line); padding-top: 8px; font-weight: 700; }
 .pay-panel { background: var(--primary-50); border: 1px solid #fecdd3; border-radius: 12px; padding: 14px 16px; }
 
 /* ---- Printable sheet (DocPrint) ---- */

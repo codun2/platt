@@ -34,7 +34,7 @@ const daysLeft = (d: string | null) => d ? Math.ceil((new Date(d).getTime() - Da
         <tbody>
           <tr v-for="t in rows" :key="t.id">
             <td><b>{{ t.name }}</b></td><td>{{ t.sector_preset?.name_ar || '—' }}</td>
-            <td>{{ t.plan?.name_ar || '—' }} <small class="muted">{{ t.plan ? t.plan.price_monthly + ' ر.ع' : '' }}</small></td>
+            <td>{{ t.plan?.name_ar || '—' }} <small class="muted">{{ t.plan ? t.plan.price_monthly + ' ريال' : '' }}</small></td>
             <td><span class="badge" :class="statusClass[t.subscription_status]">{{ statusLabel[t.subscription_status] }}</span></td>
             <td class="num">{{ t.subscription_renews_at || '—' }}</td>
             <td><span v-if="daysLeft(t.subscription_renews_at) !== null" class="badge" :class="daysLeft(t.subscription_renews_at)! < 0 ? 'bad' : daysLeft(t.subscription_renews_at)! <= 7 ? 'warn' : 'ok'">{{ daysLeft(t.subscription_renews_at) }} يوم</span></td>

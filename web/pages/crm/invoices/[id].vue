@@ -13,6 +13,12 @@ const canManage = computed(() => auth.can('crm.manage'))
 const dueDays = computed(() => daysUntil(inv.value?.due_date))
 const editable = computed(() => inv.value && !['paid', 'cancelled'].includes(inv.value.status))
 const print = () => window.print()
+const exporting = ref(false)
+async function exportPdf() {
+  exporting.value = true
+  try { await exportDocPdf(document.querySelector('.doc-print') as HTMLElement, docPdfName(inv.value.number, data.value.company?.name)) }
+  catch (e: any) { err.value = e.message } finally { exporting.value = false }
+}
 
 const notFound = ref(false)
 async function load() {
@@ -71,6 +77,7 @@ async function remove() { if (!confirm('حذف المسودّة نهائياً؟
             </div>
             <div class="row" style="gap:8px;flex-wrap:wrap;justify-content:flex-end">
               <button class="btn ghost sm" @click="print"><i class="ti ti-printer" /> طباعة</button>
+              <button class="btn ghost sm" :disabled="exporting" @click="exportPdf"><i class="ti ti-file-type-pdf" /> {{ exporting ? 'جاري التصدير…' : 'تصدير PDF' }}</button>
               <template v-if="canManage">
                 <button v-if="inv.status === 'draft'" class="btn ok sm" @click="send"><i class="ti ti-send" /> إصدار الفاتورة</button>
                 <button v-if="['draft','sent','partial'].includes(inv.status) && +inv.balance > 0" class="btn info sm" @click="paying = !paying"><i class="ti ti-cash" /> تسجيل دفعة</button>

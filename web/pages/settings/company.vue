@@ -3,13 +3,13 @@ definePageMeta({ title: 'بيانات الشركة' })
 const api = useApi()
 const auth = useAuth()
 const data = ref<any>(null)
-const form = reactive<any>({ name: '', phone: '', email: '', currency: 'OMR', tax_rate: 0, settings: { address: '', tax_number: '', cr_number: '', bank_details: '', invoice_terms: '', invoice_footer: '' } })
+const form = reactive<any>({ name: '', phone: '', email: '', currency: 'SAR', tax_rate: 0, settings: { address: '', tax_number: '', cr_number: '', bank_details: '', invoice_terms: '', invoice_footer: '' } })
 const msg = ref(''); const err = ref('')
 
 async function load() {
   data.value = await api.get('/app/company')
   const t = data.value.tenant; const s = t.settings || {}
-  Object.assign(form, { name: t.name, phone: t.phone || '', email: t.email || '', currency: t.currency || 'OMR', tax_rate: +t.tax_rate || 0 })
+  Object.assign(form, { name: t.name, phone: t.phone || '', email: t.email || '', currency: t.currency || 'SAR', tax_rate: +t.tax_rate || 0 })
   Object.assign(form.settings, { address: s.address || '', tax_number: s.tax_number || '', cr_number: s.cr_number || '', bank_details: s.bank_details || '', invoice_terms: s.invoice_terms || '', invoice_footer: s.invoice_footer || '' })
 }
 onMounted(load)

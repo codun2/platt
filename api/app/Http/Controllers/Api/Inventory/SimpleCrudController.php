@@ -21,7 +21,14 @@ class SimpleCrudController extends Controller
         'categories' => [Category::class, ['name' => 'required|string|max:100', 'parent_id' => 'nullable|integer', 'sort' => 'integer']],
         'units' => [Unit::class, ['name' => 'required|string|max:50', 'symbol' => 'nullable|string|max:20']],
         'warehouses' => [Warehouse::class, ['name' => 'required|string|max:100', 'location' => 'nullable|string|max:150', 'is_default' => 'boolean', 'is_active' => 'boolean']],
-        'suppliers' => [Supplier::class, ['name' => 'required|string|max:150', 'phone' => 'nullable|string|max:30', 'email' => 'nullable|email', 'tax_number' => 'nullable|string|max:50', 'address' => 'nullable|string|max:255', 'notes' => 'nullable|string', 'is_active' => 'boolean']],
+        'suppliers' => [Supplier::class, [
+            'name' => 'required|string|max:150', 'supplier_type' => 'nullable|in:individual,company', 'code' => 'nullable|string|max:40',
+            'contact_person' => 'nullable|string|max:150', 'phone' => 'nullable|string|max:30', 'phone2' => 'nullable|string|max:30', 'whatsapp' => 'nullable|string|max:30',
+            'email' => 'nullable|email', 'tax_number' => 'nullable|string|max:50', 'cr_number' => 'nullable|string|max:50',
+            'address' => 'nullable|string|max:255', 'country' => 'nullable|string|max:60', 'city' => 'nullable|string|max:80', 'area' => 'nullable|string|max:120',
+            'bank_details' => 'nullable|string|max:500', 'payment_terms_days' => 'nullable|integer|min:0|max:365', 'category' => 'nullable|string|max:40',
+            'opening_balance' => 'nullable|numeric', 'tags' => 'nullable|string|max:255', 'notes' => 'nullable|string', 'is_active' => 'boolean',
+        ]],
     ];
 
     public function index(string $kind): JsonResponse

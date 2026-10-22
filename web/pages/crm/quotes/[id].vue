@@ -13,6 +13,12 @@ const canManage = computed(() => auth.can('crm.manage'))
 const validDays = computed(() => daysUntil(q.value?.valid_until))
 const editable = computed(() => q.value && ['draft', 'sent'].includes(q.value.status))
 const print = () => window.print()
+const exporting = ref(false)
+async function exportPdf() {
+  exporting.value = true
+  try { await exportDocPdf(document.querySelector('.doc-print') as HTMLElement, docPdfName(q.value.number, data.value.company?.name)) }
+  catch (e: any) { err.value = e.message } finally { exporting.value = false }
+}
 
 const notFound = ref(false)
 async function load() {
@@ -70,6 +76,7 @@ async function remove() { if (!confirm('حذف عرض السعر نهائياً�
             </div>
             <div class="row" style="gap:8px;flex-wrap:wrap;justify-content:flex-end">
               <button class="btn ghost sm" @click="print"><i class="ti ti-printer" /> طباعة</button>
+              <button class="btn ghost sm" :disabled="exporting" @click="exportPdf"><i class="ti ti-file-type-pdf" /> {{ exporting ? 'جاري التصدير…' : 'تصدير PDF' }}</button>
               <template v-if="canManage">
                 <button v-if="q.status === 'draft'" class="btn info sm" @click="setStatus('sent', 'تم تعليم العرض كمُرسَل')"><i class="ti ti-send" /> إرسال</button>
                 <button v-if="['draft','sent'].includes(q.status)" class="btn ok sm" @click="setStatus('accepted', 'تم قبول العرض')"><i class="ti ti-check" /> قبول</button>

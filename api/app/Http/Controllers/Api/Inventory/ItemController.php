@@ -63,11 +63,13 @@ class ItemController extends Controller
 
     public function show(int $id): JsonResponse
     {
-        $item = Item::with('category:id,name', 'unit:id,name,symbol')->findOrFail($id);
+        $item = Item::with('category:id,name', 'unit:id,name,symbol', 'supplier:id,name,phone')->withSum('stockLevels as stock', 'qty')->findOrFail($id);
         $levels = $item->stockLevels()->with('warehouse:id,name')->get();
-        $movements = $item->movements()->with('warehouse:id,name', 'user:id,name')->orderByDesc('id')->limit(50)->get();
+        $movements = $item->movements()->with('warehouse:id,name', 'user:id,name')->orderByDesc('id')->limit(100)->get();
+        $purchases = \App\Models\PurchaseItem::where('item_id', $item->id)->with('purchase:id,number,date,status,supplier_id', 'purchase.supplier:id,name')
+            ->orderByDesc('id')->limit(20)->get(['id', 'purchase_id', 'qty', 'unit_cost', 'total']);
 
-        return response()->json(['item' => $item, 'levels' => $levels, 'movements' => $movements]);
+        return response()->json(['item' => $item, 'levels' => $levels, 'movements' => $movements, 'purchases' => $purchases]);
     }
 
     public function store(Request $request, InventoryService $inv): JsonResponse
@@ -132,12 +134,20 @@ class ItemController extends Controller
             'name_en' => ['nullable', 'string', 'max:150'],
             'sku' => ['nullable', 'string', 'max:60', \Illuminate\Validation\Rule::unique('items', 'sku')->where('tenant_id', $tenantId)->ignore($item?->id)],
             'barcode' => ['nullable', 'string', 'max:80', \Illuminate\Validation\Rule::unique('items', 'barcode')->where('tenant_id', $tenantId)->ignore($item?->id)],
+            'brand' => ['nullable', 'string', 'max:80'],
+            'model' => ['nullable', 'string', 'max:80'],
+            'description' => ['nullable', 'string'],
             'category_id' => ['nullable', \Illuminate\Validation\Rule::exists('categories', 'id')->where('tenant_id', $tenantId)],
             'unit_id' => ['nullable', \Illuminate\Validation\Rule::exists('units', 'id')->where('tenant_id', $tenantId)],
+            'supplier_id' => ['nullable', \Illuminate\Validation\Rule::exists('suppliers', 'id')->where('tenant_id', $tenantId)],
             'cost_price' => ['nullable', 'numeric', 'min:0'],
             'sale_price' => ['required', 'numeric', 'min:0'],
             'track_stock' => ['boolean'],
             'min_stock' => ['nullable', 'numeric', 'min:0'],
+            'reorder_qty' => ['nullable', 'numeric', 'min:0'],
+            'max_stock' => ['nullable', 'numeric', 'min:0'],
+            'location' => ['nullable', 'string', 'max:80'],
+            'weight' => ['nullable', 'numeric', 'min:0'],
             'is_active' => ['boolean'],
             'notes' => ['nullable', 'string'],
             'opening_qty' => ['nullable', 'numeric', 'min:0'],

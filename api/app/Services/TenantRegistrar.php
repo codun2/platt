@@ -28,6 +28,7 @@ class TenantRegistrar
                 'slug' => $this->uniqueSlug($data['company_name']),
                 'phone' => $data['phone'] ?? null,
                 'email' => $data['email'],
+                'currency' => 'SAR',
                 'plan_id' => $plan?->id,
                 'status' => 'active',
                 'subscription_status' => 'trial',

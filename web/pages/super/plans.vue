@@ -25,7 +25,7 @@ async function remove(p: any) { if (!confirm(`حذف الخطة ${p.name_ar}؟`)
       <tbody>
         <tr v-for="p in plans" :key="p.id">
           <td><b>{{ p.name_ar }}</b> <small class="muted" dir="ltr">({{ p.key }})</small><br /><small class="muted">{{ p.description_ar }}</small></td>
-          <td class="num">{{ p.price_monthly }} ر.ع</td><td>{{ p.max_users }}</td><td>{{ p.tenants_count }}</td>
+          <td class="num">{{ p.price_monthly }} ريال</td><td>{{ p.max_users }}</td><td>{{ p.tenants_count }}</td>
           <td><span class="badge" :class="p.is_active ? 'ok' : 'muted'">{{ p.is_active ? 'نشطة' : 'معطّلة' }}</span></td>
           <td class="row" style="gap:6px"><button class="btn ghost sm icon" @click="openEdit(p)"><i class="ti ti-pencil" /></button><button class="btn ghost sm icon" style="color:var(--primary)" @click="remove(p)"><i class="ti ti-trash" /></button></td>
         </tr>
@@ -38,7 +38,7 @@ async function remove(p: any) { if (!confirm(`حذف الخطة ${p.name_ar}؟`)
         <div class="field"><label>المفتاح</label><input v-model="form.key" dir="ltr" /></div>
         <div class="field"><label>الاسم (عربي)</label><input v-model="form.name_ar" /></div>
         <div class="field"><label>الاسم (إنجليزي)</label><input v-model="form.name_en" dir="ltr" /></div>
-        <div class="field"><label>السعر الشهري (ر.ع)</label><input v-model.number="form.price_monthly" type="number" step="0.001" dir="ltr" /></div>
+        <div class="field"><label>السعر الشهري (ريال)</label><input v-model.number="form.price_monthly" type="number" step="0.001" dir="ltr" /></div>
         <div class="field"><label>حد المستخدمين</label><input v-model.number="form.max_users" type="number" min="1" /></div>
         <div class="field"><label>الترتيب</label><input v-model.number="form.sort" type="number" /></div>
       </div>

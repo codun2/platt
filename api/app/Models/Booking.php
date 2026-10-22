@@ -11,11 +11,11 @@ class Booking extends Model
 {
     use BelongsToTenant;
 
-    protected $fillable = ['tenant_id', 'number', 'unit_id', 'customer_id', 'customer_name', 'customer_phone', 'period', 'start_at', 'end_at', 'qty', 'unit_price', 'services_total', 'discount', 'tax_rate', 'tax', 'total', 'paid', 'deposit', 'deposit_paid', 'deposit_status', 'status', 'event_type', 'guests', 'note', 'created_by'];
+    protected $fillable = ['tenant_id', 'number', 'unit_id', 'customer_id', 'customer_name', 'customer_phone', 'customer_email', 'period', 'start_at', 'end_at', 'qty', 'unit_price', 'services_total', 'discount', 'tax_rate', 'tax', 'total', 'paid', 'deposit', 'deposit_paid', 'deposit_status', 'status', 'event_type', 'source', 'guests', 'adults', 'children', 'note', 'special_requests', 'internal_note', 'checked_in_at', 'checked_out_at', 'created_by'];
 
     protected function casts(): array
     {
-        return ['start_at' => 'datetime', 'end_at' => 'datetime', 'qty' => 'decimal:2', 'unit_price' => 'decimal:3', 'services_total' => 'decimal:3', 'discount' => 'decimal:3', 'tax_rate' => 'decimal:2', 'tax' => 'decimal:3', 'total' => 'decimal:3', 'paid' => 'decimal:3', 'deposit' => 'decimal:3', 'deposit_paid' => 'decimal:3'];
+        return ['start_at' => 'datetime', 'end_at' => 'datetime', 'checked_in_at' => 'datetime', 'checked_out_at' => 'datetime', 'qty' => 'decimal:2', 'unit_price' => 'decimal:3', 'services_total' => 'decimal:3', 'discount' => 'decimal:3', 'tax_rate' => 'decimal:2', 'tax' => 'decimal:3', 'total' => 'decimal:3', 'paid' => 'decimal:3', 'deposit' => 'decimal:3', 'deposit_paid' => 'decimal:3'];
     }
 
     public function unit(): BelongsTo

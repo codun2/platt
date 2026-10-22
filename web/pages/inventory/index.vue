@@ -19,6 +19,7 @@ onMounted(async () => { meta.value = await api.get('/app/inventory/items/meta');
       <div class="quick">
         <NuxtLink to="/inventory/items"><i class="ti ti-box" />الأصناف</NuxtLink>
         <NuxtLink to="/inventory/purchases"><i class="ti ti-truck-delivery" />المشتريات</NuxtLink>
+        <NuxtLink to="/inventory/suppliers"><i class="ti ti-truck" />الموردون</NuxtLink>
         <NuxtLink to="/inventory/warehouses"><i class="ti ti-building-warehouse" />المستودعات</NuxtLink>
         <NuxtLink to="/inventory/movements"><i class="ti ti-arrows-exchange" />الحركات</NuxtLink>
         <NuxtLink to="/pos"><i class="ti ti-cash-register" />نقطة البيع</NuxtLink>
