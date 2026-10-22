@@ -21,7 +21,7 @@ async function act(fn: () => Promise<any>, ok = tt('تم','Done')) {
 }
 const save = () => act(async () => { await api.patch(`/app/inventory/purchases/${id}`, purchasePayload(form)); editing.value = false }, tt('تم حفظ التعديلات','Changes saved'))
 const receive = () => act(() => api.post(`/app/inventory/purchases/${id}/receive`), tt('تم استلام الأصناف إلى المخزون','Items received into stock'))
-const cancel = () => { if (confirm(p.value.status === 'received' ? tt('إلغاء الفاتورة وسحب الكميات من المخزون؟','Cancel and pull quantities from stock?') : tt('إلغاء الفاتورة؟','Cancel invoice?'))) act(() => api.post(`/app/inventory/purchases/${id}/cancel`), 'تم إلغاء الفاتورة') }
+const cancel = () => { if (confirm(p.value.status === 'received' ? tt('إلغاء الفاتورة وسحب الكميات من المخزون؟','Cancel and pull quantities from stock?') : tt('إلغاء الفاتورة؟','Cancel invoice?'))) act(() => api.post(`/app/inventory/purchases/${id}/cancel`), tt('تم إلغاء الفاتورة','Invoice cancelled')) }
 const doPay = () => act(async () => { await api.post(`/app/inventory/purchases/${id}/pay`, { amount: payAmt.value }); paying.value = false }, tt('تم تسجيل الدفعة','Payment recorded'))
 </script>
 
@@ -44,7 +44,7 @@ const doPay = () => act(async () => { await api.post(`/app/inventory/purchases/$
         <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-truck-delivery" /></div><div><b>{{ f.money(p.total, true) }}</b><small>{{ tt('إجمالي الفاتورة','Invoice total') }} · {{ p.items.length }} {{ tt('بند','lines') }}</small></div></div>
         <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-cash" /></div><div><b>{{ f.money(p.paid) }}</b><small>{{ tt('المدفوع','Paid') }} ({{ purchasePayMethods[p.payment_method] || p.payment_method }})</small></div></div>
         <div class="card stat"><div class="ic" :style="`background:${balance > 0 ? 'var(--primary)' : 'var(--ok)'}`"><i class="ti ti-wallet" /></div><div><b>{{ f.money(balance) }}</b><small>{{ tt('المتبقي للمورد','Balance to supplier') }}</small></div></div>
-        <div class="card stat"><div class="ic" :style="`background:${dueDays !== null && dueDays < 0 && balance > 0 ? 'var(--primary)' : 'var(--warn)'}`"><i class="ti ti-calendar-due" /></div><div><b>{{ f.d(p.due_date) }}</b><small v-if="dueDays !== null && balance > 0 && p.status !== 'cancelled'">{{ dueDays < 0 ? `متأخر ${-dueDays} يوم` : dueDays === 0 ? 'يستحق اليوم' : `بعد ${dueDays} يوم` }}</small><small v-else>تاريخ الاستحقاق</small></div></div>
+        <div class="card stat"><div class="ic" :style="`background:${dueDays !== null && dueDays < 0 && balance > 0 ? 'var(--primary)' : 'var(--warn)'}`"><i class="ti ti-calendar-due" /></div><div><b>{{ f.d(p.due_date) }}</b><small v-if="dueDays !== null && balance > 0 && p.status !== 'cancelled'">{{ dueDays < 0 ? tt(`متأخر ${-dueDays} يوم`,`${-dueDays}d overdue`) : dueDays === 0 ? tt('يستحق اليوم','Due today') : tt(`بعد ${dueDays} يوم`,`in ${dueDays}d`) }}</small><small v-else>{{ tt('تاريخ الاستحقاق','Due date') }}</small></div></div>
       </div>
 
       <div class="card">

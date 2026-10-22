@@ -40,7 +40,7 @@ async function remove() { if (!confirm(tt(`حذف المورد ${s.value.name}؟
         <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-file-invoice" /></div><div><b>{{ s.purchases_count }}</b><small>{{ tt('فاتورة شراء','purchases') }} · {{ s.items_count }} صنف مرتبط</small></div></div>
         <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-shopping-cart" /></div><div><b>{{ f.money(d.stats.purchases_total) }}</b><small>{{ tt('إجمالي المشتريات','Total purchases') }}</small></div></div>
         <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-cash" /></div><div><b>{{ f.money(d.stats.paid_total) }}</b><small>{{ tt('المدفوع له','Paid') }}</small></div></div>
-        <div class="card stat"><div class="ic" :style="`background:${d.stats.balance > 0 ? 'var(--primary)' : 'var(--ok)'}`"><i class="ti ti-wallet" /></div><div><b>{{ f.money(d.stats.balance) }}</b><small>مستحق للمورد<span v-if="+s.opening_balance"> (شامل رصيد افتتاحي {{ f.money(s.opening_balance) }})</span></small></div></div>
+        <div class="card stat"><div class="ic" :style="`background:${d.stats.balance > 0 ? 'var(--primary)' : 'var(--ok)'}`"><i class="ti ti-wallet" /></div><div><b>{{ f.money(d.stats.balance) }}</b><small>{{ tt('مستحق للمورد','Payable to supplier') }}<span v-if="+s.opening_balance"> ({{ tt('شامل رصيد افتتاحي','incl. opening balance') }} {{ f.money(s.opening_balance) }})</span></small></div></div>
       </div>
 
       <div class="card">

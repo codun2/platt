@@ -26,10 +26,10 @@ const deductions = (i: any) => +i.absence_deduction + +i.fixed_deductions + +i.o
     <div v-if="msg" class="alert ok no-print">{{ msg }}</div>
     <div v-if="err" class="alert bad no-print">{{ err }}</div>
     <div class="grid grid-4 no-print" style="margin-bottom:16px">
-      <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-users" /></div><div><b>{{ p.items.length }}</b><small>موظف في الكشف</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-plus" /></div><div><b>{{ f.money(+p.total_basic + +p.total_allowances + +p.total_additions) }}</b><small>إجمالي المستحقات</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-minus" /></div><div><b>{{ f.money(p.total_deductions) }}</b><small>إجمالي الخصومات</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-cash" /></div><div><b>{{ f.money(p.total_net, true) }}</b><small>صافي الرواتب</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-users" /></div><div><b>{{ p.items.length }}</b><small>{{ tt('موظف في الكشف','Employees in run') }}</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-plus" /></div><div><b>{{ f.money(+p.total_basic + +p.total_allowances + +p.total_additions) }}</b><small>{{ tt('إجمالي المستحقات','Total earnings') }}</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-minus" /></div><div><b>{{ f.money(p.total_deductions) }}</b><small>{{ tt('إجمالي الخصومات','Total deductions') }}</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-cash" /></div><div><b>{{ f.money(p.total_net, true) }}</b><small>{{ tt('صافي الرواتب','Net payroll') }}</small></div></div>
     </div>
 
     <div class="card">
@@ -49,7 +49,7 @@ const deductions = (i: any) => +i.absence_deduction + +i.fixed_deductions + +i.o
         <div class="row" style="align-items:flex-end;gap:10px">
           <div class="field" style="margin:0"><label>{{ tt('الصرف من','Pay from') }}</label><UiSelect v-model="payAcc" style="min-width:200px"><option v-for="m in money" :key="m.id" :value="m.id">{{ m.code }} — {{ m.name }}</option></UiSelect></div>
           <div class="field" style="margin:0"><label>{{ tt('التاريخ','Date') }}</label><input v-model="payDate" type="date" dir="ltr" /></div>
-          <button class="btn" :disabled="saving || !payAcc" @click="pay"><i class="ti ti-check" /> {{ tt('تأكيد الصرف','Confirm payment') }}</button><button class="btn ghost" @click="paying = false">إغلاق</button>
+          <button class="btn" :disabled="saving || !payAcc" @click="pay"><i class="ti ti-check" /> {{ tt('تأكيد الصرف','Confirm payment') }}</button><button class="btn ghost" @click="paying = false">{{ tt('إغلاق','Close') }}</button>
         </div>
       </div>
       <hr class="no-print" style="border:none;border-top:1px solid var(--line);margin:14px 0">

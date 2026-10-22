@@ -41,7 +41,7 @@ async function remove() { if (!confirm(tt(`حذف الموظف ${e.value.name}؟
       <div class="grid grid-4" style="margin-bottom:16px">
         <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-cash" /></div><div><b>{{ f.money(e.gross_salary) }}</b><small>الراتب الإجمالي · صافي {{ f.money(e.gross_salary - +e.fixed_deductions) }}</small></div></div>
         <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-calendar-check" /></div><div><b>{{ d.attendance_month.present }} / {{ d.attendance_month.absent }}</b><small>حضور / غياب هذا الشهر · تأخير {{ d.attendance_month.late_minutes }} د</small></div></div>
-        <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-beach" /></div><div><b>{{ d.leave_balance.remaining }} / {{ d.leave_balance.annual }}</b><small>رصيد الإجازة السنوية المتبقي</small></div></div>
+        <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-beach" /></div><div><b>{{ d.leave_balance.remaining }} / {{ d.leave_balance.annual }}</b><small>{{ tt('رصيد الإجازة السنوية المتبقي','Annual leave remaining') }}</small></div></div>
         <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-briefcase" /></div><div><b>{{ yearsOfService !== null ? yearsOfService + ' سنة' : '—' }}</b><small>مدة الخدمة · منذ {{ f.d(e.hire_date) }}</small></div></div>
       </div>
 
@@ -55,7 +55,7 @@ async function remove() { if (!confirm(tt(`حذف الموظف ${e.value.name}؟
           </div>
           <div class="row" style="gap:8px">
             <span class="badge" :class="employeeStatus[e.status]?.cls">{{ employeeStatus[e.status]?.label }}</span>
-            <template v-if="canManage"><NuxtLink class="btn sm" :to="`/hr/leaves/new?employee_id=${e.id}`"><i class="ti ti-plus" /> طلب إجازة</NuxtLink><button class="btn ghost sm" @click="editing = true"><i class="ti ti-pencil" /> تعديل</button><button class="btn ghost sm" style="color:var(--primary)" @click="remove"><i class="ti ti-trash" /></button></template>
+            <template v-if="canManage"><NuxtLink class="btn sm" :to="`/hr/leaves/new?employee_id=${e.id}`"><i class="ti ti-plus" /> {{ tt('طلب إجازة','Leave request') }}</NuxtLink><button class="btn ghost sm" @click="editing = true"><i class="ti ti-pencil" /> {{ tt('تعديل','Edit') }}</button><button class="btn ghost sm" style="color:var(--primary)" @click="remove"><i class="ti ti-trash" /></button></template>
           </div>
         </div>
         <hr style="border:none;border-top:1px solid var(--line);margin:0 0 16px">
@@ -76,7 +76,7 @@ async function remove() { if (!confirm(tt(`حذف الموظف ${e.value.name}؟
           <div><small class="muted">{{ tt('البنك / IBAN','Bank / IBAN') }}</small><br /><b dir="ltr">{{ [e.bank_name, e.iban].filter(Boolean).join(' · ') || '—' }}</b></div>
           <div><small class="muted">{{ tt('طوارئ','Emergency') }}</small><br /><b dir="ltr">{{ [e.emergency_name, e.emergency_phone].filter(Boolean).join(' · ') || '—' }}</b></div>
           <div><small class="muted">{{ tt('حساب النظام','System account') }}</small><br /><b>{{ e.user?.name || '—' }}</b></div>
-          <div v-if="e.notes" style="grid-column:1/-1;background:var(--bg);padding:10px;border-radius:10px"><small class="muted">ملاحظات</small><br />{{ e.notes }}</div>
+          <div v-if="e.notes" style="grid-column:1/-1;background:var(--bg);padding:10px;border-radius:10px"><small class="muted">{{ tt('ملاحظات','Notes') }}</small><br />{{ e.notes }}</div>
         </div>
 
         <div v-else-if="tab === 'attendance'">

@@ -36,15 +36,15 @@ async function remove() { if (!confirm(tt('حذف المصروف وقيده؟','
 
     <template v-else>
       <div class="grid grid-4" style="margin-bottom:16px">
-        <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-receipt" /></div><div><b>{{ f.money(e.total, true) }}</b><small>الإجمالي المدفوع</small></div></div>
+        <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-receipt" /></div><div><b>{{ f.money(e.total, true) }}</b><small>{{ tt('الإجمالي المدفوع','Total paid') }}</small></div></div>
         <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-coins" /></div><div><b>{{ f.money(e.amount) }}</b><small>المبلغ قبل الضريبة · ضريبة {{ f.money(e.tax) }}</small></div></div>
-        <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-category" /></div><div><b style="font-size:15px">{{ e.account?.name }}</b><small>نوع المصروف</small></div></div>
+        <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-category" /></div><div><b style="font-size:15px">{{ e.account?.name }}</b><small>{{ tt('نوع المصروف','Expense type') }}</small></div></div>
         <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-cash" /></div><div><b style="font-size:15px">{{ e.paid_from?.name }}</b><small>مدفوع من · {{ expenseMethods[e.payment_method] || e.payment_method }}</small></div></div>
       </div>
       <div class="card">
         <div class="row between" style="align-items:flex-start">
-          <div><div class="row" style="gap:10px;align-items:center"><h2 style="margin:0" dir="ltr">{{ e.number }}</h2><span class="badge ok">مرحَّل</span></div><p class="muted" style="margin:6px 0 0">{{ f.d(e.date) }}<span v-if="e.creator"> · سجّله {{ e.creator.name }}</span></p></div>
-          <div v-if="canManage" class="row" style="gap:8px"><button class="btn ghost sm" @click="editing = true"><i class="ti ti-pencil" /> {{ tt('تعديل','Edit') }}</button><button class="btn ghost sm" style="color:var(--primary)" @click="remove"><i class="ti ti-trash" /> حذف</button></div>
+          <div><div class="row" style="gap:10px;align-items:center"><h2 style="margin:0" dir="ltr">{{ e.number }}</h2><span class="badge ok">{{ tt('مرحَّل','Posted') }}</span></div><p class="muted" style="margin:6px 0 0">{{ f.d(e.date) }}<span v-if="e.creator"> · {{ tt('سجّله','by') }} {{ e.creator.name }}</span></p></div>
+          <div v-if="canManage" class="row" style="gap:8px"><button class="btn ghost sm" @click="editing = true"><i class="ti ti-pencil" /> {{ tt('تعديل','Edit') }}</button><button class="btn ghost sm" style="color:var(--primary)" @click="remove"><i class="ti ti-trash" /> {{ tt('حذف','Delete') }}</button></div>
         </div>
         <hr style="border:none;border-top:1px solid var(--line);margin:14px 0">
         <div class="grid grid-3">

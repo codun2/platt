@@ -42,7 +42,7 @@ const typeTotal = (t: string) => rows.value.filter(a => a.type === t && !a.paren
       <div class="row between" style="margin-bottom:14px">
         <div class="row">
           <input v-model="q" :placeholder="tt('بحث بالرمز أو الاسم','Search by code or name')" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px;min-width:200px" />
-          <input v-model="from" type="date" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load" /><span class="muted">إلى</span><input v-model="to" type="date" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load" />
+          <input v-model="from" type="date" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load" /><span class="muted">{{ tt('إلى','to') }}</span><input v-model="to" type="date" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load" />
         </div>
         <button v-if="canManage" class="btn" @click="openNew()"><i class="ti ti-plus" /> {{ tt('حساب جديد','New account') }}</button>
       </div>

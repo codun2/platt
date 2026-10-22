@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({ title: 'ملف الرحلة', titleEn: 'Trip Profile' })
-const api = useApi(); const auth = useAuth(); const f = useFmt(); const { tt } = useI18n()
+const api = useApi(); const auth = useAuth(); const f = useFmt(); const { tt, L } = useI18n()
 const route = useRoute(); const id = Number(route.params.id)
 
 const view = ref<any>(null); const packages = ref<any[]>([])
@@ -14,7 +14,7 @@ const stLabel: any = { scheduled: L('مجدولة','Scheduled'), ongoing: L('ج�
 const stClass: any = { scheduled: 'info', ongoing: 'ok', completed: 'muted', cancelled: 'bad' }
 const transportLabel: any = { flight: L('طيران','Flight'), bus: L('حافلة','Bus'), private: L('خاص','Private'), mixed: L('مختلط','Mixed') }
 const catLabel: any = { flights: L('طيران','Flights'), hotel: L('فنادق','Hotels'), transport: L('نقل','Transport'), visa: L('تأشيرات','Visas'), food: L('إعاشة','Food'), guide: L('مرشد','Guide'), other: L('أخرى','Other') }
-const travStatus: any = { registered: 'مسجّل', confirmed: 'مؤكد', cancelled: 'ملغى' }
+const travStatus: any = { registered: L('مسجّل','Registered'), confirmed: L('مؤكد','Confirmed'), cancelled: L('ملغى','Cancelled') }
 const canManage = computed(() => auth.can('travel.manage'))
 const trip = computed(() => view.value?.trip)
 const isHoly = computed(() => trip.value && (trip.value.type === 'umrah' || trip.value.type === 'hajj'))
@@ -134,7 +134,7 @@ async function remove() {
         </table>
         <p v-if="!trip.travelers.length" class="empty">{{ tt('لا يوجد مسافرون بعد.','No travelers yet.') }}</p>
         <div v-if="canManage && trip.status !== 'cancelled'" class="row mt" style="align-items:flex-end">
-          <div class="field" style="margin:0;flex:1"><label>{{ tt('إضافة مسافر','Add traveler') }}</label><input v-model="trav.name" placeholder="الاسم" /></div>
+          <div class="field" style="margin:0;flex:1"><label>{{ tt('إضافة مسافر','Add traveler') }}</label><input v-model="trav.name" :placeholder="tt('الاسم','Name')" /></div>
           <div class="field" style="margin:0"><label>{{ tt('هاتف','Phone') }}</label><input v-model="trav.phone" dir="ltr" style="width:120px" /></div>
           <div class="field" style="margin:0"><label>{{ tt('جواز','Passport') }}</label><input v-model="trav.passport_no" dir="ltr" style="width:110px" /></div>
           <div class="field" style="margin:0"><label>{{ tt('الجنسية','Nationality') }}</label><input v-model="trav.nationality" style="width:100px" /></div>

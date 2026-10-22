@@ -48,11 +48,11 @@ const print = () => window.print()
       <div class="row between no-print" style="align-items:flex-start">
         <div>
           <div class="row" style="gap:10px;align-items:center"><h2 style="margin:0" dir="ltr">{{ e.number }}</h2><span class="badge" :class="e.status === 'posted' ? 'ok' : 'muted'">{{ e.status === 'posted' ? 'مرحَّل' : 'مسودّة' }}</span><span class="badge" :class="isManual ? 'info' : 'muted'">{{ journalSources[e.source_type || 'manual'] }}</span></div>
-          <p class="muted" style="margin:6px 0 0">{{ f.d(e.date) }}<span v-if="e.reference"> · {{ tt('مرجع','ref') }} <span dir="ltr">{{ e.reference }}</span></span><span v-if="e.creator"> · {{ e.creator.name }}</span><span v-if="link"> · <NuxtLink :to="link" style="color:var(--info)">فتح المستند المصدر</NuxtLink></span></p>
+          <p class="muted" style="margin:6px 0 0">{{ f.d(e.date) }}<span v-if="e.reference"> · {{ tt('مرجع','ref') }} <span dir="ltr">{{ e.reference }}</span></span><span v-if="e.creator"> · {{ e.creator.name }}</span><span v-if="link"> · <NuxtLink :to="link" style="color:var(--info)">{{ tt('فتح المستند المصدر','Open source document') }}</NuxtLink></span></p>
         </div>
         <div class="row" style="gap:8px">
           <button class="btn ghost sm" @click="print"><i class="ti ti-printer" /> {{ tt('طباعة','Print') }}</button>
-          <template v-if="canManage && isManual"><button class="btn ghost sm" @click="editing = true"><i class="ti ti-pencil" /> {{ tt('تعديل','Edit') }}</button><button class="btn ghost sm" style="color:var(--primary)" @click="remove"><i class="ti ti-trash" /> حذف</button></template>
+          <template v-if="canManage && isManual"><button class="btn ghost sm" @click="editing = true"><i class="ti ti-pencil" /> {{ tt('تعديل','Edit') }}</button><button class="btn ghost sm" style="color:var(--primary)" @click="remove"><i class="ti ti-trash" /> {{ tt('حذف','Delete') }}</button></template>
         </div>
       </div>
       <p v-if="!isManual" class="muted no-print" style="font-size:12px;margin-top:8px"><i class="ti ti-lock" /> {{ tt('قيد آلي: يُعدَّل أو يُعكس من مستنده المصدر فقط.','Automatic entry: edited or reversed only via its source document.') }}</p>

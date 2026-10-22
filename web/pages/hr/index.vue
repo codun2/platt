@@ -16,8 +16,8 @@ onMounted(async () => {
     <div class="grid grid-4" style="margin-bottom:16px">
       <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-users" /></div><div><b>{{ emp?.stats?.active ?? 0 }}</b><small>موظف على رأس العمل · {{ emp?.stats?.total ?? 0 }} إجمالاً</small></div></div>
       <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-calendar-check" /></div><div><b>{{ day?.summary?.present ?? 0 }} / {{ (day?.rows?.length ?? 0) }}</b><small>حضور اليوم · غياب {{ day?.summary?.absent ?? 0 }}</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-beach" /></div><div><b>{{ leaves?.stats?.pending ?? 0 }}</b><small>طلبات إجازة بانتظار الموافقة</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-cash" /></div><div><b>{{ f.money(emp?.stats?.monthly_payroll) }}</b><small>كتلة الرواتب الشهرية المتوقعة</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-beach" /></div><div><b>{{ leaves?.stats?.pending ?? 0 }}</b><small>{{ tt('طلبات إجازة بانتظار الموافقة','Leave requests awaiting approval') }}</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-cash" /></div><div><b>{{ f.money(emp?.stats?.monthly_payroll) }}</b><small>{{ tt('كتلة الرواتب الشهرية المتوقعة','Expected monthly payroll') }}</small></div></div>
     </div>
     <div class="card">
       <div class="quick">

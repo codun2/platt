@@ -21,7 +21,7 @@ async function save() {
       <div v-if="err" class="alert bad">{{ err }}</div>
       <div class="card-title"><i class="ti ti-beach" /> {{ tt('بيانات الإجازة','Leave details') }}</div>
       <div class="grid grid-3">
-        <div class="field"><label>{{ tt('الموظف','Employee') }} <span style="color:var(--primary)">*</span></label><UiSelect v-model="form.employee_id" placeholder="اختر الموظف"><option value="">—</option><option v-for="e in employees" :key="e.id" :value="e.id">{{ e.name }}<template v-if="e.department"> — {{ e.department }}</template></option></UiSelect><small v-if="employee" class="muted">رصيد سنوي {{ employee.annual_leave_days }} يوم</small></div>
+        <div class="field"><label>{{ tt('الموظف','Employee') }} <span style="color:var(--primary)">*</span></label><UiSelect v-model="form.employee_id" :placeholder="tt('اختر الموظف','Select employee')"><option value="">—</option><option v-for="e in employees" :key="e.id" :value="e.id">{{ e.name }}<template v-if="e.department"> — {{ e.department }}</template></option></UiSelect><small v-if="employee" class="muted">{{ tt('رصيد سنوي','Annual balance') }} {{ employee.annual_leave_days }} {{ tt('يوم','days') }}</small></div>
         <div class="field"><label>{{ tt('نوع الإجازة','Leave type') }}</label><UiSelect v-model="form.type"><option v-for="(l, k) in leaveTypes" :key="k" :value="k">{{ l }}</option></UiSelect></div>
         <div class="field"><label>{{ tt('عدد الأيام','Days') }}</label><input :value="days" disabled dir="ltr" /></div>
         <div class="field"><label>{{ tt('من','From') }} <span style="color:var(--primary)">*</span></label><input v-model="form.from" type="date" dir="ltr" /></div>

@@ -13,7 +13,7 @@ const sum = (k: string) => (page.value?.data || []).filter((b: any) => b.status 
   <div>
     <div class="grid grid-4" style="margin-bottom:16px">
       <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-calendar-event" /></div><div><b>{{ page?.total ?? 0 }}</b><small>{{ tt('حجز','bookings') }}</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-hourglass" /></div><div><b>{{ (page?.data || []).filter((b: any) => b.status === 'pending').length }}</b><small>معلّق (في الصفحة)</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-hourglass" /></div><div><b>{{ (page?.data || []).filter((b: any) => b.status === 'pending').length }}</b><small>{{ tt('معلّق (في الصفحة)','Pending (this page)') }}</small></div></div>
       <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-cash" /></div><div><b>{{ f.money(sum('paid')) }}</b><small>{{ tt('المحصّل (الصفحة)','Collected (page)') }}</small></div></div>
       <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-wallet" /></div><div><b>{{ f.money(sum('total') - sum('paid')) }}</b><small>{{ tt('المتبقي (الصفحة)','Balance (page)') }}</small></div></div>
     </div>

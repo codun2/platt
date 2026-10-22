@@ -13,10 +13,10 @@ async function remove(e: any) { if (!confirm(tt(`حذف الموظف ${e.name}؟
   <div>
     <div class="breadcrumb"><NuxtLink to="/hr">{{ tt('الموارد البشرية','HR') }}</NuxtLink> › <b>{{ tt('الموظفون','Employees') }}</b></div>
     <div class="grid grid-4" style="margin-bottom:16px">
-      <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-users" /></div><div><b>{{ page?.stats?.total ?? 0 }}</b><small>إجمالي الموظفين</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-user-check" /></div><div><b>{{ page?.stats?.active ?? 0 }}</b><small>على رأس العمل</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-beach" /></div><div><b>{{ page?.stats?.on_leave ?? 0 }}</b><small>في إجازة</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-cash" /></div><div><b>{{ f.money(page?.stats?.monthly_payroll) }}</b><small>الرواتب الشهرية (صافي متوقع)</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-users" /></div><div><b>{{ page?.stats?.total ?? 0 }}</b><small>{{ tt('إجمالي الموظفين','Total employees') }}</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-user-check" /></div><div><b>{{ page?.stats?.active ?? 0 }}</b><small>{{ tt('على رأس العمل','Active') }}</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-beach" /></div><div><b>{{ page?.stats?.on_leave ?? 0 }}</b><small>{{ tt('في إجازة','On leave') }}</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-cash" /></div><div><b>{{ f.money(page?.stats?.monthly_payroll) }}</b><small>{{ tt('الرواتب الشهرية (صافي متوقع)','Monthly payroll (expected net)') }}</small></div></div>
     </div>
     <div class="card">
       <div class="row between" style="margin-bottom:14px">

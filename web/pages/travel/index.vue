@@ -13,10 +13,10 @@ const sum = (k: string) => upcoming.value.reduce((s, t) => s + Number(t[k] || 0)
 <template>
   <div>
     <div class="grid grid-4">
-      <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-plane" /></div><div><b>{{ upcoming.length }}</b><small>رحلات قادمة/جارية</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-users" /></div><div><b>{{ sum('travelers_count') }}</b><small>مسافر مسجّل</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-plane" /></div><div><b>{{ upcoming.length }}</b><small>{{ tt('رحلات قادمة/جارية','Upcoming/ongoing trips') }}</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-users" /></div><div><b>{{ sum('travelers_count') }}</b><small>{{ tt('مسافر مسجّل','Registered travelers') }}</small></div></div>
       <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-cash" /></div><div><b>{{ f.money(sum('collected')) }}</b><small>محصّل من {{ f.money(sum('revenue')) }}</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-clock-dollar" /></div><div><b>{{ unpaid?.total ?? '…' }}</b><small>مسافرون لم يسددوا كاملاً</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-clock-dollar" /></div><div><b>{{ unpaid?.total ?? '…' }}</b><small>{{ tt('مسافرون لم يسددوا كاملاً','Travelers not fully paid') }}</small></div></div>
     </div>
     <div class="card mt">
       <div class="card-title"><i class="ti ti-bolt" /> {{ tt('الوصول السريع','Quick access') }}</div>

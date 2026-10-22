@@ -12,7 +12,7 @@ const isHoly = computed(() => props.form.type === 'umrah' || props.form.type ===
   <div>
     <div class="card-title"><i class="ti ti-plane" /> {{ tt('بيانات الرحلة','Trip details') }}</div>
     <div class="grid grid-3">
-      <div class="field"><label>{{ tt('اسم الرحلة','Trip name') }} <span style="color:var(--primary)">*</span></label><input v-model="form.name" placeholder="مثال: عمرة رمضان 2026" /></div>
+      <div class="field"><label>{{ tt('اسم الرحلة','Trip name') }} <span style="color:var(--primary)">*</span></label><input v-model="form.name" :placeholder="tt('مثال: عمرة رمضان 2026','e.g. Ramadan Umrah 2026')" /></div>
       <div class="field"><label>{{ tt('كود الرحلة','Trip code') }}</label><input v-model="form.code" dir="ltr" :placeholder="tt('اختياري','Optional')" /></div>
       <div class="field"><label>{{ tt('النوع','Type') }}</label><UiSelect v-model="form.type"><option v-for="(l, k) in typeLabel" :key="k" :value="k">{{ l }}</option></UiSelect></div>
       <div class="field"><label>{{ tt('الوجهة','Destination') }}</label><input v-model="form.destination" :placeholder="isHoly ? tt('مكة / المدينة','Makkah / Madinah') : tt('المدينة أو الدولة','City or country')" /></div>
@@ -22,7 +22,7 @@ const isHoly = computed(() => props.form.type === 'umrah' || props.form.type ===
 
     <div class="card-title" style="margin-top:8px"><i class="ti ti-plane-departure" /> {{ tt('النقل','Transport') }}</div>
     <div class="grid grid-4">
-      <div class="field"><label>وسيلة النقل</label><UiSelect v-model="form.transport"><option value="">—</option><option v-for="(l, k) in transportLabel" :key="k" :value="k">{{ l }}</option></UiSelect></div>
+      <div class="field"><label>{{ tt('وسيلة النقل','Transport') }}</label><UiSelect v-model="form.transport"><option value="">—</option><option v-for="(l, k) in transportLabel" :key="k" :value="k">{{ l }}</option></UiSelect></div>
       <div class="field"><label>{{ tt('شركة الطيران','Airline') }}</label><input v-model="form.airline" /></div>
       <div class="field"><label>{{ tt('رقم الرحلة الجوية','Flight no.') }}</label><input v-model="form.flight_no" dir="ltr" /></div>
       <div class="field"><label>{{ tt('نقطة التجمّع / الانطلاق','Boarding point') }}</label><input v-model="form.boarding_point" /></div>

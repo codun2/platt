@@ -34,7 +34,7 @@ const print = () => window.print()
         </div>
         <div class="row">
           <button class="btn ghost sm" @click="preset('month')">{{ tt('هذا الشهر','This month') }}</button><button class="btn ghost sm" @click="preset('quarter')">{{ tt('الربع','Quarter') }}</button><button class="btn ghost sm" @click="preset('year')">{{ tt('السنة','Year') }}</button>
-          <input v-if="tab !== 'bs'" v-model="from" type="date" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load" /><span v-if="tab !== 'bs'" class="muted">إلى</span>
+          <input v-if="tab !== 'bs'" v-model="from" type="date" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load" /><span v-if="tab !== 'bs'" class="muted">{{ tt('إلى','to') }}</span>
           <input v-model="to" type="date" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load" />
           <button class="btn ghost sm" @click="print"><i class="ti ti-printer" /> {{ tt('طباعة','Print') }}</button>
         </div>

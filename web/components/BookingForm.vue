@@ -62,8 +62,8 @@ defineExpose({ avail })
     </div>
 
     <div class="card-title" style="margin-top:8px"><i class="ti ti-sparkles" /> {{ tt('الخدمات الإضافية','Add-on services') }}</div>
-    <div class="chips" style="margin-bottom:8px"><span v-for="s in unitServices" :key="s.id" class="chip" @click="addService(s)">+ {{ s.name }} <small class="muted">{{ f.money(s.price) }}</small></span><span v-if="!unitServices.length" class="muted" style="font-size:12px">لا توجد خدمات إضافية مسجّلة.</span></div>
-    <table v-if="form.lines.length" class="table lines-editor"><thead><tr><th>{{ tt('الخدمة','Service') }}</th><th style="width:100px">{{ tt('الكمية','Qty') }}</th><th style="width:130px">{{ tt('السعر','Price') }}</th><th style="width:120px">الإجمالي</th><th style="width:48px"></th></tr></thead>
+    <div class="chips" style="margin-bottom:8px"><span v-for="s in unitServices" :key="s.id" class="chip" @click="addService(s)">+ {{ s.name }} <small class="muted">{{ f.money(s.price) }}</small></span><span v-if="!unitServices.length" class="muted" style="font-size:12px">{{ tt('لا توجد خدمات إضافية مسجّلة.','No add-on services registered.') }}</span></div>
+    <table v-if="form.lines.length" class="table lines-editor"><thead><tr><th>{{ tt('الخدمة','Service') }}</th><th style="width:100px">{{ tt('الكمية','Qty') }}</th><th style="width:130px">{{ tt('السعر','Price') }}</th><th style="width:120px">{{ tt('الإجمالي','Total') }}</th><th style="width:48px"></th></tr></thead>
       <tbody><tr v-for="(l, i) in form.lines" :key="i"><td>{{ l.name }}</td><td><input v-model.number="l.qty" type="number" step="1" min="1" dir="ltr" /></td><td><input v-model.number="l.price" type="number" step="0.001" min="0" dir="ltr" /></td><td class="num"><b>{{ f.money((+l.qty || 0) * (+l.price || 0)) }}</b></td><td><button type="button" class="btn ghost sm icon" style="color:var(--primary)" @click="form.lines.splice(i, 1)"><i class="ti ti-x" /></button></td></tr></tbody></table>
 
     <div class="grid grid-2" style="margin-top:16px;align-items:start">

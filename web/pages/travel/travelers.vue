@@ -24,8 +24,8 @@ async function remove() { if (!confirm(tt('حذف/إلغاء المسافر؟','
     <div class="card">
       <div class="row" style="margin-bottom:14px">
         <input v-model="filt.q" :placeholder="tt('اسم / هاتف / جواز','Name / phone / passport')" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @keyup.enter="load" />
-        <UiSelect v-model="filt.trip_id" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">كل الرحلات</option><option v-for="t in trips" :key="t.id" :value="t.id">{{ t.name }}</option></UiSelect>
-        <UiSelect v-model="filt.status" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">كل الحالات</option><option v-for="(l, k) in stLabel" :key="k" :value="k">{{ l }}</option></UiSelect>
+        <UiSelect v-model="filt.trip_id" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">{{ tt('كل الرحلات','All trips') }}</option><option v-for="t in trips" :key="t.id" :value="t.id">{{ t.name }}</option></UiSelect>
+        <UiSelect v-model="filt.status" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">{{ tt('كل الحالات','All statuses') }}</option><option v-for="(l, k) in stLabel" :key="k" :value="k">{{ l }}</option></UiSelect>
         <label class="switch"><input v-model="filt.unpaid" type="checkbox" @change="load" /><span /> {{ tt('لم يسددوا','Unpaid') }}</label>
         <button class="btn ghost" @click="load"><i class="ti ti-search" /></button>
         <NuxtLink to="/travel/trips" class="btn ghost" style="margin-right:auto">{{ tt('إضافة مسافر من صفحة الرحلة ←','Add traveler from the trip page ←') }}</NuxtLink>

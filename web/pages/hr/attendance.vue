@@ -27,9 +27,9 @@ onMounted(() => { loadDay(); loadMonth(); loadLeaves() })
     <div class="breadcrumb"><NuxtLink to="/hr">{{ tt('الموارد البشرية','HR') }}</NuxtLink> › <b>{{ tt('الحضور والإجازات','Attendance & Leaves') }}</b></div>
     <div class="grid grid-4" style="margin-bottom:16px">
       <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-user-check" /></div><div><b>{{ sheet?.summary?.present ?? 0 }}</b><small>حاضر ({{ f.d(date) }})</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-user-x" /></div><div><b>{{ sheet?.summary?.absent ?? 0 }}</b><small>غائب</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-user-x" /></div><div><b>{{ sheet?.summary?.absent ?? 0 }}</b><small>{{ tt('غائب','Absent') }}</small></div></div>
       <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-beach" /></div><div><b>{{ sheet?.summary?.leave ?? 0 }}</b><small>في إجازة · {{ leaves?.stats?.pending ?? 0 }} طلب معلّق</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-help" /></div><div><b>{{ sheet?.summary?.unmarked ?? 0 }}</b><small>لم يُسجَّل بعد</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-help" /></div><div><b>{{ sheet?.summary?.unmarked ?? 0 }}</b><small>{{ tt('لم يُسجَّل بعد','Not marked yet') }}</small></div></div>
     </div>
 
     <div class="card">

@@ -26,7 +26,7 @@ async function act(fn: () => Promise<any>, ok = tt('تم','Done')) {
 const save = () => act(async () => { await api.patch(`/app/bookings/list/${id}`, bookingPayload(form)); editing.value = false }, tt('تم حفظ التعديلات','Changes saved'))
 const setStatus = (status: string, deposit_status?: string, label = tt('تم','Done')) => act(() => api.post(`/app/bookings/list/${id}/status`, { status, deposit_status }), label)
 const checkin = (action: 'in' | 'out') => act(() => api.post(`/app/bookings/list/${id}/checkin`, { action }), action === 'in' ? tt('تم تسجيل الوصول','Checked in') : tt('تم تسجيل المغادرة','Checked out'))
-const doPay = () => act(async () => { await api.post(`/app/bookings/list/${id}/pay`, pay); paying.value = false; Object.assign(pay, { method: 'cash', note: '', date: f.today() }) }, 'تم تسجيل الحركة المالية')
+const doPay = () => act(async () => { await api.post(`/app/bookings/list/${id}/pay`, pay); paying.value = false; Object.assign(pay, { method: 'cash', note: '', date: f.today() }) }, tt('تم تسجيل الحركة المالية','Payment recorded'))
 </script>
 
 <template>
@@ -78,7 +78,7 @@ const doPay = () => act(async () => { await api.post(`/app/bookings/list/${id}/p
           <div class="row" style="align-items:flex-end;gap:10px">
             <div class="field" style="margin:0"><label>{{ tt('النوع','Type') }}</label><UiSelect v-model="pay.kind" style="width:160px"><option v-for="(l, k) in paymentKind" :key="k" :value="k">{{ l }}</option></UiSelect></div>
             <div class="field" style="margin:0"><label>{{ tt('المبلغ','Amount') }}</label><input v-model.number="pay.amount" type="number" step="0.001" min="0" dir="ltr" style="width:130px" /></div>
-            <div class="field" style="margin:0"><label>{{ tt('الطريقة','Method') }}</label><UiSelect v-model="pay.method" style="width:130px"><option value="cash">{{ tt('نقدي','Cash') }}</option><option value="card">بطاقة</option><option value="transfer">تحويل</option></UiSelect></div>
+            <div class="field" style="margin:0"><label>{{ tt('الطريقة','Method') }}</label><UiSelect v-model="pay.method" style="width:130px"><option value="cash">{{ tt('نقدي','Cash') }}</option><option value="card">{{ tt('بطاقة','Card') }}</option><option value="transfer">{{ tt('تحويل','Transfer') }}</option></UiSelect></div>
             <div class="field" style="margin:0"><label>{{ tt('التاريخ','Date') }}</label><input v-model="pay.date" type="date" dir="ltr" /></div>
             <div class="field" style="margin:0;flex:1"><label>{{ tt('ملاحظة','Note') }}</label><input v-model="pay.note" /></div>
             <button class="btn" :disabled="saving || !pay.amount" @click="doPay"><i class="ti ti-check" /> {{ tt('تسجيل','Record') }}</button>

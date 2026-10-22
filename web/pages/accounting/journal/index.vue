@@ -12,10 +12,10 @@ onMounted(load)
   <div>
     <div class="breadcrumb"><NuxtLink to="/accounting">{{ tt('المحاسبة','Accounting') }}</NuxtLink> › <b>{{ tt('القيود اليومية','Journal') }}</b></div>
     <div class="grid grid-4" style="margin-bottom:16px">
-      <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-book" /></div><div><b>{{ page?.stats?.count ?? 0 }}</b><small>إجمالي القيود</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-calendar" /></div><div><b>{{ page?.stats?.month_count ?? 0 }}</b><small>قيود هذا الشهر</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-coins" /></div><div><b>{{ f.money(page?.stats?.month_total) }}</b><small>حركة هذا الشهر</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-pencil" /></div><div><b>{{ page?.stats?.manual_count ?? 0 }}</b><small>قيود يدوية</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-book" /></div><div><b>{{ page?.stats?.count ?? 0 }}</b><small>{{ tt('إجمالي القيود','Total entries') }}</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-calendar" /></div><div><b>{{ page?.stats?.month_count ?? 0 }}</b><small>{{ tt('قيود هذا الشهر','Entries this month') }}</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-coins" /></div><div><b>{{ f.money(page?.stats?.month_total) }}</b><small>{{ tt('حركة هذا الشهر','Turnover this month') }}</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-pencil" /></div><div><b>{{ page?.stats?.manual_count ?? 0 }}</b><small>{{ tt('قيود يدوية','Manual entries') }}</small></div></div>
     </div>
     <div class="card">
       <div class="row between" style="margin-bottom:14px">

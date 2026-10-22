@@ -21,8 +21,8 @@ async function remove() { if (!confirm(tt('حذف الطلب؟','Delete request?
     <div v-if="err" class="alert bad">{{ err }}</div>
     <div class="grid grid-4" style="margin-bottom:16px">
       <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-calendar" /></div><div><b>{{ l.days }} يوم</b><small>{{ f.d(l.from) }} → {{ f.d(l.to) }}</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-beach" /></div><div><b>{{ leaveTypes[l.type] }}</b><small>نوع الإجازة</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-chart-donut" /></div><div><b>{{ d.balance.remaining }} / {{ d.balance.annual }}</b><small>رصيد سنوي متبقٍ (بدون هذا الطلب)</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-beach" /></div><div><b>{{ leaveTypes[l.type] }}</b><small>{{ tt('نوع الإجازة','Leave type') }}</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-chart-donut" /></div><div><b>{{ d.balance.remaining }} / {{ d.balance.annual }}</b><small>{{ tt('رصيد سنوي متبقٍ (بدون هذا الطلب)','Annual balance left (excl. this request)') }}</small></div></div>
       <div class="card stat"><div class="ic" :style="`background:${l.status === 'approved' ? 'var(--ok)' : l.status === 'rejected' ? 'var(--primary)' : 'var(--warn)'}`"><i class="ti ti-flag" /></div><div><b style="font-size:15px">{{ leaveStatus[l.status]?.label }}</b><small>{{ l.approver ? `بواسطة ${l.approver.name}` : 'الحالة' }}</small></div></div>
     </div>
     <div class="card">

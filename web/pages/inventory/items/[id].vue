@@ -40,7 +40,7 @@ async function remove() { if (!confirm(tt(`حذف الصنف ${item.value.name}�
 
     <template v-else>
       <div class="grid grid-4" style="margin-bottom:16px">
-        <div class="card stat"><div class="ic" :style="`background:${item.track_stock && +(item.stock || 0) <= +item.min_stock ? 'var(--primary)' : 'var(--info)'}`"><i class="ti ti-box" /></div><div><b>{{ item.track_stock ? f.qty(item.stock) + ' ' + (item.unit?.symbol || '') : 'خدمة' }}</b><small>الرصيد الكلي<span v-if="item.track_stock"> · الحد الأدنى {{ f.qty(item.min_stock) }}</span></small></div></div>
+        <div class="card stat"><div class="ic" :style="`background:${item.track_stock && +(item.stock || 0) <= +item.min_stock ? 'var(--primary)' : 'var(--info)'}`"><i class="ti ti-box" /></div><div><b>{{ item.track_stock ? f.qty(item.stock) + ' ' + (item.unit?.symbol || '') : tt('خدمة','Service') }}</b><small>{{ tt('الرصيد الكلي','Total stock') }}<span v-if="item.track_stock"> · {{ tt('الحد الأدنى','min') }} {{ f.qty(item.min_stock) }}</span></small></div></div>
         <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-tag" /></div><div><b>{{ f.money(item.sale_price) }}</b><small>{{ tt('سعر البيع','Sale price') }}<span v-if="margin !== null"> · هامش {{ margin }}%</span></small></div></div>
         <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-coins" /></div><div><b>{{ f.money(item.cost_price) }}</b><small>{{ tt('سعر التكلفة (آخر شراء)','Cost (last purchase)') }}</small></div></div>
         <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-chart-bar" /></div><div><b>{{ f.money(stockValue) }}</b><small>{{ tt('قيمة المخزون بالتكلفة','Stock value at cost') }}</small></div></div>

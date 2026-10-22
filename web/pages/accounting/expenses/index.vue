@@ -15,7 +15,7 @@ async function remove(e: any) { if (!confirm(tt(`حذف المصروف ${e.numbe
     <div class="grid grid-4" style="margin-bottom:16px">
       <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-receipt" /></div><div><b>{{ f.money(page?.stats?.month_total) }}</b><small>مصروفات هذا الشهر ({{ page?.stats?.month_count ?? 0 }})</small></div></div>
       <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-coins" /></div><div><b>{{ f.money(page?.stats?.total) }}</b><small>إجمالي المصروفات ({{ page?.stats?.count ?? 0 }})</small></div></div>
-      <div class="card stat" style="grid-column:span 2"><div class="ic" style="background:var(--info)"><i class="ti ti-chart-pie" /></div><div><b style="font-size:13px;white-space:normal">{{ (page?.stats?.by_category || []).map((c: any) => `${c.name} ${f.money(c.total)}`).join(' · ') || '—' }}</b><small>أعلى الأنواع هذا الشهر</small></div></div>
+      <div class="card stat" style="grid-column:span 2"><div class="ic" style="background:var(--info)"><i class="ti ti-chart-pie" /></div><div><b style="font-size:13px;white-space:normal">{{ (page?.stats?.by_category || []).map((c: any) => `${c.name} ${f.money(c.total)}`).join(' · ') || '—' }}</b><small>{{ tt('أعلى الأنواع هذا الشهر','Top types this month') }}</small></div></div>
     </div>
     <div class="card">
       <div class="row between" style="margin-bottom:14px">

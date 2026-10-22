@@ -10,7 +10,7 @@ onMounted(load)
   <div>
     <div class="row between" style="margin-bottom:14px">
       <div class="breadcrumb" style="margin:0"><b>{{ tt('المحاسبة','Accounting') }}</b></div>
-      <div class="row"><input v-model="from" type="date" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load" /><span class="muted">إلى</span><input v-model="to" type="date" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load" /></div>
+      <div class="row"><input v-model="from" type="date" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load" /><span class="muted">{{ tt('إلى','to') }}</span><input v-model="to" type="date" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load" /></div>
     </div>
 
     <div class="grid grid-4" style="margin-bottom:16px">

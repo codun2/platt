@@ -15,10 +15,10 @@ async function generate() {
   <div>
     <div class="breadcrumb"><NuxtLink to="/hr">{{ tt('الموارد البشرية','HR') }}</NuxtLink> › <b>{{ tt('الرواتب','Payroll') }}</b></div>
     <div class="grid grid-4" style="margin-bottom:16px">
-      <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-users" /></div><div><b>{{ d?.stats?.employees ?? 0 }}</b><small>موظف يُصرف له راتب</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-calculator" /></div><div><b>{{ f.money(d?.stats?.expected) }}</b><small>الكتلة الشهرية المتوقعة (صافي)</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-users" /></div><div><b>{{ d?.stats?.employees ?? 0 }}</b><small>{{ tt('موظف يُصرف له راتب','Paid employees') }}</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-calculator" /></div><div><b>{{ f.money(d?.stats?.expected) }}</b><small>{{ tt('الكتلة الشهرية المتوقعة (صافي)','Expected monthly total (net)') }}</small></div></div>
       <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-cash" /></div><div><b>{{ f.money(d?.stats?.paid_total) }}</b><small>إجمالي المدفوع ({{ d?.stats?.count ?? 0 }} كشف)</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-calendar" /></div><div><b>{{ d?.stats?.last ? monthLabel(d.stats.last) : '—' }}</b><small>آخر كشف</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-calendar" /></div><div><b>{{ d?.stats?.last ? monthLabel(d.stats.last) : '—' }}</b><small>{{ tt('آخر كشف','Last run') }}</small></div></div>
     </div>
     <div class="card">
       <div v-if="err" class="alert bad">{{ err }}</div>

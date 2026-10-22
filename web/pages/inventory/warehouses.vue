@@ -33,14 +33,14 @@ async function doTransfer() { msg.value = ''; try { await api.post('/app/invento
     <div class="breadcrumb"><NuxtLink to="/inventory">{{ tt('المخزون','Inventory') }}</NuxtLink> › <b>{{ tt('المستودعات','Warehouses') }}</b></div>
     <div class="card">
       <div class="row between" style="margin-bottom:4px">
-        <div class="tabs" style="margin-bottom:0;border:none"><button :class="{ on: tab === 'wh' }" @click="tab = 'wh'">{{ tt('المستودعات','Warehouses') }}</button><button v-if="canManage" :class="{ on: tab === 'adjust' }" @click="tab = 'adjust'">جرد / تحويل</button></div>
-        <div class="row"><NuxtLink class="btn ghost sm" to="/inventory/suppliers"><i class="ti ti-truck" /> {{ tt('الموردون','Suppliers') }}</NuxtLink><button v-if="canManage && tab === 'wh'" class="btn sm" @click="open()"><i class="ti ti-plus" /> مستودع</button></div>
+        <div class="tabs" style="margin-bottom:0;border:none"><button :class="{ on: tab === 'wh' }" @click="tab = 'wh'">{{ tt('المستودعات','Warehouses') }}</button><button v-if="canManage" :class="{ on: tab === 'adjust' }" @click="tab = 'adjust'">{{ tt('جرد / تحويل','Stocktake / transfer') }}</button></div>
+        <div class="row"><NuxtLink class="btn ghost sm" to="/inventory/suppliers"><i class="ti ti-truck" /> {{ tt('الموردون','Suppliers') }}</NuxtLink><button v-if="canManage && tab === 'wh'" class="btn sm" @click="open()"><i class="ti ti-plus" /> {{ tt('مستودع','Warehouse') }}</button></div>
       </div>
       <hr style="border:none;border-top:1px solid var(--line);margin:0 0 16px">
 
       <div v-if="tab === 'wh'">
         <table class="table"><thead><tr><th>{{ tt('الاسم','Name') }}</th><th>{{ tt('الموقع','Location') }}</th><th>{{ tt('أصناف','Items') }}</th><th>{{ tt('افتراضي','Default') }}</th><th>{{ tt('الحالة','Status') }}</th><th></th></tr></thead>
-          <tbody><tr v-for="w in warehouses" :key="w.id"><td><b>{{ w.name }}</b></td><td>{{ w.location || '—' }}</td><td>{{ w.stock_levels_count }}</td><td><span v-if="w.is_default" class="badge info">افتراضي</span></td><td><span class="badge" :class="w.is_active ? 'ok' : 'muted'">{{ w.is_active ? 'نشط' : 'موقوف' }}</span></td>
+          <tbody><tr v-for="w in warehouses" :key="w.id"><td><b>{{ w.name }}</b></td><td>{{ w.location || '—' }}</td><td>{{ w.stock_levels_count }}</td><td><span v-if="w.is_default" class="badge info">{{ tt('افتراضي','Default') }}</span></td><td><span class="badge" :class="w.is_active ? 'ok' : 'muted'">{{ w.is_active ? tt('نشط','Active') : tt('موقوف','Suspended') }}</span></td>
             <td v-if="canManage" class="row" style="gap:6px"><button class="btn ghost sm icon" @click="open(w)"><i class="ti ti-pencil" /></button><button v-if="!w.is_default" class="btn ghost sm icon" style="color:var(--primary)" @click="remove(w)"><i class="ti ti-trash" /></button></td></tr></tbody></table>
         <p v-if="!warehouses.length" class="empty">{{ tt('لا توجد مستودعات.','No warehouses.') }}</p>
       </div>

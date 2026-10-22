@@ -10,7 +10,7 @@ const typeLabel = movementLabel
 
 <template>
   <div>
-    <div class="breadcrumb"><NuxtLink to="/inventory">المخزون</NuxtLink> › <b>{{ tt('حركات المخزون','Stock movements') }}</b></div>
+    <div class="breadcrumb"><NuxtLink to="/inventory">{{ tt('المخزون','Inventory') }}</NuxtLink> › <b>{{ tt('حركات المخزون','Stock movements') }}</b></div>
     <div class="card">
       <div class="row" style="margin-bottom:14px">
         <select v-model="filt.warehouse_id" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">{{ tt('كل المستودعات','All warehouses') }}</option><option v-for="w in meta.warehouses" :key="w.id" :value="w.id">{{ w.name }}</option></select>
