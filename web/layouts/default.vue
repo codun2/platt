@@ -1,7 +1,9 @@
 <script setup lang="ts">
 const auth = useAuth()
 const route = useRoute()
-const title = computed(() => (route.meta.title as string) || 'لوحة التحكم')
+const { t, isEn } = useI18n()
+// Page title: pages set route.meta.title (ar) and optionally titleEn.
+const title = computed(() => (isEn.value && (route.meta.titleEn as string)) || (route.meta.title as string) || t('app.name'))
 </script>
 
 <template>
@@ -11,10 +13,10 @@ const title = computed(() => (route.meta.title as string) || 'لوحة التح�
       <TopBar :title="title" />
       <main class="content"><slot /></main>
       <footer class="footer row between">
-        <span>ركائز — منصّة الأعمال المتكاملة</span>
+        <span>{{ t('footer.platform') }}</span>
         <span class="badge" :class="auth.state.value.tenant?.subscription_status === 'trial' ? 'warn' : 'ok'">
-          {{ auth.state.value.tenant?.subscription_status === 'trial' ? 'فترة تجريبية' : 'اشتراك فعّال' }}
-          · يتجدد {{ auth.state.value.tenant?.subscription_renews_at }}
+          {{ auth.state.value.tenant?.subscription_status === 'trial' ? t('footer.trial') : t('footer.active') }}
+          · {{ t('footer.renews') }} {{ auth.state.value.tenant?.subscription_renews_at }}
         </span>
       </footer>
     </div>
