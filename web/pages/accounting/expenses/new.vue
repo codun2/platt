@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({ title: 'مصروف جديد', titleEn: 'New Expense' })
-const api = useApi(); const auth = useAuth()
+const api = useApi(); const auth = useAuth(); const { tt } = useI18n()
 if (!auth.can('accounting.manage')) navigateTo('/accounting/expenses')
 const meta = ref<any>({ categories: [], money: [] }); const suppliers = ref<any[]>([])
 const err = ref(''); const saving = ref(false)
@@ -19,14 +19,14 @@ async function save(stay = false) {
 
 <template>
   <div>
-    <div class="breadcrumb"><NuxtLink to="/accounting/expenses">المصروفات</NuxtLink> › <b>مصروف جديد</b></div>
+    <div class="breadcrumb"><NuxtLink to="/accounting/expenses">{{ tt('المصروفات','Expenses') }}</NuxtLink> › <b>{{ tt('مصروف جديد','New expense') }}</b></div>
     <div class="card">
       <div v-if="err" class="alert bad">{{ err }}</div>
       <ExpenseForm :form="form" :meta="meta" :suppliers="suppliers" />
       <div class="row" style="gap:10px;margin-top:18px;border-top:1px solid var(--line);padding-top:16px">
-        <button class="btn" :disabled="saving" @click="save(false)"><i class="ti ti-check" /> حفظ وترحيل</button>
-        <button class="btn ghost" :disabled="saving" @click="save(true)"><i class="ti ti-plus" /> حفظ وإضافة آخر</button>
-        <NuxtLink class="btn ghost" to="/accounting/expenses">إلغاء</NuxtLink>
+        <button class="btn" :disabled="saving" @click="save(false)"><i class="ti ti-check" /> {{ tt('حفظ وترحيل','Save & post') }}</button>
+        <button class="btn ghost" :disabled="saving" @click="save(true)"><i class="ti ti-plus" /> {{ tt('حفظ وإضافة آخر','Save & add another') }}</button>
+        <NuxtLink class="btn ghost" to="/accounting/expenses">{{ tt('إلغاء','Cancel') }}</NuxtLink>
       </div>
     </div>
   </div>
