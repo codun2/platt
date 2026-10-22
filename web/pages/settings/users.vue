@@ -1,6 +1,7 @@
 <script setup lang="ts">
 definePageMeta({ title: 'المستخدمون', titleEn: 'Users' })
 const api = useApi()
+const { tt } = useI18n()
 const users = ref<any[]>([])
 const roles = ref<any[]>([])
 const q = ref('')
@@ -27,29 +28,29 @@ async function save() {
   } catch (e: any) { err.value = e.message }
 }
 async function remove(u: any) {
-  if (!confirm(`حذف المستخدم ${u.name}؟`)) return
+  if (!confirm(tt(`حذف المستخدم ${u.name}؟`,`Delete user ${u.name}?`))) return
   try { await api.del(`/app/users/${u.id}`); await load() } catch (e: any) { alert(e.message) }
 }
 </script>
 
 <template>
   <div>
-    <div class="breadcrumb">الإعدادات العامة › <b>المستخدمون</b></div>
+    <div class="breadcrumb">{{ tt('الإعدادات العامة','General settings') }} › <b>{{ tt('المستخدمون','Users') }}</b></div>
     <div class="card">
       <div class="row between" style="margin-bottom:14px">
-        <div class="row"><input v-model="q" placeholder="بحث بالاسم أو البريد..." style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @keyup.enter="load" /><button class="btn ghost" @click="load"><i class="ti ti-search" /></button></div>
-        <button class="btn" @click="openNew"><i class="ti ti-plus" /> إضافة مستخدم</button>
+        <div class="row"><input v-model="q" :placeholder="tt('بحث بالاسم أو البريد...','Search by name or email...')" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @keyup.enter="load" /><button class="btn ghost" @click="load"><i class="ti ti-search" /></button></div>
+        <button class="btn" @click="openNew"><i class="ti ti-plus" /> {{ tt('إضافة مستخدم','Add user') }}</button>
       </div>
       <table class="table">
-        <thead><tr><th>#</th><th>الاسم</th><th>البريد</th><th>الهاتف</th><th>الأدوار</th><th>الحالة</th><th>آخر دخول</th><th>الإجراءات</th></tr></thead>
+        <thead><tr><th>#</th><th>{{ tt('الاسم','Name') }}</th><th>{{ tt('البريد','Email') }}</th><th>{{ tt('الهاتف','Phone') }}</th><th>{{ tt('الأدوار','Roles') }}</th><th>{{ tt('الحالة','Status') }}</th><th>{{ tt('آخر دخول','Last login') }}</th><th>{{ tt('الإجراءات','Actions') }}</th></tr></thead>
         <tbody>
           <tr v-for="(u, i) in users" :key="u.id">
             <td>{{ i + 1 }}</td>
-            <td><b>{{ u.name }}</b> <span v-if="u.is_owner" class="badge info">مالك</span></td>
+            <td><b>{{ u.name }}</b> <span v-if="u.is_owner" class="badge info">{{ tt('مالك','Owner') }}</span></td>
             <td dir="ltr" style="text-align:right">{{ u.email }}</td>
             <td dir="ltr" style="text-align:right">{{ u.phone || '—' }}</td>
-            <td><span v-for="r in u.roles" :key="r.id" class="badge muted" style="margin-left:4px">{{ r.name_ar }}</span></td>
-            <td><span class="badge" :class="u.is_active ? 'ok' : 'bad'">{{ u.is_active ? 'مفعّل' : 'معطّل' }}</span></td>
+            <td><span v-for="r in u.roles" :key="r.id" class="badge muted" style="margin-left:4px">{{ tt(r.name_ar, r.name_en || r.name_ar) }}</span></td>
+            <td><span class="badge" :class="u.is_active ? 'ok' : 'bad'">{{ u.is_active ? tt('مفعّل','Active') : tt('معطّل','Disabled') }}</span></td>
             <td class="muted">{{ u.last_login_at ? u.last_login_at.slice(0, 16).replace('T', ' ') : '—' }}</td>
             <td class="row" style="gap:6px">
               <button class="btn ghost sm icon" @click="openEdit(u)"><i class="ti ti-pencil" /></button>
@@ -58,22 +59,22 @@ async function remove(u: any) {
           </tr>
         </tbody>
       </table>
-      <p v-if="!users.length" class="empty">لا يوجد مستخدمون.</p>
+      <p v-if="!users.length" class="empty">{{ tt('لا يوجد مستخدمون.','No users.') }}</p>
     </div>
 
-    <UiModal v-if="modal" :title="editing ? 'تعديل مستخدم' : 'مستخدم جديد'" @close="modal = false">
+    <UiModal v-if="modal" :title="editing ? tt('تعديل مستخدم','Edit user') : tt('مستخدم جديد','New user')" @close="modal = false">
       <div v-if="err" class="alert bad">{{ err }}</div>
-      <div class="field"><label>الاسم</label><input v-model="form.name" /></div>
-      <div class="field"><label>البريد الإلكتروني</label><input v-model="form.email" type="email" dir="ltr" /></div>
-      <div class="field"><label>الهاتف</label><input v-model="form.phone" dir="ltr" /></div>
-      <div class="field"><label>كلمة المرور {{ editing ? '(اتركها فارغة للإبقاء)' : '' }}</label><input v-model="form.password" type="password" dir="ltr" /></div>
-      <div class="field"><label>الأدوار</label>
-        <div class="chips"><span v-for="r in roles" :key="r.id" class="chip" :class="{ on: form.roles.includes(r.id) }" @click="toggleRole(r.id)">{{ r.name_ar }}</span></div>
+      <div class="field"><label>{{ tt('الاسم','Name') }}</label><input v-model="form.name" /></div>
+      <div class="field"><label>{{ tt('البريد الإلكتروني','Email') }}</label><input v-model="form.email" type="email" dir="ltr" /></div>
+      <div class="field"><label>{{ tt('الهاتف','Phone') }}</label><input v-model="form.phone" dir="ltr" /></div>
+      <div class="field"><label>{{ tt('كلمة المرور','Password') }} {{ editing ? tt('(اتركها فارغة للإبقاء)','(leave blank to keep)') : '' }}</label><input v-model="form.password" type="password" dir="ltr" /></div>
+      <div class="field"><label>{{ tt('الأدوار','Roles') }}</label>
+        <div class="chips"><span v-for="r in roles" :key="r.id" class="chip" :class="{ on: form.roles.includes(r.id) }" @click="toggleRole(r.id)">{{ tt(r.name_ar, r.name_en || r.name_ar) }}</span></div>
       </div>
-      <label v-if="!editing?.is_owner" class="switch"><input v-model="form.is_active" type="checkbox" /><span /> مفعّل</label>
+      <label v-if="!editing?.is_owner" class="switch"><input v-model="form.is_active" type="checkbox" /><span /> {{ tt('مفعّل','Active') }}</label>
       <template #footer>
-        <button class="btn ghost" @click="modal = false">إلغاء</button>
-        <button class="btn" @click="save">حفظ</button>
+        <button class="btn ghost" @click="modal = false">{{ tt('إلغاء','Cancel') }}</button>
+        <button class="btn" @click="save">{{ tt('حفظ','Save') }}</button>
       </template>
     </UiModal>
   </div>

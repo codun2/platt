@@ -1,6 +1,7 @@
 <script setup lang="ts">
 definePageMeta({ title: 'الأدوار والصلاحيات', titleEn: 'Roles & Permissions' })
 const api = useApi()
+const { tt } = useI18n()
 const roles = ref<any[]>([])
 const groups = ref<any[]>([])
 const modal = ref(false)
@@ -25,28 +26,28 @@ async function save() {
   catch (e: any) { err.value = e.message }
 }
 async function remove(r: any) {
-  if (!confirm(`حذف الدور ${r.name_ar}؟`)) return
+  if (!confirm(tt(`حذف الدور ${r.name_ar}؟`,`Delete role ${r.name_ar}?`))) return
   try { await api.del(`/app/roles/${r.id}`); await load() } catch (e: any) { alert(e.message) }
 }
-const groupName = (g: string) => ({ core: 'الإدارة العامة' } as any)[g] || (groups.value.find(x => x.group === g)?.items[0]?.name_ar?.replace('عرض: ', '') || g)
+const groupName = (g: string) => (g === 'core' ? tt('الإدارة العامة','General administration') : (groups.value.find(x => x.group === g)?.items[0]?.name_ar?.replace('عرض: ', '') || g))
 </script>
 
 <template>
   <div>
-    <div class="breadcrumb">الإعدادات العامة › <b>الأدوار والصلاحيات</b></div>
+    <div class="breadcrumb">{{ tt('الإعدادات العامة','General settings') }} › <b>{{ tt('الأدوار والصلاحيات','Roles & permissions') }}</b></div>
     <div class="card">
       <div class="row between" style="margin-bottom:14px">
-        <p class="muted" style="margin:0">الصلاحية <code>عرض</code> لكل وحدة تتحكم بظهورها في القائمة الجانبية.</p>
-        <button class="btn" @click="openNew"><i class="ti ti-plus" /> دور جديد</button>
+        <p class="muted" style="margin:0">{{ tt('الصلاحية «عرض» لكل وحدة تتحكم بظهورها في القائمة الجانبية.','The “view” permission of each module controls whether it appears in the sidebar.') }}</p>
+        <button class="btn" @click="openNew"><i class="ti ti-plus" /> {{ tt('دور جديد','New role') }}</button>
       </div>
       <table class="table">
-        <thead><tr><th>الدور</th><th>النوع</th><th>المستخدمون</th><th>الصلاحيات</th><th>الإجراءات</th></tr></thead>
+        <thead><tr><th>{{ tt('الدور','Role') }}</th><th>{{ tt('النوع','Type') }}</th><th>{{ tt('المستخدمون','Users') }}</th><th>{{ tt('الصلاحيات','Permissions') }}</th><th>{{ tt('الإجراءات','Actions') }}</th></tr></thead>
         <tbody>
           <tr v-for="r in roles" :key="r.id">
-            <td><b>{{ r.name_ar }}</b> <small class="muted" dir="ltr">({{ r.key }})</small></td>
-            <td><span class="badge" :class="r.is_system ? 'info' : 'muted'">{{ r.is_system ? 'نظامي' : 'مخصص' }}</span></td>
+            <td><b>{{ tt(r.name_ar, r.name_en || r.name_ar) }}</b> <small class="muted" dir="ltr">({{ r.key }})</small></td>
+            <td><span class="badge" :class="r.is_system ? 'info' : 'muted'">{{ r.is_system ? tt('نظامي','System') : tt('مخصص','Custom') }}</span></td>
             <td>{{ r.users_count }}</td>
-            <td>{{ r.key === 'admin' ? 'كل الصلاحيات' : r.permissions.length }}</td>
+            <td>{{ r.key === 'admin' ? tt('كل الصلاحيات','All permissions') : r.permissions.length }}</td>
             <td class="row" style="gap:6px">
               <button class="btn ghost sm icon" @click="openEdit(r)"><i class="ti ti-pencil" /></button>
               <button v-if="!r.is_system" class="btn ghost sm icon" style="color:var(--primary)" @click="remove(r)"><i class="ti ti-trash" /></button>
@@ -56,19 +57,19 @@ const groupName = (g: string) => ({ core: 'الإدارة العامة' } as any
       </table>
     </div>
 
-    <UiModal v-if="modal" :title="editing ? 'تعديل دور' : 'دور جديد'" lg @close="modal = false">
+    <UiModal v-if="modal" :title="editing ? tt('تعديل دور','Edit role') : tt('دور جديد','New role')" lg @close="modal = false">
       <div v-if="err" class="alert bad">{{ err }}</div>
-      <div class="field"><label>اسم الدور</label><input v-model="form.name_ar" /></div>
-      <div v-if="editing?.key === 'admin'" class="alert info">دور «مدير النظام» يملك كل الصلاحيات دائماً.</div>
+      <div class="field"><label>{{ tt('اسم الدور','Role name') }}</label><input v-model="form.name_ar" /></div>
+      <div v-if="editing?.key === 'admin'" class="alert info">{{ tt('دور «مدير النظام» يملك كل الصلاحيات دائماً.','The “System administrator” role always has all permissions.') }}</div>
       <template v-else>
         <div v-for="g in groups" :key="g.group" class="card" style="padding:12px;margin-top:10px;box-shadow:none;border:1px solid var(--line)">
-          <div class="row between"><b>{{ groupName(g.group) }}</b><button class="btn ghost sm" @click="toggleGroup(g)">تحديد الكل</button></div>
-          <div class="chips mt"><span v-for="p in g.items" :key="p.key" class="chip" :class="{ on: form.permissions.includes(p.key) }" @click="toggle(p.key)">{{ p.name_ar }}</span></div>
+          <div class="row between"><b>{{ groupName(g.group) }}</b><button class="btn ghost sm" @click="toggleGroup(g)">{{ tt('تحديد الكل','Select all') }}</button></div>
+          <div class="chips mt"><span v-for="p in g.items" :key="p.key" class="chip" :class="{ on: form.permissions.includes(p.key) }" @click="toggle(p.key)">{{ tt(p.name_ar, p.name_en || p.name_ar) }}</span></div>
         </div>
       </template>
       <template #footer>
-        <button class="btn ghost" @click="modal = false">إلغاء</button>
-        <button class="btn" @click="save">حفظ</button>
+        <button class="btn ghost" @click="modal = false">{{ tt('إلغاء','Cancel') }}</button>
+        <button class="btn" @click="save">{{ tt('حفظ','Save') }}</button>
       </template>
     </UiModal>
   </div>
