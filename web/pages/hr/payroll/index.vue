@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({ title: 'الرواتب', titleEn: 'Payroll' })
-const api = useApi(); const auth = useAuth(); const f = useFmt()
+const api = useApi(); const auth = useAuth(); const f = useFmt(); const { tt } = useI18n()
 const d = ref<any>(null); const period = ref(thisMonth()); const err = ref(''); const generating = ref(false)
 const canManage = computed(() => auth.can('hr.manage'))
 async function load() { d.value = await api.get('/app/hr/payroll') }
@@ -13,7 +13,7 @@ async function generate() {
 
 <template>
   <div>
-    <div class="breadcrumb"><NuxtLink to="/hr">الموارد البشرية</NuxtLink> › <b>الرواتب</b></div>
+    <div class="breadcrumb"><NuxtLink to="/hr">{{ tt('الموارد البشرية','HR') }}</NuxtLink> › <b>{{ tt('الرواتب','Payroll') }}</b></div>
     <div class="grid grid-4" style="margin-bottom:16px">
       <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-users" /></div><div><b>{{ d?.stats?.employees ?? 0 }}</b><small>موظف يُصرف له راتب</small></div></div>
       <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-calculator" /></div><div><b>{{ f.money(d?.stats?.expected) }}</b><small>الكتلة الشهرية المتوقعة (صافي)</small></div></div>
@@ -23,12 +23,12 @@ async function generate() {
     <div class="card">
       <div v-if="err" class="alert bad">{{ err }}</div>
       <div class="row between" style="margin-bottom:14px">
-        <div class="card-title" style="margin:0"><i class="ti ti-cash" /> كشوف الرواتب</div>
-        <div v-if="canManage" class="row"><input v-model="period" type="month" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" /><button class="btn" :disabled="generating" @click="generate"><i class="ti ti-player-play" /> إنشاء كشف {{ monthLabel(period) }}</button></div>
+        <div class="card-title" style="margin:0"><i class="ti ti-cash" /> {{ tt('كشوف الرواتب','Payroll runs') }}</div>
+        <div v-if="canManage" class="row"><input v-model="period" type="month" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" /><button class="btn" :disabled="generating" @click="generate"><i class="ti ti-player-play" /> {{ tt('إنشاء كشف','Generate') }} {{ monthLabel(period) }}</button></div>
       </div>
-      <p class="muted" style="font-size:12px;margin-top:0">يُحسب الكشف من رواتب الموظفين وبدلاتهم، ويُخصم الغياب ونصف الأيام والإجازات بدون راتب تلقائياً بالأجر اليومي (الإجمالي ÷ 30). بعد المراجعة: اعتماد ثم صرف (يُرحَّل قيد الرواتب للمحاسبة).</p>
+      <p class="muted" style="font-size:12px;margin-top:0">{{ tt('يُحسب الكشف من رواتب الموظفين وبدلاتهم، ويُخصم الغياب ونصف الأيام والإجازات بدون راتب تلقائياً بالأجر اليومي (الإجمالي ÷ 30). بعد المراجعة: اعتماد ثم صرف (يُرحَّل قيد الرواتب للمحاسبة).','Computed from salaries and allowances; absences, half-days and unpaid leave are auto-deducted at the daily rate (gross ÷ 30). After review: approve then pay (posts a payroll journal entry).') }}</p>
       <table class="table">
-        <thead><tr><th>الرقم</th><th>الشهر</th><th>الموظفون</th><th>الأساسي</th><th>البدلات</th><th>إضافات</th><th>خصومات</th><th>الصافي</th><th>الحالة</th><th></th></tr></thead>
+        <thead><tr><th>{{ tt('الرقم','No.') }}</th><th>{{ tt('الشهر','Month') }}</th><th>{{ tt('الموظفون','Employees') }}</th><th>{{ tt('الأساسي','Basic') }}</th><th>{{ tt('البدلات','Allow.') }}</th><th>{{ tt('إضافات','Additions') }}</th><th>{{ tt('خصومات','Deductions') }}</th><th>{{ tt('الصافي','Net') }}</th><th>{{ tt('الحالة','Status') }}</th><th></th></tr></thead>
         <tbody>
           <tr v-for="p in d?.data" :key="p.id">
             <td><NuxtLink :to="`/hr/payroll/${p.id}`" style="color:var(--info);font-weight:700" dir="ltr">{{ p.number }}</NuxtLink></td><td><b>{{ monthLabel(p.period) }}</b></td><td>{{ p.items_count }}</td>
@@ -38,7 +38,7 @@ async function generate() {
           </tr>
         </tbody>
       </table>
-      <p v-if="d && !d.data.length" class="empty">لم يُنشأ أي كشف بعد.</p>
+      <p v-if="d && !d.data.length" class="empty">{{ tt('لم يُنشأ أي كشف بعد.','No payroll created yet.') }}</p>
     </div>
   </div>
 </template>
