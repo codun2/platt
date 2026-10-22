@@ -23,7 +23,7 @@ const today = computed(() => new Date().toLocaleDateString(locale.value === 'en'
       <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-users" /></div><div><b>{{ data?.counts?.users ?? '…' }}</b><small>{{ t('dashboard.users') }}</small></div></div>
       <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-apps" /></div><div><b>{{ data?.counts?.modules ?? '…' }}</b><small>{{ t('dashboard.activeModules') }}</small></div></div>
       <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-shield-lock" /></div><div><b>{{ data?.counts?.roles ?? '…' }}</b><small>{{ t('dashboard.roles') }}</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-calendar-event" /></div><div><b style="font-size:16px">{{ data?.tenant?.renews_at ?? '…' }}</b><small>{{ t('dashboard.renewDate') }} ({{ data?.tenant?.plan || t('dashboard.noPlan') }})</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-calendar-event" /></div><div><b>{{ data?.tenant?.renews_at ?? '…' }}</b><small>{{ t('dashboard.renewDate') }} ({{ data?.tenant?.plan || t('dashboard.noPlan') }})</small></div></div>
     </div>
 
     <div v-if="data?.sales" class="grid grid-4 mt">
