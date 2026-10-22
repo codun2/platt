@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /** Line-items table for invoices/quotes. Mutates `lines` in place. Optional inventory item picker. */
 const props = defineProps<{ lines: any[]; canPickItems?: boolean }>()
-const api = useApi(); const f = useFmt()
+const api = useApi(); const f = useFmt(); const { tt } = useI18n()
 const results = ref<any[]>([]); const searching = ref<number | null>(null); const q = ref('')
 let timer: any = null
 
@@ -28,27 +28,27 @@ function clearItem(l: any) { l.item_id = '' }
 <template>
   <div class="lines-editor">
     <table class="table">
-      <thead><tr><th style="width:36px">#</th><th>الوصف</th><th style="width:90px">الكمية</th><th style="width:90px">الوحدة</th><th style="width:120px">سعر الوحدة</th><th style="width:100px">خصم</th><th style="width:120px">الإجمالي</th><th style="width:96px"></th></tr></thead>
+      <thead><tr><th style="width:36px">#</th><th>{{ tt('الوصف','Description') }}</th><th style="width:90px">{{ tt('الكمية','Qty') }}</th><th style="width:90px">{{ tt('الوحدة','Unit') }}</th><th style="width:120px">{{ tt('سعر الوحدة','Unit price') }}</th><th style="width:100px">{{ tt('خصم','Disc.') }}</th><th style="width:120px">{{ tt('الإجمالي','Total') }}</th><th style="width:96px"></th></tr></thead>
       <tbody>
         <tr v-for="(l, i) in lines" :key="i">
           <td class="muted">{{ i + 1 }}</td>
           <td>
             <div class="row" style="gap:6px;flex-wrap:nowrap">
-              <input v-model="l.description" placeholder="وصف البند أو الخدمة" style="flex:1" />
-              <button v-if="canPickItems && !l.item_id" type="button" class="btn ghost sm icon" title="اختيار صنف من المخزون" @click="openSearch(i)"><i class="ti ti-package" /></button>
-              <span v-else-if="l.item_id" class="badge info" style="white-space:nowrap;cursor:pointer" title="إلغاء ربط الصنف" @click="clearItem(l)"><i class="ti ti-package" /> صنف ×</span>
+              <input v-model="l.description" :placeholder="tt('وصف البند أو الخدمة','Item or service description')" style="flex:1" />
+              <button v-if="canPickItems && !l.item_id" type="button" class="btn ghost sm icon" :title="tt('اختيار صنف من المخزون','Pick inventory item')" @click="openSearch(i)"><i class="ti ti-package" /></button>
+              <span v-else-if="l.item_id" class="badge info" style="white-space:nowrap;cursor:pointer" :title="tt('إلغاء ربط الصنف','Unlink item')" @click="clearItem(l)"><i class="ti ti-package" /> {{ tt('صنف','Item') }} ×</span>
             </div>
             <div v-if="searching === i" class="line-search">
-              <input id="line-search" v-model="q" placeholder="ابحث بالاسم أو الباركود..." @input="onSearch" @keydown.esc="searching = null" />
+              <input id="line-search" v-model="q" :placeholder="tt('ابحث بالاسم أو الباركود...','Search by name or barcode...')" @input="onSearch" @keydown.esc="searching = null" />
               <div class="line-results">
-                <button v-for="it in results" :key="it.id" type="button" @click="pick(it)"><b>{{ it.name }}</b><small class="muted"> {{ it.sku || '' }} · {{ f.money(it.sale_price) }}<span v-if="it.stock != null"> · متوفر {{ f.qty(it.stock) }}</span></small></button>
-                <p v-if="q && !results.length" class="muted" style="padding:8px;margin:0;font-size:12px">لا نتائج.</p>
+                <button v-for="it in results" :key="it.id" type="button" @click="pick(it)"><b>{{ it.name }}</b><small class="muted"> {{ it.sku || '' }} · {{ f.money(it.sale_price) }}<span v-if="it.stock != null"> · {{ tt('متوفر','in stock') }} {{ f.qty(it.stock) }}</span></small></button>
+                <p v-if="q && !results.length" class="muted" style="padding:8px;margin:0;font-size:12px">{{ tt('لا نتائج.','No results.') }}</p>
               </div>
-              <button type="button" class="btn ghost sm" style="margin-top:6px" @click="searching = null">إغلاق</button>
+              <button type="button" class="btn ghost sm" style="margin-top:6px" @click="searching = null">{{ tt('إغلاق','Close') }}</button>
             </div>
           </td>
           <td><input v-model.number="l.qty" type="number" step="0.001" min="0" dir="ltr" /></td>
-          <td><input v-model="l.unit" placeholder="قطعة" /></td>
+          <td><input v-model="l.unit" :placeholder="tt('قطعة','pcs')" /></td>
           <td><input v-model.number="l.unit_price" type="number" step="0.001" min="0" dir="ltr" /></td>
           <td><input v-model.number="l.discount" type="number" step="0.001" min="0" dir="ltr" /></td>
           <td class="num"><b>{{ f.money(lineTotal(l)) }}</b></td>
@@ -62,6 +62,6 @@ function clearItem(l: any) { l.item_id = '' }
         </tr>
       </tbody>
     </table>
-    <button type="button" class="btn ghost sm mt" @click="add"><i class="ti ti-plus" /> إضافة بند</button>
+    <button type="button" class="btn ghost sm mt" @click="add"><i class="ti ti-plus" /> {{ tt('إضافة بند','Add line') }}</button>
   </div>
 </template>

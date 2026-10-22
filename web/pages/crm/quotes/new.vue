@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({ title: 'عرض سعر جديد', titleEn: 'New Quote' })
-const api = useApi(); const auth = useAuth(); const route = useRoute()
+const api = useApi(); const auth = useAuth(); const route = useRoute(); const { tt } = useI18n()
 if (!auth.can('crm.manage')) navigateTo('/crm/quotes')
 
 const customers = ref<any[]>([]); const err = ref(''); const saving = ref(false)
@@ -19,14 +19,14 @@ async function save(status: 'draft' | 'sent') {
 
 <template>
   <div>
-    <div class="breadcrumb"><NuxtLink to="/crm/quotes">عروض الأسعار</NuxtLink> › <b>عرض سعر جديد</b></div>
+    <div class="breadcrumb"><NuxtLink to="/crm/quotes">{{ tt('عروض الأسعار','Quotes') }}</NuxtLink> › <b>{{ tt('عرض سعر جديد','New quote') }}</b></div>
     <div class="card">
       <div v-if="err" class="alert bad">{{ err }}</div>
       <DocForm kind="quote" :form="form" :customers="customers" />
       <div class="row" style="gap:10px;margin-top:18px;border-top:1px solid var(--line);padding-top:16px">
-        <button class="btn" :disabled="saving" @click="save('sent')"><i class="ti ti-send" /> حفظ وإرسال</button>
-        <button class="btn ghost" :disabled="saving" @click="save('draft')"><i class="ti ti-device-floppy" /> حفظ كمسودّة</button>
-        <NuxtLink class="btn ghost" to="/crm/quotes">إلغاء</NuxtLink>
+        <button class="btn" :disabled="saving" @click="save('sent')"><i class="ti ti-send" /> {{ tt('حفظ وإرسال','Save & send') }}</button>
+        <button class="btn ghost" :disabled="saving" @click="save('draft')"><i class="ti ti-device-floppy" /> {{ tt('حفظ كمسودّة','Save as draft') }}</button>
+        <NuxtLink class="btn ghost" to="/crm/quotes">{{ tt('إلغاء','Cancel') }}</NuxtLink>
       </div>
     </div>
   </div>
