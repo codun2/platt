@@ -2,7 +2,7 @@
 definePageMeta({ layout: 'auth' })
 const api = useApi()
 const auth = useAuth()
-const { tt } = useI18n()
+const { tt, toggle, isEn } = useI18n()
 const sectors = ref<any[]>([])
 const form = reactive({ company_name: '', sector: '', name: '', email: '', phone: '', password: '' })
 const err = ref('')
@@ -20,6 +20,7 @@ async function submit() {
 
 <template>
   <div class="box wide">
+    <div style="text-align:left;margin-bottom:4px"><button class="btn ghost sm" @click="toggle"><i class="ti ti-language" /> {{ isEn ? 'ع' : 'EN' }}</button></div>
     <div class="logo"><div class="mark">{{ tt('ر','R') }}</div><div><b>{{ tt('ركائز','Rakeez') }}</b><br /><small class="muted">{{ tt('تجربة مجانية 14 يوماً','14-day free trial') }}</small></div></div>
     <h2>{{ tt('سجّل شركتك','Register your company') }}</h2>
     <p class="sub">{{ tt('اختر قطاع نشاطك وسيتم تفعيل الوحدات المناسبة تلقائياً','Pick your sector and the right modules will be enabled automatically') }}</p>
