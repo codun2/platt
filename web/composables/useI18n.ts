@@ -40,9 +40,15 @@ export const currentLocale = () => _locale.value
 /** Inline bilingual string. */
 export const tt = (ar: string, en: string) => (_locale.value === 'en' ? en : ar)
 
-/** Label-map value with a reactive `.label`. Keeps `cls` and any extra fields. */
-export const L = <T extends Record<string, any>>(ar: string, en: string, extra?: T) =>
-  ({ ...(extra as T), get label() { return _locale.value === 'en' ? en : ar } })
+/**
+ * Label-map value with a reactive `.label` (and `cls`/extra fields). Also
+ * stringifies to the localized label, so both `obj.label` and `{{ obj }}`
+ * (pure-string maps) localize with no call-site changes.
+ */
+export const L = <T extends Record<string, any>>(ar: string, en: string, extra?: T) => {
+  const pick = () => (_locale.value === 'en' ? en : ar)
+  return { ...(extra as T), get label() { return pick() }, toString: pick, toJSON: pick }
+}
 
 function lookup(key: string, loc: Locale): string | undefined {
   const parts = key.split('.')

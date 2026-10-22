@@ -1,14 +1,14 @@
 /** HR UI helpers: labels, form shapes, payloads. */
-export const employmentTypes: Record<string, string> = { full_time: 'دوام كامل', part_time: 'دوام جزئي', contract: 'عقد', daily: 'يومي' }
-export const employeeStatus: Record<string, { label: string; cls: string }> = { active: { label: 'على رأس العمل', cls: 'ok' }, on_leave: { label: 'في إجازة', cls: 'warn' }, terminated: { label: 'منتهي الخدمة', cls: 'muted' } }
+export const employmentTypes: Record<string, any> = { full_time: L('دوام كامل', 'Full-time'), part_time: L('دوام جزئي', 'Part-time'), contract: L('عقد', 'Contract'), daily: L('يومي', 'Daily') }
+export const employeeStatus: Record<string, { label: string; cls: string }> = { active: L('على رأس العمل', 'Active', { cls: 'ok' }), on_leave: L('في إجازة', 'On leave', { cls: 'warn' }), terminated: L('منتهي الخدمة', 'Terminated', { cls: 'muted' }) }
 export const attendanceStatus: Record<string, { label: string; cls: string }> = {
-  present: { label: 'حاضر', cls: 'ok' }, late: { label: 'متأخر', cls: 'warn' }, half_day: { label: 'نصف يوم', cls: 'info' }, absent: { label: 'غائب', cls: 'bad' },
-  leave: { label: 'إجازة', cls: 'muted' }, holiday: { label: 'عطلة رسمية', cls: 'muted' }, weekend: { label: 'نهاية أسبوع', cls: 'muted' },
+  present: L('حاضر', 'Present', { cls: 'ok' }), late: L('متأخر', 'Late', { cls: 'warn' }), half_day: L('نصف يوم', 'Half day', { cls: 'info' }), absent: L('غائب', 'Absent', { cls: 'bad' }),
+  leave: L('إجازة', 'Leave', { cls: 'muted' }), holiday: L('عطلة رسمية', 'Holiday', { cls: 'muted' }), weekend: L('نهاية أسبوع', 'Weekend', { cls: 'muted' }),
 }
-export const leaveTypes: Record<string, string> = { annual: 'سنوية', sick: 'مرضية', unpaid: 'بدون راتب', emergency: 'طارئة', maternity: 'أمومة', other: 'أخرى' }
-export const leaveStatus: Record<string, { label: string; cls: string }> = { pending: { label: 'بانتظار الموافقة', cls: 'warn' }, approved: { label: 'موافَق عليها', cls: 'ok' }, rejected: { label: 'مرفوضة', cls: 'bad' } }
-export const payrollStatus: Record<string, { label: string; cls: string }> = { draft: { label: 'مسودّة', cls: 'warn' }, approved: { label: 'معتمد', cls: 'info' }, paid: { label: 'مدفوع', cls: 'ok' } }
-export const maritalStatus: Record<string, string> = { single: 'أعزب', married: 'متزوج', divorced: 'مطلّق', widowed: 'أرمل' }
+export const leaveTypes: Record<string, any> = { annual: L('سنوية', 'Annual'), sick: L('مرضية', 'Sick'), unpaid: L('بدون راتب', 'Unpaid'), emergency: L('طارئة', 'Emergency'), maternity: L('أمومة', 'Maternity'), other: L('أخرى', 'Other') }
+export const leaveStatus: Record<string, { label: string; cls: string }> = { pending: L('بانتظار الموافقة', 'Pending', { cls: 'warn' }), approved: L('موافَق عليها', 'Approved', { cls: 'ok' }), rejected: L('مرفوضة', 'Rejected', { cls: 'bad' }) }
+export const payrollStatus: Record<string, { label: string; cls: string }> = { draft: L('مسودّة', 'Draft', { cls: 'warn' }), approved: L('معتمد', 'Approved', { cls: 'info' }), paid: L('مدفوع', 'Paid', { cls: 'ok' }) }
+export const maritalStatus: Record<string, any> = { single: L('أعزب', 'Single'), married: L('متزوج', 'Married'), divorced: L('مطلّق', 'Divorced'), widowed: L('أرمل', 'Widowed') }
 
 export const blankEmployee = () => ({
   code: '', name: '', name_en: '', job_title: '', department: '', employment_type: 'full_time', hire_date: new Date().toISOString().slice(0, 10), end_date: '', status: 'active',
@@ -28,5 +28,5 @@ export const grossOf = (f: any) => Math.round(((+f.basic_salary || 0) + (+f.hous
 
 export const blankLeave = (employeeId: any = '') => ({ employee_id: employeeId, type: 'annual', from: new Date().toISOString().slice(0, 10), to: new Date().toISOString().slice(0, 10), reason: '', note: '' })
 export const leaveDays = (from: string, to: string) => { if (!from || !to) return 0; const d = Math.round((new Date(to + 'T00:00:00').getTime() - new Date(from + 'T00:00:00').getTime()) / 86400000) + 1; return d > 0 ? d : 0 }
-export const monthLabel = (ym: string) => { const [y, m] = ym.split('-'); return `${['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'][+m - 1]} ${y}` }
+export const monthLabel = (ym: string) => { const [y, m] = ym.split('-'); const ar = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']; const en = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']; return `${tt(ar[+m - 1], en[+m - 1])} ${y}` }
 export const thisMonth = () => new Date().toISOString().slice(0, 7)

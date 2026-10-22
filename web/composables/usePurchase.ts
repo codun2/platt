@@ -1,8 +1,8 @@
 /** Purchase (supplier invoice) form helpers. */
 export const purchaseStatus: Record<string, { label: string; cls: string }> = {
-  draft: { label: 'مسودّة', cls: 'warn' }, received: { label: 'مستلمة', cls: 'ok' }, cancelled: { label: 'ملغاة', cls: 'bad' },
+  draft: L('مسودّة', 'Draft', { cls: 'warn' }), received: L('مستلمة', 'Received', { cls: 'ok' }), cancelled: L('ملغاة', 'Cancelled', { cls: 'bad' }),
 }
-export const purchasePayMethods: Record<string, string> = { cash: 'نقدي', card: 'بطاقة', transfer: 'تحويل بنكي', cheque: 'شيك', credit: 'آجل' }
+export const purchasePayMethods: Record<string, any> = { cash: L('نقدي', 'Cash'), card: L('بطاقة', 'Card'), transfer: L('تحويل بنكي', 'Bank transfer'), cheque: L('شيك', 'Cheque'), credit: L('آجل', 'Credit') }
 
 export const blankPurchase = (warehouseId: any = '') => ({
   supplier_id: '', warehouse_id: warehouseId, date: new Date().toISOString().slice(0, 10), due_date: '',

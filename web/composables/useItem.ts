@@ -26,4 +26,4 @@ export const itemPayload = (form: any) => ({
   cost_price: +form.cost_price || 0, sale_price: +form.sale_price || 0, min_stock: +form.min_stock || 0, opening_qty: +form.opening_qty || 0,
 })
 
-export const movementLabel = (t: string) => ({ opening: 'رصيد افتتاحي', purchase: 'شراء', purchase_cancel: 'إلغاء شراء', sale: 'بيع', sale_cancel: 'إلغاء بيع', adjustment: 'جرد/تسوية', transfer_in: 'تحويل وارد', transfer_out: 'تحويل صادر' } as Record<string, string>)[t] || t
+export const movementLabel = (t: string) => (tt(({ opening: 'رصيد افتتاحي', purchase: 'شراء', purchase_cancel: 'إلغاء شراء', sale: 'بيع', sale_cancel: 'إلغاء بيع', adjustment: 'جرد/تسوية', transfer_in: 'تحويل وارد', transfer_out: 'تحويل صادر' } as Record<string, string>)[t], ({ opening: 'Opening', purchase: 'Purchase', purchase_cancel: 'Purchase cancel', sale: 'Sale', sale_cancel: 'Sale cancel', adjustment: 'Adjustment', transfer_in: 'Transfer in', transfer_out: 'Transfer out' } as Record<string, string>)[t]) || t)

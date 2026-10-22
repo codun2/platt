@@ -1,11 +1,11 @@
 /** Accounting UI helpers: labels, form shapes, payloads. */
 export const accountTypes: Record<string, { label: string; cls: string }> = {
-  asset: { label: 'أصول', cls: 'info' }, liability: { label: 'التزامات', cls: 'warn' }, equity: { label: 'حقوق ملكية', cls: 'muted' },
-  revenue: { label: 'إيرادات', cls: 'ok' }, expense: { label: 'مصروفات', cls: 'bad' },
+  asset: L('أصول', 'Assets', { cls: 'info' }), liability: L('التزامات', 'Liabilities', { cls: 'warn' }), equity: L('حقوق ملكية', 'Equity', { cls: 'muted' }),
+  revenue: L('إيرادات', 'Revenue', { cls: 'ok' }), expense: L('مصروفات', 'Expenses', { cls: 'bad' }),
 }
-export const journalSources: Record<string, string> = {
-  manual: 'يدوي', invoice: 'فاتورة مبيعات', invoice_payment: 'تحصيل فاتورة', sale: 'نقطة بيع', sale_payment: 'تحصيل نقطة بيع',
-  expense: 'مصروف', booking_payment: 'حجز', payroll: 'رواتب', reversal: 'قيد عكسي',
+export const journalSources: Record<string, any> = {
+  manual: L('يدوي', 'Manual'), invoice: L('فاتورة مبيعات', 'Sales invoice'), invoice_payment: L('تحصيل فاتورة', 'Invoice payment'), sale: L('نقطة بيع', 'POS sale'), sale_payment: L('تحصيل نقطة بيع', 'POS payment'),
+  expense: L('مصروف', 'Expense'), booking_payment: L('حجز', 'Booking'), payroll: L('رواتب', 'Payroll'), reversal: L('قيد عكسي', 'Reversal'),
 }
 export const sourceLink = (type: string | null, id: number | null) => {
   if (!id) return null
@@ -15,7 +15,7 @@ export const sourceLink = (type: string | null, id: number | null) => {
   if (type === 'reversal') return `/accounting/journal/${id}`
   return null
 }
-export const expenseMethods: Record<string, string> = { cash: 'نقدي', card: 'بطاقة', transfer: 'تحويل بنكي', cheque: 'شيك' }
+export const expenseMethods: Record<string, any> = { cash: L('نقدي', 'Cash'), card: L('بطاقة', 'Card'), transfer: L('تحويل بنكي', 'Bank transfer'), cheque: L('شيك', 'Cheque') }
 
 export const monthStart = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01` }
 export const todayStr = () => new Date().toISOString().slice(0, 10)

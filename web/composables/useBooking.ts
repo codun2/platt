@@ -1,11 +1,11 @@
 /** Booking form helpers + labels (shared by new / edit / list / calendar). */
 export const bookingStatus: Record<string, { label: string; cls: string }> = {
-  pending: { label: 'معلّق', cls: 'warn' }, confirmed: { label: 'مؤكد', cls: 'ok' }, completed: { label: 'مكتمل', cls: 'info' }, cancelled: { label: 'ملغى', cls: 'bad' },
+  pending: L('معلّق', 'Pending', { cls: 'warn' }), confirmed: L('مؤكد', 'Confirmed', { cls: 'ok' }), completed: L('مكتمل', 'Completed', { cls: 'info' }), cancelled: L('ملغى', 'Cancelled', { cls: 'bad' }),
 }
-export const depositStatus: Record<string, string> = { pending: 'لم يُستلم', held: 'محتجز', returned: 'مُرجع', forfeited: 'مُصادر' }
-export const periodLabel: Record<string, string> = { day: 'يوم كامل', night: 'ليلة', hour: 'ساعة' }
-export const bookingSource: Record<string, string> = { walk_in: 'حضور مباشر', phone: 'اتصال', whatsapp: 'واتساب', online: 'إلكتروني', agent: 'وكيل / وسيط' }
-export const paymentKind: Record<string, string> = { payment: 'دفعة', deposit: 'استلام تأمين', refund: 'استرداد', deposit_return: 'إرجاع تأمين' }
+export const depositStatus: Record<string, any> = { pending: L('لم يُستلم', 'Not received'), held: L('محتجز', 'Held'), returned: L('مُرجع', 'Returned'), forfeited: L('مُصادر', 'Forfeited') }
+export const periodLabel: Record<string, any> = { day: L('يوم كامل', 'Full day'), night: L('ليلة', 'Night'), hour: L('ساعة', 'Hour') }
+export const bookingSource: Record<string, any> = { walk_in: L('حضور مباشر', 'Walk-in'), phone: L('اتصال', 'Phone'), whatsapp: L('واتساب', 'WhatsApp'), online: L('إلكتروني', 'Online'), agent: L('وكيل / وسيط', 'Agent') }
+export const paymentKind: Record<string, any> = { payment: L('دفعة', 'Payment'), deposit: L('استلام تأمين', 'Deposit received'), refund: L('استرداد', 'Refund'), deposit_return: L('إرجاع تأمين', 'Deposit return') }
 
 export const blankBooking = (date?: string) => ({
   unit_id: '', customer_id: '', customer_name: '', customer_phone: '', customer_email: '',

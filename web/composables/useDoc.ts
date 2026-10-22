@@ -2,14 +2,14 @@
 export type DocKind = 'invoice' | 'quote'
 
 export const invoiceStatus: Record<string, { label: string; cls: string }> = {
-  draft: { label: 'مسودّة', cls: 'muted' }, sent: { label: 'مرسلة', cls: 'info' }, partial: { label: 'مسدّدة جزئياً', cls: 'warn' },
-  paid: { label: 'مسدّدة', cls: 'ok' }, cancelled: { label: 'ملغاة', cls: 'bad' },
+  draft: L('مسودّة', 'Draft', { cls: 'muted' }), sent: L('مرسلة', 'Sent', { cls: 'info' }), partial: L('مسدّدة جزئياً', 'Partial', { cls: 'warn' }),
+  paid: L('مسدّدة', 'Paid', { cls: 'ok' }), cancelled: L('ملغاة', 'Cancelled', { cls: 'bad' }),
 }
 export const quoteStatus: Record<string, { label: string; cls: string }> = {
-  draft: { label: 'مسودّة', cls: 'muted' }, sent: { label: 'مُرسَل', cls: 'info' }, accepted: { label: 'مقبول', cls: 'ok' },
-  rejected: { label: 'مرفوض', cls: 'bad' }, expired: { label: 'منتهٍ', cls: 'warn' }, converted: { label: 'محوّل لفاتورة', cls: 'ok' },
+  draft: L('مسودّة', 'Draft', { cls: 'muted' }), sent: L('مُرسَل', 'Sent', { cls: 'info' }), accepted: L('مقبول', 'Accepted', { cls: 'ok' }),
+  rejected: L('مرفوض', 'Rejected', { cls: 'bad' }), expired: L('منتهٍ', 'Expired', { cls: 'warn' }), converted: L('محوّل لفاتورة', 'Converted', { cls: 'ok' }),
 }
-export const payMethods: Record<string, string> = { cash: 'نقدي', card: 'بطاقة', transfer: 'تحويل بنكي', cheque: 'شيك' }
+export const payMethods: Record<string, any> = { cash: L('نقدي', 'Cash'), card: L('بطاقة', 'Card'), transfer: L('تحويل بنكي', 'Bank transfer'), cheque: L('شيك', 'Cheque') }
 
 export const blankLine = () => ({
   item_id: '', description: '', qty: 1, unit: '', unit_price: 0, discount: 0,
