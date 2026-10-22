@@ -10,6 +10,7 @@ use App\Models\SalePayment;
 use App\Models\Sequence;
 use App\Models\Shift;
 use App\Services\InventoryService;
+use App\Services\LedgerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -120,6 +121,7 @@ class SaleController extends Controller
             if ($paid > 0) {
                 SalePayment::create(['sale_id' => $sale->id, 'amount' => $paid, 'method' => $method === 'credit' ? 'cash' : $method, 'date' => $sale->date, 'user_id' => $request->user()->id]);
             }
+            app(LedgerService::class)->postSale($sale->fresh()->load('customer'));
 
             return $sale;
         });
@@ -139,6 +141,11 @@ class SaleController extends Controller
                 $inv->move(Item::findOrFail($line->item_id), $sale->warehouse_id, (float) $line->qty, 'sale_cancel', ['ref_type' => 'sale', 'ref_id' => $sale->id]);
             }
             $sale->update(['status' => 'cancelled', 'cancelled_at' => now()]);
+            $ledger = app(LedgerService::class);
+            $ledger->reverse('sale', $sale->id, 'إلغاء فاتورة '.$sale->number);
+            foreach ($sale->payments as $p) {
+                $ledger->reverse('sale_payment', $p->id, 'إلغاء فاتورة '.$sale->number);
+            }
         });
 
         return response()->json($sale->fresh());
@@ -159,8 +166,9 @@ class SaleController extends Controller
             return response()->json(['message' => 'المبلغ أكبر من المتبقي ('.number_format($remaining, 3).').'], 422);
         }
         DB::transaction(function () use ($sale, $data, $request) {
-            SalePayment::create(['sale_id' => $sale->id, 'amount' => $data['amount'], 'method' => $data['method'], 'date' => $data['date'] ?? now()->toDateString(), 'note' => $data['note'] ?? null, 'user_id' => $request->user()->id]);
+            $p = SalePayment::create(['sale_id' => $sale->id, 'amount' => $data['amount'], 'method' => $data['method'], 'date' => $data['date'] ?? now()->toDateString(), 'note' => $data['note'] ?? null, 'user_id' => $request->user()->id]);
             $sale->update(['paid' => (float) $sale->paid + (float) $data['amount']]);
+            app(LedgerService::class)->postSalePayment($p, $sale->load('customer'));
         });
 
         return response()->json($sale->fresh()->load('payments'));

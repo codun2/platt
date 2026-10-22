@@ -1,0 +1,46 @@
+/** Accounting UI helpers: labels, form shapes, payloads. */
+export const accountTypes: Record<string, { label: string; cls: string }> = {
+  asset: { label: 'أصول', cls: 'info' }, liability: { label: 'التزامات', cls: 'warn' }, equity: { label: 'حقوق ملكية', cls: 'muted' },
+  revenue: { label: 'إيرادات', cls: 'ok' }, expense: { label: 'مصروفات', cls: 'bad' },
+}
+export const journalSources: Record<string, string> = {
+  manual: 'يدوي', invoice: 'فاتورة مبيعات', invoice_payment: 'تحصيل فاتورة', sale: 'نقطة بيع', sale_payment: 'تحصيل نقطة بيع',
+  expense: 'مصروف', booking_payment: 'حجز', payroll: 'رواتب', reversal: 'قيد عكسي',
+}
+export const sourceLink = (type: string | null, id: number | null) => {
+  if (!id) return null
+  if (type === 'invoice') return `/crm/invoices/${id}`
+  if (type === 'expense') return `/accounting/expenses/${id}`
+  if (type === 'sale') return `/pos/sales?open=${id}`
+  if (type === 'reversal') return `/accounting/journal/${id}`
+  return null
+}
+export const expenseMethods: Record<string, string> = { cash: 'نقدي', card: 'بطاقة', transfer: 'تحويل بنكي', cheque: 'شيك' }
+
+export const monthStart = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01` }
+export const todayStr = () => new Date().toISOString().slice(0, 10)
+
+/* ---- expenses ---- */
+export const blankExpense = () => ({
+  date: todayStr(), account_id: '', paid_from_account_id: '', supplier_id: '', payee: '',
+  amount: 0, tax: 0, payment_method: 'cash', reference: '', description: '', notes: '',
+})
+export const expenseToForm = (e: any) => ({
+  ...blankExpense(), date: e.date, account_id: e.account_id, paid_from_account_id: e.paid_from_account_id, supplier_id: e.supplier_id || '',
+  payee: e.payee || '', amount: +e.amount, tax: +e.tax || 0, payment_method: e.payment_method || 'cash', reference: e.reference || '', description: e.description || '', notes: e.notes || '',
+})
+export const expensePayload = (f: any) => ({ ...f, supplier_id: f.supplier_id || null, amount: +f.amount || 0, tax: +f.tax || 0 })
+
+/* ---- journal ---- */
+export const blankJournalLine = () => ({ account_id: '', debit: 0, credit: 0, description: '' })
+export const blankJournal = () => ({ date: todayStr(), reference: '', description: '', status: 'posted', lines: [blankJournalLine(), blankJournalLine()] })
+export const journalToForm = (e: any) => ({
+  date: e.date, reference: e.reference || '', description: e.description || '', status: e.status || 'posted',
+  lines: (e.lines || []).map((l: any) => ({ account_id: l.account_id, debit: +l.debit || 0, credit: +l.credit || 0, description: l.description || '' })),
+})
+export const journalPayload = (f: any) => ({ ...f, lines: f.lines.filter((l: any) => l.account_id && ((+l.debit || 0) > 0 || (+l.credit || 0) > 0)).map((l: any) => ({ account_id: l.account_id, debit: +l.debit || 0, credit: +l.credit || 0, description: l.description || null })) })
+export const journalTotals = (lines: any[]) => {
+  const r3 = (n: number) => Math.round(n * 1000) / 1000
+  const debit = r3(lines.reduce((s, l) => s + (+l.debit || 0), 0)); const credit = r3(lines.reduce((s, l) => s + (+l.credit || 0), 0))
+  return { debit, credit, diff: r3(debit - credit), balanced: Math.abs(debit - credit) < 0.0005 && debit > 0 }
+}

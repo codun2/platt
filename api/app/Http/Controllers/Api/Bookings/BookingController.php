@@ -9,6 +9,7 @@ use App\Models\BookingPayment;
 use App\Models\BookingService;
 use App\Models\BookingUnit;
 use App\Models\Sequence;
+use App\Services\LedgerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -149,7 +150,8 @@ class BookingController extends Controller
         ]);
 
         DB::transaction(function () use ($b, $data, $request) {
-            BookingPayment::create($data + ['booking_id' => $b->id, 'date' => $data['date'] ?? now()->toDateString(), 'user_id' => $request->user()->id]);
+            $p = BookingPayment::create($data + ['booking_id' => $b->id, 'date' => $data['date'] ?? now()->toDateString(), 'user_id' => $request->user()->id]);
+            app(LedgerService::class)->postBookingPayment($p, $b);
             $amt = (float) $data['amount'];
             match ($data['kind']) {
                 'payment' => $b->paid = (float) $b->paid + $amt,

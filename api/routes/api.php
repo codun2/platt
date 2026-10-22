@@ -100,6 +100,44 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant'])->prefix('app')->gro
         });
     });
 
+    /* ---- Accounting (core) ---- */
+    Route::prefix('accounting')->group(function () {
+        Route::middleware('perm:accounting_accounts.view')->group(function () {
+            Route::get('accounts', [Accounting\AccountController::class, 'index']);
+            Route::get('accounts/{id}', [Accounting\AccountController::class, 'show'])->whereNumber('id');
+            Route::middleware('perm:accounting.manage')->group(function () {
+                Route::post('accounts', [Accounting\AccountController::class, 'store']);
+                Route::match(['put', 'patch'], 'accounts/{id}', [Accounting\AccountController::class, 'update'])->whereNumber('id');
+                Route::delete('accounts/{id}', [Accounting\AccountController::class, 'destroy'])->whereNumber('id');
+            });
+        });
+        Route::middleware('perm:accounting_journal.view')->group(function () {
+            Route::get('journal', [Accounting\JournalController::class, 'index']);
+            Route::get('journal/{id}', [Accounting\JournalController::class, 'show'])->whereNumber('id');
+            Route::middleware('perm:accounting.manage')->group(function () {
+                Route::post('journal', [Accounting\JournalController::class, 'store']);
+                Route::match(['put', 'patch'], 'journal/{id}', [Accounting\JournalController::class, 'update'])->whereNumber('id');
+                Route::delete('journal/{id}', [Accounting\JournalController::class, 'destroy'])->whereNumber('id');
+            });
+        });
+        Route::middleware('perm:accounting_expenses.view')->group(function () {
+            Route::get('expenses/meta', [Accounting\ExpenseController::class, 'meta']);
+            Route::get('expenses', [Accounting\ExpenseController::class, 'index']);
+            Route::get('expenses/{id}', [Accounting\ExpenseController::class, 'show'])->whereNumber('id');
+            Route::middleware('perm:accounting.manage')->group(function () {
+                Route::post('expenses', [Accounting\ExpenseController::class, 'store']);
+                Route::match(['put', 'patch'], 'expenses/{id}', [Accounting\ExpenseController::class, 'update'])->whereNumber('id');
+                Route::delete('expenses/{id}', [Accounting\ExpenseController::class, 'destroy'])->whereNumber('id');
+            });
+        });
+        Route::middleware('perm:accounting_reports.view')->group(function () {
+            Route::get('summary', [Accounting\ReportController::class, 'summary']);
+            Route::get('reports/trial-balance', [Accounting\ReportController::class, 'trialBalance']);
+            Route::get('reports/income-statement', [Accounting\ReportController::class, 'incomeStatement']);
+            Route::get('reports/balance-sheet', [Accounting\ReportController::class, 'balanceSheet']);
+        });
+    });
+
     /* ---- Engine: Inventory ---- */
     Route::prefix('inventory')->group(function () {
         Route::get('items/meta', [Inventory\ItemController::class, 'meta']);

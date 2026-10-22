@@ -8,6 +8,7 @@ use App\Models\InvoiceItem;
 use App\Models\InvoicePayment;
 use App\Models\Sequence;
 use App\Services\DocumentCalculator;
+use App\Services\LedgerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -74,6 +75,9 @@ class InvoiceController extends Controller
                 'sent_at' => $status === 'sent' ? now() : null,
             ]);
             $this->syncLines($inv, $calc['lines']);
+            if ($status === 'sent') {
+                app(LedgerService::class)->postInvoice($inv->load('customer'));
+            }
 
             return $inv;
         });
@@ -103,6 +107,11 @@ class InvoiceController extends Controller
             $inv->update($attrs);
             $inv->items()->delete();
             $this->syncLines($inv, $calc['lines']);
+            if ($attrs['status'] !== 'draft') {   // re-post the issue entry with the new totals
+                $ledger = app(LedgerService::class);
+                $ledger->reverse('invoice', $inv->id, 'تعديل فاتورة '.$inv->number);
+                $ledger->postInvoice($inv->fresh()->load('customer'));
+            }
         });
 
         return response()->json($inv->fresh()->load('items', 'customer:id,name'));
@@ -126,6 +135,7 @@ class InvoiceController extends Controller
             return response()->json(['message' => 'الفاتورة ليست مسودّة.'], 422);
         }
         $inv->update(['status' => 'sent', 'sent_at' => now()]);
+        app(LedgerService::class)->postInvoice($inv->fresh()->load('customer'));
 
         return response()->json($inv->fresh());
     }
@@ -140,6 +150,7 @@ class InvoiceController extends Controller
             return response()->json(['message' => 'لا يمكن إلغاء فاتورة عليها دفعات — احذف الدفعات أولاً.'], 422);
         }
         $inv->update(['status' => 'cancelled', 'cancelled_at' => now()]);
+        app(LedgerService::class)->reverse('invoice', $inv->id, 'إلغاء فاتورة '.$inv->number);
 
         return response()->json($inv->fresh());
     }
@@ -181,8 +192,11 @@ class InvoiceController extends Controller
             return response()->json(['message' => 'المبلغ أكبر من المتبقي ('.number_format($inv->balance, 3).').'], 422);
         }
         DB::transaction(function () use ($inv, $data, $request) {
-            InvoicePayment::create($data + ['invoice_id' => $inv->id, 'date' => $data['date'] ?? now()->toDateString(), 'user_id' => $request->user()->id]);
+            $p = InvoicePayment::create($data + ['invoice_id' => $inv->id, 'date' => $data['date'] ?? now()->toDateString(), 'user_id' => $request->user()->id]);
             $this->refreshPaid($inv);
+            $ledger = app(LedgerService::class);
+            $ledger->postInvoice($inv->fresh()->load('customer'));   // a draft paid directly is issued implicitly
+            $ledger->postInvoicePayment($p, $inv->load('customer'));
         });
 
         return response()->json($inv->fresh()->load('payments.user:id,name'));
@@ -192,7 +206,9 @@ class InvoiceController extends Controller
     {
         $inv = Invoice::findOrFail($id);
         DB::transaction(function () use ($inv, $paymentId) {
-            InvoicePayment::where('invoice_id', $inv->id)->findOrFail($paymentId)->delete();
+            $p = InvoicePayment::where('invoice_id', $inv->id)->findOrFail($paymentId);
+            app(LedgerService::class)->reverse('invoice_payment', $p->id, 'حذف دفعة فاتورة '.$inv->number);
+            $p->delete();
             $this->refreshPaid($inv);
         });
 
