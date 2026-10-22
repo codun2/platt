@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Accounting;
 use App\Http\Controllers\Api\App;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Bookings;
+use App\Http\Controllers\Api\Hr;
 use App\Http\Controllers\Api\Inventory;
 use App\Http\Controllers\Api\Travel;
 use App\Http\Controllers\Api\Pos;
@@ -135,6 +136,43 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant'])->prefix('app')->gro
             Route::get('reports/trial-balance', [Accounting\ReportController::class, 'trialBalance']);
             Route::get('reports/income-statement', [Accounting\ReportController::class, 'incomeStatement']);
             Route::get('reports/balance-sheet', [Accounting\ReportController::class, 'balanceSheet']);
+        });
+    });
+
+    /* ---- HR (core) ---- */
+    Route::prefix('hr')->group(function () {
+        Route::middleware('perm:hr_employees.view')->group(function () {
+            Route::get('employees', [Hr\EmployeeController::class, 'index']);
+            Route::get('employees/{id}', [Hr\EmployeeController::class, 'show'])->whereNumber('id');
+            Route::middleware('perm:hr.manage')->group(function () {
+                Route::post('employees', [Hr\EmployeeController::class, 'store']);
+                Route::match(['put', 'patch'], 'employees/{id}', [Hr\EmployeeController::class, 'update'])->whereNumber('id');
+                Route::delete('employees/{id}', [Hr\EmployeeController::class, 'destroy'])->whereNumber('id');
+            });
+        });
+        Route::middleware('perm:hr_attendance.view')->group(function () {
+            Route::get('attendance/day', [Hr\AttendanceController::class, 'day']);
+            Route::get('attendance/summary', [Hr\AttendanceController::class, 'summary']);
+            Route::get('leaves', [Hr\LeaveController::class, 'index']);
+            Route::get('leaves/{id}', [Hr\LeaveController::class, 'show'])->whereNumber('id');
+            Route::middleware('perm:hr.manage')->group(function () {
+                Route::post('attendance/bulk', [Hr\AttendanceController::class, 'bulk']);
+                Route::post('leaves', [Hr\LeaveController::class, 'store']);
+                Route::match(['put', 'patch'], 'leaves/{id}', [Hr\LeaveController::class, 'update'])->whereNumber('id');
+                Route::post('leaves/{id}/status', [Hr\LeaveController::class, 'setStatus'])->whereNumber('id');
+                Route::delete('leaves/{id}', [Hr\LeaveController::class, 'destroy'])->whereNumber('id');
+            });
+        });
+        Route::middleware('perm:hr_payroll.view')->group(function () {
+            Route::get('payroll', [Hr\PayrollController::class, 'index']);
+            Route::get('payroll/{id}', [Hr\PayrollController::class, 'show'])->whereNumber('id');
+            Route::middleware('perm:hr.manage')->group(function () {
+                Route::post('payroll/generate', [Hr\PayrollController::class, 'generate']);
+                Route::patch('payroll/{id}/items/{itemId}', [Hr\PayrollController::class, 'updateItem'])->whereNumber('id')->whereNumber('itemId');
+                Route::post('payroll/{id}/approve', [Hr\PayrollController::class, 'approve'])->whereNumber('id');
+                Route::post('payroll/{id}/pay', [Hr\PayrollController::class, 'pay'])->whereNumber('id');
+                Route::delete('payroll/{id}', [Hr\PayrollController::class, 'destroy'])->whereNumber('id');
+            });
         });
     });
 
