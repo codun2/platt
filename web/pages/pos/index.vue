@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // POS screen: item grid + cart + checkout. Keyboard: Enter in search = barcode scan.
 definePageMeta({ title: 'نقطة البيع', titleEn: 'Point of Sale' })
-const api = useApi(); const auth = useAuth(); const f = useFmt()
+const api = useApi(); const auth = useAuth(); const f = useFmt(); const { tt } = useI18n()
 const meta = ref<any>({ categories: [], warehouses: [] })
 const items = ref<any[]>([]); const q = ref(''); const cat = ref('')
 const cart = ref<any[]>([])
@@ -34,7 +34,7 @@ function clear() { cart.value = []; discount.value = 0; paid.value = null; metho
 async function checkout() {
   err.value = ''
   if (!cart.value.length) return
-  if (method.value === 'credit' && !customerId.value) { err.value = 'البيع الآجل يتطلب اختيار عميل'; return }
+  if (method.value === 'credit' && !customerId.value) { err.value = tt('البيع الآجل يتطلب اختيار عميل','Credit sale requires selecting a customer'); return }
   busy.value = true
   try {
     const sale = await api.post('/app/pos/sales', {
@@ -54,26 +54,26 @@ function printLast() { window.open(`/app/pos/sales?print=${last.value.id}`, '_bl
   <div class="pos">
     <div class="pos-left card">
       <div class="row" style="margin-bottom:10px">
-        <input v-model="q" placeholder="ابحث أو امسح الباركود ثم Enter" autofocus style="flex:1;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font-size:15px" @keyup.enter="onEnter" @input="loadItems" />
-        <select v-model="cat" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="loadItems"><option value="">كل التصنيفات</option><option v-for="c in meta.categories" :key="c.id" :value="c.id">{{ c.name }}</option></select>
+        <input v-model="q" :placeholder="tt('ابحث أو امسح الباركود ثم Enter','Search or scan barcode then Enter')" autofocus style="flex:1;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font-size:15px" @keyup.enter="onEnter" @input="loadItems" />
+        <select v-model="cat" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="loadItems"><option value="">{{ tt('كل التصنيفات','All categories') }}</option><option v-for="c in meta.categories" :key="c.id" :value="c.id">{{ c.name }}</option></select>
       </div>
       <div class="pos-grid">
         <div v-for="i in items" :key="i.id" class="pos-item" :class="{ out: i.track_stock && Number(i.stock || 0) <= 0 }" @click="add(i)">
           <b>{{ i.name }}</b>
           <span class="price">{{ f.money(i.sale_price) }}</span>
-          <small class="muted">{{ i.track_stock ? `المتاح: ${f.qty(i.stock)}` : 'خدمة' }}</small>
+          <small class="muted">{{ i.track_stock ? `${tt('المتاح','Available')}: ${f.qty(i.stock)}` : tt('خدمة','Service') }}</small>
         </div>
       </div>
-      <p v-if="!items.length" class="empty">لا توجد أصناف مطابقة.</p>
+      <p v-if="!items.length" class="empty">{{ tt('لا توجد أصناف مطابقة.','No matching items.') }}</p>
     </div>
 
     <div class="pos-right card">
       <div v-if="!shift" class="alert warn" style="background:#fef3c7;color:#92400e">
-        لا توجد وردية مفتوحة. <div class="row mt"><input v-model.number="openCash" type="number" step="0.001" placeholder="النقد الافتتاحي" dir="ltr" style="padding:6px 10px;border:1px solid var(--line);border-radius:8px;width:140px" /><button class="btn sm" @click="openShift">فتح وردية</button></div>
+        {{ tt('لا توجد وردية مفتوحة.','No open shift.') }} <div class="row mt"><input v-model.number="openCash" type="number" step="0.001" :placeholder="tt('النقد الافتتاحي','Opening cash')" dir="ltr" style="padding:6px 10px;border:1px solid var(--line);border-radius:8px;width:140px" /><button class="btn sm" @click="openShift">{{ tt('فتح وردية','Open shift') }}</button></div>
       </div>
-      <div v-else class="row between" style="margin-bottom:8px"><small class="muted">وردية #{{ shift.id }} · {{ shift.warehouse?.name }}</small><small class="muted">مبيعات الوردية: <b>{{ f.money(shift.sales_total) }}</b></small></div>
+      <div v-else class="row between" style="margin-bottom:8px"><small class="muted">{{ tt('وردية','Shift') }} #{{ shift.id }} · {{ shift.warehouse?.name }}</small><small class="muted">{{ tt('مبيعات الوردية:','Shift sales:') }} <b>{{ f.money(shift.sales_total) }}</b></small></div>
 
-      <div class="field" style="margin-bottom:8px"><select v-model="customerId"><option value="">عميل نقدي</option><option v-for="c in customers" :key="c.id" :value="c.id">{{ c.name }} {{ c.phone ? `— ${c.phone}` : '' }}</option></select></div>
+      <div class="field" style="margin-bottom:8px"><select v-model="customerId"><option value="">{{ tt('عميل نقدي','Walk-in customer') }}</option><option v-for="c in customers" :key="c.id" :value="c.id">{{ c.name }} {{ c.phone ? `— ${c.phone}` : '' }}</option></select></div>
 
       <div class="cart">
         <div v-for="(l, i) in cart" :key="l.item_id" class="cart-line">
@@ -81,24 +81,24 @@ function printLast() { window.open(`/app/pos/sales?print=${last.value.id}`, '_bl
           <div class="num" style="min-width:80px;text-align:left"><b>{{ f.money(l.qty * l.unit_price - l.discount) }}</b></div>
           <button class="btn ghost sm icon" style="color:var(--primary)" @click="cart.splice(i, 1)"><i class="ti ti-x" /></button>
         </div>
-        <p v-if="!cart.length" class="empty">السلة فارغة</p>
+        <p v-if="!cart.length" class="empty">{{ tt('السلة فارغة','Cart is empty') }}</p>
       </div>
 
       <div class="totals">
-        <div class="row between"><span>المجموع</span><b>{{ f.money(subtotal) }}</b></div>
-        <div class="row between"><span>خصم</span><input v-model.number="discount" type="number" step="0.001" dir="ltr" style="width:100px;padding:4px 8px;border:1px solid var(--line);border-radius:6px" /></div>
-        <div class="row between"><span>ضريبة {{ taxRate }}%</span><b>{{ f.money(tax) }}</b></div>
-        <div class="row between total"><span>الإجمالي</span><b>{{ f.money(total, true) }}</b></div>
+        <div class="row between"><span>{{ tt('المجموع','Subtotal') }}</span><b>{{ f.money(subtotal) }}</b></div>
+        <div class="row between"><span>{{ tt('خصم','Discount') }}</span><input v-model.number="discount" type="number" step="0.001" dir="ltr" style="width:100px;padding:4px 8px;border:1px solid var(--line);border-radius:6px" /></div>
+        <div class="row between"><span>{{ tt('ضريبة','Tax') }} {{ taxRate }}%</span><b>{{ f.money(tax) }}</b></div>
+        <div class="row between total"><span>{{ tt('الإجمالي','Total') }}</span><b>{{ f.money(total, true) }}</b></div>
         <div class="chips" style="margin:8px 0"><span v-for="m in ['cash','card','transfer','credit']" :key="m" class="chip" :class="{ on: method === m }" @click="method = m as any">{{ f.methodLabel(m) }}</span></div>
-        <div class="row between"><span>{{ method === 'credit' ? 'دفعة مقدمة' : 'المدفوع' }}</span><input v-model.number="paid" type="number" step="0.001" dir="ltr" :placeholder="f.money(total)" style="width:120px;padding:4px 8px;border:1px solid var(--line);border-radius:6px" /></div>
-        <div v-if="change > 0" class="row between" style="color:var(--ok)"><span>الباقي للعميل</span><b>{{ f.money(change) }}</b></div>
+        <div class="row between"><span>{{ method === 'credit' ? tt('دفعة مقدمة','Down payment') : tt('المدفوع','Paid') }}</span><input v-model.number="paid" type="number" step="0.001" dir="ltr" :placeholder="f.money(total)" style="width:120px;padding:4px 8px;border:1px solid var(--line);border-radius:6px" /></div>
+        <div v-if="change > 0" class="row between" style="color:var(--ok)"><span>{{ tt('الباقي للعميل','Change due') }}</span><b>{{ f.money(change) }}</b></div>
       </div>
       <div v-if="err" class="alert bad">{{ err }}</div>
       <div class="row" style="margin-top:8px">
-        <button class="btn ghost" @click="clear">إفراغ</button>
-        <button class="btn ok" style="flex:1;justify-content:center;font-size:16px;padding:12px" :disabled="!cart.length || busy" @click="checkout"><i class="ti ti-check" /> إتمام البيع</button>
+        <button class="btn ghost" @click="clear">{{ tt('إفراغ','Clear') }}</button>
+        <button class="btn ok" style="flex:1;justify-content:center;font-size:16px;padding:12px" :disabled="!cart.length || busy" @click="checkout"><i class="ti ti-check" /> {{ tt('إتمام البيع','Complete sale') }}</button>
       </div>
-      <div v-if="last" class="alert ok mt row between"><span>تمت الفاتورة <b>{{ last.number }}</b> — {{ f.money(last.total, true) }}<span v-if="last.change"> · الباقي {{ f.money(last.change) }}</span></span><button class="btn ghost sm" @click="printLast"><i class="ti ti-printer" /> طباعة</button></div>
+      <div v-if="last" class="alert ok mt row between"><span>{{ tt('تمت الفاتورة','Invoice done') }} <b>{{ last.number }}</b> — {{ f.money(last.total, true) }}<span v-if="last.change"> · {{ tt('الباقي','Change') }} {{ f.money(last.change) }}</span></span><button class="btn ghost sm" @click="printLast"><i class="ti ti-printer" /> {{ tt('طباعة','Print') }}</button></div>
     </div>
   </div>
 </template>
