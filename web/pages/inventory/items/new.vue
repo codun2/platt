@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({ title: 'صنف جديد', titleEn: 'New Item' })
-const api = useApi(); const auth = useAuth()
+const api = useApi(); const auth = useAuth(); const { tt } = useI18n()
 if (!auth.can('inventory.manage')) navigateTo('/inventory/items')
 const meta = ref<any>({ categories: [], units: [], warehouses: [] }); const suppliers = ref<any[]>([])
 const err = ref(''); const saving = ref(false)
@@ -16,14 +16,14 @@ async function save(stay = false) {
 
 <template>
   <div>
-    <div class="breadcrumb"><NuxtLink to="/inventory/items">الأصناف</NuxtLink> › <b>صنف جديد</b></div>
+    <div class="breadcrumb"><NuxtLink to="/inventory/items">{{ tt('الأصناف','Items') }}</NuxtLink> › <b>{{ tt('صنف جديد','New item') }}</b></div>
     <div class="card">
       <div v-if="err" class="alert bad">{{ err }}</div>
       <ItemForm :form="form" :meta="meta" :suppliers="suppliers" is-new />
       <div class="row" style="gap:10px;margin-top:18px;border-top:1px solid var(--line);padding-top:16px">
-        <button class="btn" :disabled="saving" @click="save(false)"><i class="ti ti-check" /> حفظ</button>
-        <button class="btn ghost" :disabled="saving" @click="save(true)"><i class="ti ti-plus" /> حفظ وإضافة آخر</button>
-        <NuxtLink class="btn ghost" to="/inventory/items">إلغاء</NuxtLink>
+        <button class="btn" :disabled="saving" @click="save(false)"><i class="ti ti-check" /> {{ tt('حفظ','Save') }}</button>
+        <button class="btn ghost" :disabled="saving" @click="save(true)"><i class="ti ti-plus" /> {{ tt('حفظ وإضافة آخر','Save & add another') }}</button>
+        <NuxtLink class="btn ghost" to="/inventory/items">{{ tt('إلغاء','Cancel') }}</NuxtLink>
       </div>
     </div>
   </div>

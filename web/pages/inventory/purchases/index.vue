@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({ title: 'المشتريات', titleEn: 'Purchases' })
-const api = useApi(); const auth = useAuth(); const f = useFmt()
+const api = useApi(); const auth = useAuth(); const f = useFmt(); const { tt } = useI18n()
 const page = ref<any>(null); const suppliers = ref<any[]>([]); const pg = ref(1)
 const filt = reactive({ q: '', status: '', from: '', to: '' })
 const canManage = computed(() => auth.can('inventory.manage'))
@@ -11,26 +11,26 @@ const sum = (k: string, only?: (p: any) => boolean) => (page.value?.data || []).
 
 <template>
   <div>
-    <div class="breadcrumb"><NuxtLink to="/inventory">المخزون</NuxtLink> › <b>المشتريات</b></div>
+    <div class="breadcrumb"><NuxtLink to="/inventory">{{ tt('المخزون','Inventory') }}</NuxtLink> › <b>{{ tt('المشتريات','Purchases') }}</b></div>
     <div class="grid grid-4" style="margin-bottom:16px">
-      <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-truck-delivery" /></div><div><b>{{ page?.total ?? 0 }}</b><small>فاتورة شراء</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-shopping-cart" /></div><div><b>{{ f.money(sum('total')) }}</b><small>إجمالي الصفحة</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-cash" /></div><div><b>{{ f.money(sum('paid')) }}</b><small>المدفوع</small></div></div>
-      <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-hourglass" /></div><div><b>{{ f.money(sum('total') - sum('paid')) }}</b><small>مستحق للموردين (الصفحة)</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-truck-delivery" /></div><div><b>{{ page?.total ?? 0 }}</b><small>{{ tt('فاتورة شراء','purchase invoices') }}</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-shopping-cart" /></div><div><b>{{ f.money(sum('total')) }}</b><small>{{ tt('إجمالي الصفحة','Page total') }}</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-cash" /></div><div><b>{{ f.money(sum('paid')) }}</b><small>{{ tt('المدفوع','Paid') }}</small></div></div>
+      <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-hourglass" /></div><div><b>{{ f.money(sum('total') - sum('paid')) }}</b><small>{{ tt('مستحق للموردين (الصفحة)','Payable (page)') }}</small></div></div>
     </div>
     <div class="card">
       <div class="row between" style="margin-bottom:14px">
         <div class="row">
-          <input v-model="filt.q" placeholder="رقم / مورد / فاتورة المورد" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px;min-width:220px" @keyup.enter="load()" />
-          <UiSelect v-model="filt.status" @change="load()"><option value="">كل الحالات</option><option v-for="(s, k) in purchaseStatus" :key="k" :value="k">{{ s.label }}</option></UiSelect>
+          <input v-model="filt.q" :placeholder="tt('رقم / مورد / فاتورة المورد','No. / supplier / supplier inv.')" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px;min-width:220px" @keyup.enter="load()" />
+          <UiSelect v-model="filt.status" @change="load()"><option value="">{{ tt('كل الحالات','All statuses') }}</option><option v-for="(s, k) in purchaseStatus" :key="k" :value="k">{{ s.label }}</option></UiSelect>
           <input v-model="filt.from" type="date" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load()" />
           <input v-model="filt.to" type="date" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load()" />
           <button class="btn ghost" @click="load()"><i class="ti ti-search" /></button>
         </div>
-        <div class="row"><NuxtLink class="btn ghost" to="/inventory/suppliers"><i class="ti ti-truck" /> الموردون ({{ suppliers.length }})</NuxtLink><NuxtLink v-if="canManage" class="btn" to="/inventory/purchases/new"><i class="ti ti-plus" /> فاتورة شراء</NuxtLink></div>
+        <div class="row"><NuxtLink class="btn ghost" to="/inventory/suppliers"><i class="ti ti-truck" /> {{ tt('الموردون','Suppliers') }} ({{ suppliers.length }})</NuxtLink><NuxtLink v-if="canManage" class="btn" to="/inventory/purchases/new"><i class="ti ti-plus" /> {{ tt('فاتورة شراء','New purchase') }}</NuxtLink></div>
       </div>
       <table class="table">
-        <thead><tr><th>الرقم</th><th>التاريخ</th><th>الاستحقاق</th><th>المورد</th><th>المستودع</th><th>بنود</th><th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th><th>الحالة</th><th></th></tr></thead>
+        <thead><tr><th>{{ tt('الرقم','No.') }}</th><th>{{ tt('التاريخ','Date') }}</th><th>{{ tt('الاستحقاق','Due') }}</th><th>{{ tt('المورد','Supplier') }}</th><th>{{ tt('المستودع','Warehouse') }}</th><th>{{ tt('بنود','Lines') }}</th><th>{{ tt('الإجمالي','Total') }}</th><th>{{ tt('المدفوع','Paid') }}</th><th>{{ tt('المتبقي','Balance') }}</th><th>{{ tt('الحالة','Status') }}</th><th></th></tr></thead>
         <tbody>
           <tr v-for="p in page?.data" :key="p.id">
             <td><NuxtLink :to="`/inventory/purchases/${p.id}`" style="color:var(--info);font-weight:700" dir="ltr">{{ p.number }}</NuxtLink></td>
@@ -42,10 +42,10 @@ const sum = (k: string, only?: (p: any) => boolean) => (page.value?.data || []).
           </tr>
         </tbody>
       </table>
-      <p v-if="page && !page.data.length" class="empty">لا توجد فواتير شراء.</p>
+      <p v-if="page && !page.data.length" class="empty">{{ tt('لا توجد فواتير شراء.','No purchases.') }}</p>
       <div v-if="page && page.last_page > 1" class="row between mt">
-        <span class="muted" style="font-size:12px">صفحة {{ page.current_page }} من {{ page.last_page }} · {{ page.total }} فاتورة</span>
-        <div class="row"><button class="btn ghost sm" :disabled="pg <= 1" @click="load(pg - 1)">السابق</button><button class="btn ghost sm" :disabled="pg >= page.last_page" @click="load(pg + 1)">التالي</button></div>
+        <span class="muted" style="font-size:12px">{{ tt('صفحة','Page') }} {{ page.current_page }} {{ tt('من','of') }} {{ page.last_page }} · {{ page.total }}</span>
+        <div class="row"><button class="btn ghost sm" :disabled="pg <= 1" @click="load(pg - 1)">{{ tt('السابق','Prev') }}</button><button class="btn ghost sm" :disabled="pg >= page.last_page" @click="load(pg + 1)">{{ tt('التالي','Next') }}</button></div>
       </div>
     </div>
   </div>
