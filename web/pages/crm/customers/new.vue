@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({ title: 'عميل جديد', titleEn: 'New Customer' })
-const api = useApi(); const auth = useAuth()
+const api = useApi(); const auth = useAuth(); const { tt } = useI18n()
 if (!auth.can('crm.manage')) navigateTo('/crm/customers')
 
 const err = ref(''); const saving = ref(false)
@@ -18,14 +18,14 @@ async function save(stay = false) {
 
 <template>
   <div>
-    <div class="breadcrumb"><NuxtLink to="/crm/customers">العملاء</NuxtLink> › <b>عميل جديد</b></div>
+    <div class="breadcrumb"><NuxtLink to="/crm/customers">{{ tt('العملاء', 'Customers') }}</NuxtLink> › <b>{{ tt('عميل جديد', 'New customer') }}</b></div>
     <div class="card">
       <div v-if="err" class="alert bad">{{ err }}</div>
       <CustomerForm :form="form" />
       <div class="row" style="gap:10px;margin-top:18px;border-top:1px solid var(--line);padding-top:16px">
-        <button class="btn" :disabled="saving" @click="save(false)"><i class="ti ti-check" /> حفظ</button>
-        <button class="btn ghost" :disabled="saving" @click="save(true)"><i class="ti ti-plus" /> حفظ وإضافة آخر</button>
-        <NuxtLink class="btn ghost" to="/crm/customers">إلغاء</NuxtLink>
+        <button class="btn" :disabled="saving" @click="save(false)"><i class="ti ti-check" /> {{ tt('حفظ', 'Save') }}</button>
+        <button class="btn ghost" :disabled="saving" @click="save(true)"><i class="ti ti-plus" /> {{ tt('حفظ وإضافة آخر', 'Save & add another') }}</button>
+        <NuxtLink class="btn ghost" to="/crm/customers">{{ tt('إلغاء', 'Cancel') }}</NuxtLink>
       </div>
     </div>
   </div>
