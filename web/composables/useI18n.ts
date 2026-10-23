@@ -32,6 +32,8 @@ function applyDir() {
   const el = document.documentElement
   el.setAttribute('lang', _locale.value)
   el.setAttribute('dir', _locale.value === 'ar' ? 'rtl' : 'ltr')
+  // Keep the browser-tab title (brand) in the active language.
+  try { document.title = _locale.value === 'en' ? 'Rakeez — Business Platform' : 'ركائز — منصّة الأعمال' } catch { /* noop */ }
 }
 
 /** Current locale without the full composable (for label maps). */
