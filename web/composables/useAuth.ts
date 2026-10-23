@@ -6,6 +6,7 @@ export interface AuthState {
   tenant: any | null
   permissions: string[]
   sidebar: SidebarItem[]
+  identity?: { key: string; accent: string } | null
   loaded: boolean
 }
 
@@ -19,8 +20,17 @@ export function useAuth() {
       tenant: payload.tenant,
       permissions: payload.permissions || [],
       sidebar: payload.sidebar || [],
+      identity: payload.identity || null,
       loaded: true,
     }
+    applyAccent(payload.identity?.accent)
+  }
+
+  // Per-sector accent: everything themed off --primary follows it.
+  function applyAccent(color?: string | null) {
+    if (!import.meta.client) return
+    const el = document.documentElement
+    color && /^#[0-9a-f]{6}$/i.test(color) ? el.style.setProperty('--primary', color) : el.style.removeProperty('--primary')
   }
 
   async function login(email: string, password: string) {
@@ -53,6 +63,7 @@ export function useAuth() {
     try { await api.post('/auth/logout') } catch {}
     api.setToken(null)
     state.value = { user: null, tenant: null, permissions: [], sidebar: [], loaded: true }
+    applyAccent(null)
     navigateTo('/login')
   }
 

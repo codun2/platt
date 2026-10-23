@@ -59,7 +59,7 @@ class ModuleSeeder extends Seeder
             ['key' => 'inventory_movements', 'parent_key' => 'inventory', 'engine' => 'inventory', 'name_ar' => 'حركات المخزون', 'name_en' => 'Stock Movements', 'icon' => 'ti-arrows-exchange', 'route' => '/inventory/movements'],
             ['key' => 'pos', 'engine' => 'inventory', 'name_ar' => 'نقطة البيع', 'name_en' => 'POS', 'icon' => 'ti-cash-register', 'route' => '/pos'],
             ['key' => 'pos_screen', 'parent_key' => 'pos', 'engine' => 'inventory', 'name_ar' => 'شاشة البيع', 'name_en' => 'POS Screen', 'icon' => 'ti-device-desktop', 'route' => '/pos'],
-            ['key' => 'pos_sales', 'parent_key' => 'pos', 'engine' => 'inventory', 'name_ar' => 'الفواتير', 'name_en' => 'Sales', 'icon' => 'ti-shopping-cart', 'route' => '/pos/sales'],
+            ['key' => 'pos_sales', 'parent_key' => 'pos', 'engine' => 'inventory', 'name_ar' => 'فواتير المبيعات', 'name_en' => 'Sales Receipts', 'icon' => 'ti-shopping-cart', 'route' => '/pos/sales'],
             ['key' => 'pos_shifts', 'parent_key' => 'pos', 'engine' => 'inventory', 'name_ar' => 'الورديات', 'name_en' => 'Shifts', 'icon' => 'ti-clock', 'route' => '/pos/shifts'],
             ['key' => 'pos_reports', 'parent_key' => 'pos', 'engine' => 'inventory', 'name_ar' => 'تقارير المبيعات', 'name_en' => 'Sales Reports', 'icon' => 'ti-report-analytics', 'route' => '/pos/reports'],
             ['key' => 'vehicles', 'engine' => 'inventory', 'name_ar' => 'معرض السيارات', 'name_en' => 'Vehicles', 'icon' => 'ti-car', 'route' => '/vehicles'],

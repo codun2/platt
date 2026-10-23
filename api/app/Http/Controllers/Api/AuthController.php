@@ -86,7 +86,7 @@ class AuthController extends Controller
     /** Common auth payload: user + tenant + permissions + dynamic sidebar. */
     private function payload(User $user): array
     {
-        $tenant = $user->tenant_id ? $user->tenant()->with('sectorPreset:id,key,name_ar,icon', 'plan:id,key,name_ar')->first() : null;
+        $tenant = $user->tenant_id ? $user->tenant()->with('sectorPreset:id,key,name_ar,name_en,icon', 'plan:id,key,name_ar')->first() : null;
 
         return [
             'user' => [
@@ -99,6 +99,7 @@ class AuthController extends Controller
                 'roles' => $user->tenant_id ? $user->roles()->pluck('name_ar') : [],
             ],
             'tenant' => $tenant,
+            'identity' => \App\Services\SectorIdentity::publicFor($tenant),
             'permissions' => $user->permissionKeys(),
             'sidebar' => $tenant ? app(SidebarBuilder::class)->forUser($user, $tenant) : [],
         ];
