@@ -47,7 +47,7 @@ export function useApi() {
       }
       const errors = data?.errors || {}
       const first = Object.values(errors)[0] as string[] | undefined
-      throw new ApiError(res.status, first?.[0] || data?.message || 'حدث خطأ غير متوقع', errors)
+      throw new ApiError(res.status, first?.[0] || data?.message || tt('حدث خطأ غير متوقع', 'An unexpected error occurred'), errors)
     }
     return data as T
   }

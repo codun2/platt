@@ -4,17 +4,17 @@
  * company letterhead come out exactly as on screen. Loaded lazily.
  */
 export async function exportDocPdf(sheet: HTMLElement | null, filename: string) {
-  if (!sheet) throw new Error('لا توجد ورقة للتصدير')
+  if (!sheet) throw new Error(tt('لا توجد ورقة للتصدير', 'Nothing to export'))
   const { default: html2pdf } = await import('html2pdf.js')
 
   // Visible clone at A4 width (794px @ 96dpi) on top of the page while capturing.
   const wrap = document.createElement('div')
-  wrap.setAttribute('dir', 'rtl')
+  wrap.setAttribute('dir', document.documentElement.dir || 'rtl')
   wrap.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#fff;overflow:auto;padding:0'
   const clone = sheet.cloneNode(true) as HTMLElement
   clone.style.cssText = 'display:block;width:794px;margin:0 auto;padding:28px 32px;background:#fff;color:#111;box-sizing:border-box'
   const hint = document.createElement('div')
-  hint.textContent = 'جاري تصدير ملف PDF…'
+  hint.textContent = tt('جاري تصدير ملف PDF…', 'Exporting PDF…')
   hint.style.cssText = 'position:fixed;top:12px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:8px 16px;border-radius:999px;font-size:13px;z-index:100000'
   wrap.appendChild(clone); document.body.appendChild(wrap); document.body.appendChild(hint)
 

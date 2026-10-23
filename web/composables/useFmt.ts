@@ -1,9 +1,10 @@
 // Shared formatters: money (3 decimals, Omani style), qty, dates.
 export function useFmt() {
   const auth = useAuth()
-  // Currency code → Arabic label shown next to amounts. Default is "ريال".
-  const labels: Record<string, string> = { SAR: 'ريال', YER: 'ريال', QAR: 'ر.ق', OMR: 'ر.ع', AED: 'د.إ', KWD: 'د.ك', BHD: 'د.ب', EGP: 'ج.م', JOD: 'د.أ', USD: '$', EUR: '€' }
-  const cur = computed(() => { const c = String(auth.state.value.tenant?.currency || 'SAR').toUpperCase(); return labels[c] || 'ريال' })
+  // Currency code → label shown next to amounts (Arabic symbol / Latin code). Default is "ريال"/"SAR".
+  const labelsAr: Record<string, string> = { SAR: 'ريال', YER: 'ريال', QAR: 'ر.ق', OMR: 'ر.ع', AED: 'د.إ', KWD: 'د.ك', BHD: 'د.ب', EGP: 'ج.م', JOD: 'د.أ', USD: '$', EUR: '€' }
+  const labelsEn: Record<string, string> = { SAR: 'SAR', YER: 'YER', QAR: 'QAR', OMR: 'OMR', AED: 'AED', KWD: 'KWD', BHD: 'BHD', EGP: 'EGP', JOD: 'JOD', USD: '$', EUR: '€' }
+  const cur = computed(() => { const c = String(auth.state.value.tenant?.currency || 'SAR').toUpperCase(); return tt(labelsAr[c] || 'ريال', labelsEn[c] || 'SAR') })
   const money = (v: any, withCur = false) => {
     const n = Number(v || 0)
     const s = n.toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })
