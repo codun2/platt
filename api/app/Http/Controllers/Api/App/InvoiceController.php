@@ -223,6 +223,7 @@ class InvoiceController extends Controller
 
         return $request->validate([
             'customer_id' => ['nullable', Rule::exists('customers', 'id')->where('tenant_id', $tenantId)],
+            'student_id' => ['nullable', Rule::exists('edu_students', 'id')->where('tenant_id', $tenantId)],
             'date' => ['required', 'date'],
             'due_date' => ['nullable', 'date', 'after_or_equal:date'],
             'payment_terms_days' => ['nullable', 'integer', 'min:0', 'max:365'],
@@ -253,6 +254,7 @@ class InvoiceController extends Controller
 
         return [
             'customer_id' => $data['customer_id'] ?? null,
+            'student_id' => $data['student_id'] ?? null,
             'date' => $data['date'], 'due_date' => $due,
             'payment_terms_days' => $data['payment_terms_days'] ?? null,
             'subject' => $data['subject'] ?? null, 'reference' => $data['reference'] ?? null,

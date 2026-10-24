@@ -1,6 +1,7 @@
 <script setup lang="ts">
 definePageMeta({ title: 'عرض سعر جديد', titleEn: 'New Quote' })
-const api = useApi(); const auth = useAuth(); const route = useRoute(); const { tt } = useI18n()
+const api = useApi(); const auth = useAuth(); const route = useRoute(); const { tt } = useI18n(); const { profile: docP } = useDocProfile()
+usePageTitle(() => `${tt('إنشاء', 'New')} ${tt(...(docP.value.quote))}`)
 if (!auth.can('crm.manage')) navigateTo('/crm/quotes')
 
 const customers = ref<any[]>([]); const err = ref(''); const saving = ref(false)
@@ -12,6 +13,7 @@ if (route.query.customer_id) form.customer_id = String(route.query.customer_id)
 onMounted(async () => { customers.value = await api.get('/app/customers', { all: 1, active_only: 1 }) })
 
 async function save(status: 'draft' | 'sent') {
+  if (!docP.value.cash && !form.customer_id) { err.value = tt(`اختر ${tt(...docP.value.party)} أولاً`, `Choose the ${docP.value.party[1].toLowerCase()} first`); window.scrollTo({ top: 0, behavior: 'smooth' }); return }
   err.value = ''; saving.value = true
   try { const q = await api.post('/app/quotes', { ...docPayload(form), status }); navigateTo(`/crm/quotes/${q.id}`) }
   catch (e: any) { err.value = e.message; window.scrollTo({ top: 0, behavior: 'smooth' }) } finally { saving.value = false }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 definePageMeta({ title: 'عرض السعر', titleEn: 'Quote' })
 const api = useApi(); const auth = useAuth(); const f = useFmt()
-const route = useRoute(); const id = Number(route.params.id); const { tt } = useI18n()
+const route = useRoute(); const id = Number(route.params.id); const { tt } = useI18n(); const docP = useDocProfile()
 
 const data = ref<any>(null); const customers = ref<any[]>([])
 const editing = ref(route.query.edit === '1'); const converting = ref(false)
@@ -9,6 +9,7 @@ const err = ref(''); const msg = ref(''); const saving = ref(false)
 const form = reactive<any>(blankDoc('quote'))
 const conv = reactive({ date: f.today(), payment_terms_days: '', status: 'sent' })
 const q = computed(() => data.value?.quote)
+usePageTitle(() => q.value ? `${tt(...docP.profile.value.quote)} ${q.value.number}` : null)
 const canManage = computed(() => auth.can('crm.manage'))
 const validDays = computed(() => daysUntil(q.value?.valid_until))
 const editable = computed(() => q.value && ['draft', 'sent'].includes(q.value.status))
@@ -116,10 +117,7 @@ async function remove() { if (!await uiConfirm(tt('حذف عرض السعر نه
 
         <div class="card">
           <div class="card-title"><i class="ti ti-list-details" /> {{ tt('البنود','Line items') }} ({{ q.items.length }})</div>
-          <table class="table">
-            <thead><tr><th>#</th><th>{{ tt('الوصف','Description') }}</th><th>{{ tt('الكمية','Qty') }}</th><th>{{ tt('الوحدة','Unit') }}</th><th>{{ tt('سعر الوحدة','Unit price') }}</th><th>{{ tt('خصم','Disc.') }}</th><th>{{ tt('الإجمالي','Total') }}</th></tr></thead>
-            <tbody><tr v-for="(l, i) in q.items" :key="l.id"><td class="muted">{{ i + 1 }}</td><td>{{ l.description }}<small v-if="l.item?.sku" class="muted" dir="ltr"> ({{ l.item.sku }})</small></td><td class="num">{{ f.qty(l.qty) }}</td><td>{{ l.unit || '—' }}</td><td class="num">{{ f.money(l.unit_price) }}</td><td class="num">{{ f.money(l.discount) }}</td><td class="num"><b>{{ f.money(l.total) }}</b></td></tr></tbody>
-          </table>
+          <DocLinesView :items="q.items" :mode="docP.profile.value.lineMode" />
           <div class="totals-box" style="margin-right:auto;max-width:340px">
             <div class="row between"><span>{{ tt('المجموع','Subtotal') }}</span><b>{{ f.money(q.subtotal) }}</b></div>
             <div class="row between"><span>{{ tt('الخصم','Discount') }}<small v-if="q.discount_type === 'percent'" class="muted"> ({{ +q.discount_value }}%)</small></span><b>- {{ f.money(q.discount) }}</b></div>

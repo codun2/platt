@@ -7,6 +7,22 @@ const canPickItems = computed(() => auth.state.value.sidebar.some((i: any) => i.
 const totals = computed(() => calcDoc(props.form))
 const customer = computed(() => props.customers.find((c: any) => String(c.id) === String(props.form.customer_id)))
 
+// Sector profile: naming, record link, line style, presets.
+const { profile: P, link } = useDocProfile()
+const docName = computed(() => tt(...(isInvoice.value ? P.value.invoice : P.value.quote)))
+const party = computed(() => tt(...P.value.party))
+const links = ref<any[]>([])
+onMounted(async () => { if (link.value) links.value = await loadDocLinks(link.value.type) })
+// Issuing against a case / student / contract / work order / booking fills the party, subject and reference.
+watch(() => props.form.link_id, id => {
+  const l = links.value.find((x: any) => x.id === id)
+  if (!l) { if (!id) props.form.student_id = ''; return }
+  if (l.customer_id) props.form.customer_id = l.customer_id
+  props.form.reference = l.reference || props.form.reference
+  if (!props.form.subject) props.form.subject = l.subject || ''
+  props.form.student_id = l.student_id || ''
+})
+
 // Invoice: payment terms → due date (only when the user hasn't typed a due date by hand).
 watch(() => [props.form.payment_terms_days, props.form.date], () => {
   if (!isInvoice.value || props.form.payment_terms_days === '' || !props.form.date) return
@@ -17,12 +33,17 @@ watch(() => [props.form.payment_terms_days, props.form.date], () => {
 
 <template>
   <div>
-    <div class="card-title"><i :class="`ti ${isInvoice ? 'ti-file-invoice' : 'ti-file-dollar'}`" /> {{ isInvoice ? tt('بيانات الفاتورة','Invoice details') : tt('بيانات العرض','Quote details') }}</div>
+    <div class="card-title"><i :class="`ti ${isInvoice ? 'ti-file-invoice' : 'ti-file-dollar'}`" /> {{ tt('بيانات', 'Details:') }} {{ docName }}</div>
     <div class="grid grid-3">
+      <div v-if="link" class="field">
+        <label>{{ tt(link.label[0], link.label[1]) }}</label>
+        <UiSelect v-model="form.link_id" :placeholder="tt('اختياري', 'Optional')"><option value="">—</option><option v-for="l in links" :key="l.id" :value="l.id">{{ l.label }}</option></UiSelect>
+        <small class="muted">{{ tt('يملأ', 'Fills') }} {{ party }} {{ tt('والمرجع تلقائياً', '& reference') }}</small>
+      </div>
       <div class="field">
-        <label>{{ tt('العميل','Customer') }}</label>
-        <UiSelect v-model="form.customer_id" placeholder="—" :add-label="tt('إضافة عميل','Add customer')" add-to="/crm/customers/new" add-key="customer">
-          <option value="">{{ tt('بدون عميل (نقدي)','No customer (cash)') }}</option>
+        <label>{{ party }}<span v-if="!P.cash" style="color:var(--primary)"> *</span></label>
+        <UiSelect v-model="form.customer_id" placeholder="—" :add-label="tt('إضافة', 'Add') + ' ' + party" add-to="/crm/customers/new" add-key="customer">
+          <option value="">{{ P.cash ? tt('بدون عميل (نقدي)','No customer (cash)') : '—' }}</option>
           <option v-for="c in customers" :key="c.id" :value="c.id">{{ c.name }}<template v-if="c.phone"> — {{ c.phone }}</template></option>
         </UiSelect>
         <small v-if="customer" class="muted">{{ [customer.phone, customer.email, customer.city].filter(Boolean).join(' · ') }}<span v-if="customer.tax_number"> · ض.{{ customer.tax_number }}</span></small>
@@ -33,12 +54,12 @@ watch(() => [props.form.payment_terms_days, props.form.date], () => {
         <div class="field"><label>{{ tt('تاريخ الاستحقاق','Due date') }}</label><input v-model="form.due_date" type="date" dir="ltr" /></div>
       </template>
       <div v-else class="field"><label>{{ tt('صالح حتى','Valid until') }}</label><input v-model="form.valid_until" type="date" dir="ltr" /></div>
-      <div class="field"><label>{{ tt('الموضوع','Subject') }}</label><input v-model="form.subject" :placeholder="isInvoice ? tt('مثال: أعمال صيانة شهر أكتوبر','e.g. October maintenance') : tt('مثال: عرض توريد وتركيب','e.g. supply & install')" /></div>
-      <div class="field"><label>{{ isInvoice ? tt('رقم أمر الشراء / المرجع','PO / reference') : tt('مرجع العميل','Customer ref.') }}</label><input v-model="form.reference" dir="ltr" /></div>
+      <div class="field"><label>{{ tt('الموضوع','Subject') }}</label><input v-model="form.subject" :placeholder="tt(...P.subject)" /></div>
+      <div class="field"><label>{{ tt(...P.ref) }}</label><input v-model="form.reference" dir="ltr" /></div>
     </div>
 
-    <div class="card-title" style="margin-top:8px"><i class="ti ti-list-details" /> {{ tt('البنود','Line items') }}</div>
-    <DocLinesEditor :lines="form.lines" :can-pick-items="canPickItems" />
+    <div class="card-title" style="margin-top:8px"><i class="ti ti-list-details" /> {{ P.lineMode === 'amount' ? tt('البنود والمبالغ', 'Items & amounts') : tt('البنود','Line items') }}</div>
+    <DocLinesEditor :lines="form.lines" :can-pick-items="canPickItems" :mode="P.lineMode" :desc-placeholder="tt(...P.desc)" :unit="P.unit" :presets="P.presets" />
 
     <div class="grid grid-2" style="margin-top:16px;align-items:start">
       <div>

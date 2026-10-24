@@ -3,7 +3,9 @@
 const props = defineProps<{ kind: DocKind; doc: any; company: any }>()
 const f = useFmt(); const { tt } = useI18n()
 const isInvoice = computed(() => props.kind === 'invoice')
-const title = computed(() => isInvoice.value ? tt('فاتورة','INVOICE') : tt('عرض سعر','QUOTE'))
+const { profile: P } = useDocProfile()
+// Sector naming on the printed document (فاتورة أتعاب / فاتورة رسوم / فاتورة إيجار…).
+const title = computed(() => tt(...(isInvoice.value ? P.value.invoice : P.value.quote)))
 const st = computed(() => (isInvoice.value ? invoiceStatus : quoteStatus)[props.doc.status]?.label)
 </script>
 
@@ -29,7 +31,7 @@ const st = computed(() => (isInvoice.value ? invoiceStatus : quoteStatus)[props.
 
     <section class="dp-grid">
       <div>
-        <h4>{{ isInvoice ? tt('فاتورة إلى','Bill to') : tt('مقدّم إلى','Prepared for') }}</h4>
+        <h4>{{ isInvoice ? tt('فاتورة إلى','Bill to') : tt('مقدّم إلى','Prepared for') }}: {{ tt(...P.party) }}</h4>
         <b>{{ doc.customer?.name || tt('عميل نقدي','Cash customer') }}</b>
         <div v-if="doc.customer?.company_name">{{ doc.customer.company_name }}</div>
         <div v-if="doc.customer?.phone" dir="ltr" style="text-align:right">{{ doc.customer.phone }}</div>
@@ -48,12 +50,7 @@ const st = computed(() => (isInvoice.value ? invoiceStatus : quoteStatus)[props.
       </div>
     </section>
 
-    <table class="dp-table">
-      <thead><tr><th style="width:30px">#</th><th>{{ tt('الوصف','Description') }}</th><th style="width:70px">{{ tt('الكمية','Qty') }}</th><th style="width:60px">{{ tt('الوحدة','Unit') }}</th><th style="width:100px">{{ tt('سعر الوحدة','Unit price') }}</th><th style="width:80px">{{ tt('خصم','Disc.') }}</th><th style="width:110px">{{ tt('الإجمالي','Total') }}</th></tr></thead>
-      <tbody>
-        <tr v-for="(l, i) in doc.items" :key="l.id"><td>{{ i + 1 }}</td><td>{{ l.description }}</td><td class="num">{{ f.qty(l.qty) }}</td><td>{{ l.unit || '' }}</td><td class="num">{{ f.money(l.unit_price) }}</td><td class="num">{{ +l.discount ? f.money(l.discount) : '' }}</td><td class="num">{{ f.money(l.total) }}</td></tr>
-      </tbody>
-    </table>
+    <DocLinesView :items="doc.items" :mode="P.lineMode" plain class="dp-table" />
 
     <section class="dp-bottom">
       <div class="dp-notes">

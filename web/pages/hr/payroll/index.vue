@@ -4,6 +4,13 @@ const api = useApi(); const auth = useAuth(); const f = useFmt(); const { tt } =
 const d = ref<any>(null); const period = ref(thisMonth()); const err = ref(''); const generating = ref(false)
 const canManage = computed(() => auth.can('hr.manage'))
 async function load() { d.value = await api.get('/app/hr/payroll') }
+// Period picker: 12 months back → 2 ahead; months that already have a run are marked.
+const periods = computed(() => {
+  const now = new Date(); const out: string[] = []
+  for (let i = 2; i >= -12; i--) { const x = new Date(now.getFullYear(), now.getMonth() + i, 1); out.push(`${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}`) }
+  return out
+})
+const done = computed(() => new Set((d.value?.data || []).map((p: any) => p.period)))
 onMounted(load)
 async function generate() {
   err.value = ''; generating.value = true
@@ -24,7 +31,7 @@ async function generate() {
       <div v-if="err" class="alert bad">{{ err }}</div>
       <div class="row between" style="margin-bottom:14px">
         <div class="card-title" style="margin:0"><i class="ti ti-cash" /> {{ tt('كشوف الرواتب','Payroll runs') }}</div>
-        <div v-if="canManage" class="row"><input v-model="period" type="month" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" /><button class="btn" :disabled="generating" @click="generate"><i class="ti ti-player-play" /> {{ tt('إنشاء كشف','Generate') }} {{ monthLabel(period) }}</button></div>
+        <div v-if="canManage" class="row"><UiSelect v-model="period" style="min-width:190px"><option v-for="m in periods" :key="m" :value="m">{{ monthLabel(m) }}{{ done.has(m) ? ' — ' + tt('صادر', 'issued') : '' }}</option></UiSelect><button class="btn" :disabled="generating" @click="generate"><i class="ti ti-player-play" /> {{ tt('إنشاء كشف','Generate') }} {{ monthLabel(period) }}</button></div>
       </div>
       <p class="muted" style="font-size:12px;margin-top:0">{{ tt('يُحسب الكشف من رواتب الموظفين وبدلاتهم، ويُخصم الغياب ونصف الأيام والإجازات بدون راتب تلقائياً بالأجر اليومي (الإجمالي ÷ 30). بعد المراجعة: اعتماد ثم صرف (يُرحَّل قيد الرواتب للمحاسبة).','Computed from salaries and allowances; absences, half-days and unpaid leave are auto-deducted at the daily rate (gross ÷ 30). After review: approve then pay (posts a payroll journal entry).') }}</p>
       <table class="table">

@@ -34,7 +34,8 @@ const groups = computed(() => {
       </div>
       <div v-for="g in groups" :key="g.day" style="margin-bottom:14px">
         <div class="muted" style="font-weight:700;font-size:13px;margin-bottom:6px"><i class="ti ti-calendar" /> {{ g.day }}</div>
-        <table class="table">
+        <table class="table agenda">
+          <colgroup><col style="width:70px" /><col /><col style="width:15%" /><col style="width:14%" /><col style="width:16%" /><col style="width:170px" /></colgroup>
           <tbody>
             <tr v-for="t in g.items" :key="t.id" :style="isOverdue(t) ? 'background:var(--primary-50)' : ''">
               <td style="width:70px" dir="ltr"><b>{{ t.due_at ? t.due_at.slice(11, 16) : '—' }}</b></td>
@@ -53,3 +54,9 @@ const groups = computed(() => {
     <TaskDialog v-if="dialog" :mode="dialog.mode" :task="dialog.task" :projects="projects" :people="people" :default-kind="dialog.kind" @close="dialog = null" @saved="load" />
   </div>
 </template>
+
+<style scoped>
+/* Same column widths in every day group so rows line up across the agenda. */
+.agenda { table-layout: fixed; }
+.agenda td { overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
+</style>

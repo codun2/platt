@@ -17,7 +17,7 @@ export const blankLine = () => ({
 
 export const blankDoc = (kind: DocKind, taxRate = 0) => {
   return {
-    customer_id: '', date: new Date().toISOString().slice(0, 10), status: 'draft',
+    customer_id: '', student_id: '', link_id: '', date: new Date().toISOString().slice(0, 10), status: 'draft',
     due_date: '', payment_terms_days: '', valid_until: '',
     subject: '', reference: '',
     discount_type: 'amount', discount_value: 0, tax_rate: taxRate,
@@ -29,7 +29,7 @@ export const blankDoc = (kind: DocKind, taxRate = 0) => {
 export function docToForm(kind: DocKind, d: any) {
   const f: any = blankDoc(kind, +d.tax_rate || 0)
   Object.assign(f, {
-    customer_id: d.customer_id || '', date: d.date || f.date, status: d.status === 'sent' ? 'sent' : 'draft',
+    customer_id: d.customer_id || '', student_id: d.student_id || '', link_id: d.student_id ? `s${d.student_id}` : '', date: d.date || f.date, status: d.status === 'sent' ? 'sent' : 'draft',
     due_date: d.due_date || '', payment_terms_days: d.payment_terms_days ?? '', valid_until: d.valid_until || '',
     subject: d.subject || '', reference: d.reference || '',
     discount_type: d.discount_type || 'amount', discount_value: +d.discount_value || 0, tax_rate: +d.tax_rate || 0,
@@ -46,7 +46,7 @@ export function docPayload(form: any) {
     .map((l: any) => ({ item_id: l.item_id || null, description: l.description || null, qty: +l.qty || 0, unit: l.unit || null, unit_price: +l.unit_price || 0, discount: +l.discount || 0 }))
   return {
     ...form,
-    customer_id: form.customer_id || null,
+    customer_id: form.customer_id || null, student_id: form.student_id || null, link_id: undefined,
     due_date: form.due_date || null, valid_until: form.valid_until || null,
     payment_terms_days: form.payment_terms_days === '' ? null : +form.payment_terms_days,
     discount_value: +form.discount_value || 0, tax_rate: +form.tax_rate || 0,

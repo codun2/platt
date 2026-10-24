@@ -6,6 +6,8 @@ const sector = computed(() => auth.state.value.tenant?.sector_preset?.key || '')
 // Sectors where official ID / nationality / birth date really matter.
 const needsId = computed(() => ['hotel', 'chalets', 'halls', 'travel', 'car_rental', 'real_estate', 'car_showroom'].includes(sector.value))
 const isCompany = computed(() => props.form.customer_type === 'company')
+// Businesses that actually sell on account (B2B / projects); others never see credit fields.
+const sellsOnCredit = computed(() => ['general', 'wholesale', 'accounting_firm', 'engineering', 'maintenance', 'manufacturing', 'sweets_factory', 'car_showroom', 'farm'].includes(sector.value) || +props.form.credit_limit > 0 || +props.form.opening_balance !== 0)
 </script>
 
 <template>
@@ -70,23 +72,15 @@ const isCompany = computed(() => props.form.customer_type === 'company')
     </div>
     <div class="field"><label>{{ tt('العنوان التفصيلي', 'Full address') }}</label><input v-model="form.address" /></div>
 
-    <div class="card-title" style="margin-top:8px"><i class="ti ti-cash" /> {{ tt('التصنيف والبيانات المالية', 'Classification & financials') }}</div>
-    <div class="grid grid-4">
-      <div class="field">
-        <label>{{ tt('التصنيف', 'Category') }}</label>
-        <UiSelect v-model="form.category">
-          <option value="">{{ tt('عادي', 'Regular') }}</option>
-          <option value="vip">{{ tt('مميّز (VIP)', 'VIP') }}</option>
-          <option value="wholesale">{{ tt('جملة', 'Wholesale') }}</option>
-          <option value="retail">{{ tt('تجزئة', 'Retail') }}</option>
-          <option value="government">{{ tt('جهة حكومية', 'Government') }}</option>
-        </UiSelect>
+    <!-- Credit terms only where the business sells on account; collapsed and optional. -->
+    <details v-if="sellsOnCredit" class="credit-box" :open="!!(+form.credit_limit || +form.opening_balance || +form.payment_terms_days)">
+      <summary><i class="ti ti-credit-card" /> {{ tt('البيع الآجل (اختياري)', 'Credit terms (optional)') }}</summary>
+      <div class="grid grid-3" style="margin-top:10px">
+        <div class="field"><label>{{ tt('مهلة السداد (أيام)', 'Payment terms (days)') }}</label><input v-model="form.payment_terms_days" type="number" min="0" max="365" dir="ltr" /><small class="muted">{{ tt('تُحسب منها تواريخ استحقاق فواتيره', 'Sets due dates on invoices') }}</small></div>
+        <div class="field"><label>{{ tt('حد الائتمان', 'Credit limit') }}</label><input v-model="form.credit_limit" type="number" step="0.001" min="0" dir="ltr" /></div>
+        <div class="field"><label>{{ tt('رصيد سابق عند البدء', 'Balance carried over') }}</label><input v-model="form.opening_balance" type="number" step="0.001" dir="ltr" /></div>
       </div>
-      <div class="field"><label>{{ tt('حد الائتمان', 'Credit limit') }}</label><input v-model="form.credit_limit" type="number" step="0.001" min="0" dir="ltr" /></div>
-      <div class="field"><label>{{ tt('رصيد افتتاحي', 'Opening balance') }}</label><input v-model="form.opening_balance" type="number" step="0.001" dir="ltr" /></div>
-      <div class="field"><label>{{ tt('أيام السداد (آجل)', 'Payment terms (days)') }}</label><input v-model="form.payment_terms_days" type="number" min="0" max="365" dir="ltr" /></div>
-    </div>
-    <div class="field"><label>{{ tt('الوسوم (افصل بينها بفاصلة)', 'Tags (comma separated)') }}</label><input v-model="form.tags" :placeholder="tt('مثال: عميل دائم, مشروع المول', 'e.g. regular, mall project')" /></div>
+    </details>
 
     <div class="card-title" style="margin-top:8px"><i class="ti ti-note" /> {{ tt('ملاحظات', 'Notes') }}</div>
     <div class="field"><textarea v-model="form.notes" rows="3" /></div>
@@ -94,3 +88,8 @@ const isCompany = computed(() => props.form.customer_type === 'company')
     <label class="switch"><input v-model="form.is_active" type="checkbox" /><span /> {{ tt('نشط', 'Active') }}</label>
   </div>
 </template>
+
+<style scoped>
+.credit-box { border: 1px dashed var(--line); border-radius: 12px; padding: 10px 14px; margin: 10px 0 4px; }
+.credit-box summary { cursor: pointer; font-weight: 700; color: var(--muted); }
+</style>
