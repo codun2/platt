@@ -8,7 +8,7 @@ onMounted(load)
 function openNew() { editing.value = null; Object.assign(form, { name: '', name_en: '', price: 0, unit_id: '', is_active: true }); err.value = ''; modal.value = true }
 function openEdit(s: any) { editing.value = s; Object.assign(form, { name: s.name, name_en: s.name_en || '', price: +s.price, unit_id: s.unit_id || '', is_active: s.is_active }); err.value = ''; modal.value = true }
 async function save() { err.value = ''; try { const b = { ...form, unit_id: form.unit_id || null }; editing.value ? await api.patch(`/app/bookings/services/${editing.value.id}`, b) : await api.post('/app/bookings/services', b); modal.value = false; await load() } catch (e: any) { err.value = e.message } }
-async function remove(s: any) { if (!confirm(tt(`حذف ${s.name}؟`,`Delete ${s.name}?`))) return; try { await api.del(`/app/bookings/services/${s.id}`); await load() } catch (e: any) { alert(e.message) } }
+async function remove(s: any) { if (!await uiConfirm(tt(`حذف ${s.name}؟`,`Delete ${s.name}?`))) return; try { await api.del(`/app/bookings/services/${s.id}`); await load() } catch (e: any) { uiAlert(e.message) } }
 </script>
 
 <template>

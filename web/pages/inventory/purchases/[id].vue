@@ -21,7 +21,7 @@ async function act(fn: () => Promise<any>, ok = tt('تم','Done')) {
 }
 const save = () => act(async () => { await api.patch(`/app/inventory/purchases/${id}`, purchasePayload(form)); editing.value = false }, tt('تم حفظ التعديلات','Changes saved'))
 const receive = () => act(() => api.post(`/app/inventory/purchases/${id}/receive`), tt('تم استلام الأصناف إلى المخزون','Items received into stock'))
-const cancel = () => { if (confirm(p.value.status === 'received' ? tt('إلغاء الفاتورة وسحب الكميات من المخزون؟','Cancel and pull quantities from stock?') : tt('إلغاء الفاتورة؟','Cancel invoice?'))) act(() => api.post(`/app/inventory/purchases/${id}/cancel`), tt('تم إلغاء الفاتورة','Invoice cancelled')) }
+const cancel = async () => { if (await uiConfirm(p.value.status === 'received' ? tt('إلغاء الفاتورة وسحب الكميات من المخزون؟','Cancel and pull quantities from stock?') : tt('إلغاء الفاتورة؟','Cancel invoice?'))) act(() => api.post(`/app/inventory/purchases/${id}/cancel`), tt('تم إلغاء الفاتورة','Invoice cancelled')) }
 const doPay = () => act(async () => { await api.post(`/app/inventory/purchases/${id}/pay`, { amount: payAmt.value }); paying.value = false }, tt('تم تسجيل الدفعة','Payment recorded'))
 </script>
 

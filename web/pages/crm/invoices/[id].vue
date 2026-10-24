@@ -34,11 +34,11 @@ async function act(fn: () => Promise<any>, ok = tt('تم','Done')) {
 }
 const save = () => act(async () => { await api.patch(`/app/invoices/${id}`, docPayload(form)); editing.value = false }, tt('تم حفظ التعديلات','Changes saved'))
 const send = () => act(() => api.post(`/app/invoices/${id}/send`), tt('تم إصدار الفاتورة','Invoice issued'))
-const cancel = () => { if (confirm(tt('إلغاء الفاتورة؟','Cancel this invoice?'))) act(() => api.post(`/app/invoices/${id}/cancel`), tt('تم إلغاء الفاتورة','Invoice cancelled')) }
+const cancel = async () => { if (await uiConfirm(tt('إلغاء الفاتورة؟','Cancel this invoice?'))) act(() => api.post(`/app/invoices/${id}/cancel`), tt('تم إلغاء الفاتورة','Invoice cancelled')) }
 const doPay = () => act(async () => { await api.post(`/app/invoices/${id}/pay`, pay); paying.value = false; Object.assign(pay, { method: 'cash', reference: '', note: '', date: f.today() }) }, tt('تم تسجيل الدفعة','Payment recorded'))
-const delPay = (p: any) => { if (confirm(tt(`حذف دفعة ${f.money(p.amount)}؟`,`Delete payment ${f.money(p.amount)}?`))) act(() => api.del(`/app/invoices/${id}/payments/${p.id}`), tt('تم حذف الدفعة','Payment deleted')) }
+const delPay = async (p: any) => { if (await uiConfirm(tt(`حذف دفعة ${f.money(p.amount)}؟`,`Delete payment ${f.money(p.amount)}?`))) act(() => api.del(`/app/invoices/${id}/payments/${p.id}`), tt('تم حذف الدفعة','Payment deleted')) }
 async function duplicate() { try { const c = await api.post(`/app/invoices/${id}/duplicate`); navigateTo(`/crm/invoices/${c.id}?edit=1`) } catch (e: any) { err.value = e.message } }
-async function remove() { if (!confirm(tt('حذف المسودّة نهائياً؟','Delete draft permanently?'))) return; try { await api.del(`/app/invoices/${id}`); navigateTo('/crm/invoices') } catch (e: any) { err.value = e.message } }
+async function remove() { if (!await uiConfirm(tt('حذف المسودّة نهائياً؟','Delete draft permanently?'))) return; try { await api.del(`/app/invoices/${id}`); navigateTo('/crm/invoices') } catch (e: any) { err.value = e.message } }
 </script>
 
 <template>

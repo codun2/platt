@@ -18,7 +18,7 @@ onMounted(load)
 async function act(fn: () => Promise<any>, ok: string) { err.value = ''; msg.value = ''; busy.value = true; try { c.value = await fn(); msg.value = ok; await load() } catch (e: any) { err.value = e.message; window.scrollTo({ top: 0, behavior: 'smooth' }) } finally { busy.value = false } }
 const collect = () => act(() => api.post(`/app/rental/contracts/${id}/collect`, { ...pay, installment_id: pay.installment_id || null }), tt('تم تسجيل الدفعة', 'Payment recorded'))
 const deposit = (kind: string) => act(() => api.post(`/app/rental/contracts/${id}/deposit`, { ...dep, kind }), kind === 'deposit' ? tt('تم استلام التأمين', 'Deposit received') : tt('تم إرجاع التأمين', 'Deposit returned'))
-const closeAs = (status: 'ended' | 'terminated') => { if (confirm(status === 'ended' ? tt('إنهاء العقد؟ ستُلغى الدفعات المستقبلية غير المدفوعة.', 'End the contract? Future unpaid payments are cancelled.') : tt('فسخ العقد اليوم؟ ستُلغى الدفعات المستقبلية غير المدفوعة.', 'Terminate today? Future unpaid payments are cancelled.'))) act(() => api.post(`/app/rental/contracts/${id}/close`, { status }), tt('تم تحديث حالة العقد', 'Contract updated')) }
+const closeAs = async (status: 'ended' | 'terminated') => { if (await uiConfirm(status === 'ended' ? tt('إنهاء العقد؟ ستُلغى الدفعات المستقبلية غير المدفوعة.', 'End the contract? Future unpaid payments are cancelled.') : tt('فسخ العقد اليوم؟ ستُلغى الدفعات المستقبلية غير المدفوعة.', 'Terminate today? Future unpaid payments are cancelled.'))) act(() => api.post(`/app/rental/contracts/${id}/close`, { status }), tt('تم تحديث حالة العقد', 'Contract updated')) }
 function payInstallment(i: any) { pay.installment_id = i.id; pay.amount = +(+i.amount - +i.paid).toFixed(3); document.getElementById('collect')?.scrollIntoView({ behavior: 'smooth', block: 'center' }) }
 
 async function startEdit() {
@@ -28,7 +28,7 @@ async function startEdit() {
   editing.value = true
 }
 async function saveEdit() { err.value = ''; try { await api.patch(`/app/rental/contracts/${id}`, contractPayload(form)); editing.value = false; msg.value = tt('تم حفظ التعديلات', 'Changes saved'); await load() } catch (e: any) { err.value = e.message } }
-async function remove() { if (!confirm(tt('حذف العقد؟', 'Delete contract?'))) return; try { await api.del(`/app/rental/contracts/${id}`); navigateTo('/rental/contracts') } catch (e: any) { alert(e.message) } }
+async function remove() { if (!await uiConfirm(tt('حذف العقد؟', 'Delete contract?'))) return; try { await api.del(`/app/rental/contracts/${id}`); navigateTo('/rental/contracts') } catch (e: any) { uiAlert(e.message) } }
 
 const balance = computed(() => c.value ? +(+c.value.total - +c.value.paid).toFixed(3) : 0)
 const today = f.today()

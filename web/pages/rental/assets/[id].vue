@@ -8,7 +8,7 @@ const canManage = computed(() => auth.can('rental.manage'))
 async function load() { a.value = await api.get(`/app/rental/assets/${id}`); Object.assign(form, assetToForm(a.value)) }
 onMounted(async () => { await load(); owners.value = await api.get('/app/rental/owners'); buildings.value = (await api.get('/app/rental/assets', { type: 'building' })).data })
 async function save() { err.value = ''; try { await api.patch(`/app/rental/assets/${id}`, assetPayload(form)); editing.value = false; msg.value = tt('تم حفظ التعديلات', 'Changes saved'); await load() } catch (e: any) { err.value = e.message } }
-async function remove() { if (!confirm(tt(`حذف ${a.value.name}؟`, `Delete ${a.value.name}?`))) return; try { await api.del(`/app/rental/assets/${id}`); navigateTo('/rental/assets') } catch (e: any) { alert(e.message) } }
+async function remove() { if (!await uiConfirm(tt(`حذف ${a.value.name}؟`, `Delete ${a.value.name}?`))) return; try { await api.del(`/app/rental/assets/${id}`); navigateTo('/rental/assets') } catch (e: any) { uiAlert(e.message) } }
 const active = computed(() => a.value?.contracts?.find((c: any) => c.status === 'active'))
 const collected = computed(() => (a.value?.contracts || []).reduce((n: number, c: any) => n + +c.paid, 0))
 const spec = computed(() => {

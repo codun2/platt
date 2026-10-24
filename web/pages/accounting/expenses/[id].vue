@@ -17,7 +17,7 @@ async function save() {
   try { await api.patch(`/app/accounting/expenses/${id}`, expensePayload(form)); msg.value = tt('تم حفظ التعديلات وإعادة ترحيل القيد','Saved and entry re-posted'); editing.value = false; await load() }
   catch (x: any) { err.value = x.message } finally { saving.value = false; window.scrollTo({ top: 0, behavior: 'smooth' }) }
 }
-async function remove() { if (!confirm(tt('حذف المصروف وقيده؟','Delete expense and its entry?'))) return; try { await api.del(`/app/accounting/expenses/${id}`); navigateTo('/accounting/expenses') } catch (x: any) { err.value = x.message } }
+async function remove() { if (!await uiConfirm(tt('حذف المصروف وقيده؟','Delete expense and its entry?'))) return; try { await api.del(`/app/accounting/expenses/${id}`); navigateTo('/accounting/expenses') } catch (x: any) { err.value = x.message } }
 </script>
 
 <template>

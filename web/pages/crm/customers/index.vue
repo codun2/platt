@@ -6,8 +6,8 @@ const page = ref<any>(null); const q = ref('')
 async function load() { page.value = await api.get('/app/customers', { q: q.value }) }
 onMounted(load)
 async function remove(c: any) {
-  if (!confirm(tt(`حذف العميل ${c.name}؟`, `Delete customer ${c.name}?`))) return
-  try { await api.del(`/app/customers/${c.id}`); await load() } catch (e: any) { alert(e.message) }
+  if (!await uiConfirm(tt(`حذف العميل ${c.name}؟`, `Delete customer ${c.name}?`))) return
+  try { await api.del(`/app/customers/${c.id}`); await load() } catch (e: any) { uiAlert(e.message) }
 }
 const typeLabel = (t: string) => (t === 'company' ? tt('شركة', 'Company') : tt('فرد', 'Individual'))
 </script>

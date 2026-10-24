@@ -26,8 +26,8 @@ async function save() {
   catch (e: any) { err.value = e.message }
 }
 async function remove(r: any) {
-  if (!confirm(tt(`حذف الدور ${r.name_ar}؟`,`Delete role ${r.name_ar}?`))) return
-  try { await api.del(`/app/roles/${r.id}`); await load() } catch (e: any) { alert(e.message) }
+  if (!await uiConfirm(tt(`حذف الدور ${r.name_ar}؟`,`Delete role ${r.name_ar}?`))) return
+  try { await api.del(`/app/roles/${r.id}`); await load() } catch (e: any) { uiAlert(e.message) }
 }
 const groupName = (g: string) => (g === 'core' ? tt('الإدارة العامة','General administration') : (groups.value.find(x => x.group === g)?.items[0]?.name_ar?.replace('عرض: ', '') || g))
 </script>

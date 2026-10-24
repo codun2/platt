@@ -20,7 +20,7 @@ async function save() {
   try { await api.patch(`/app/hr/employees/${id}`, employeePayload(form)); msg.value = tt('تم حفظ التعديلات','Changes saved'); editing.value = false; await load() }
   catch (x: any) { err.value = x.message } finally { saving.value = false; window.scrollTo({ top: 0, behavior: 'smooth' }) }
 }
-async function remove() { if (!confirm(tt(`حذف الموظف ${e.value.name}؟`,`Delete employee ${e.value.name}?`))) return; try { const r = await api.del(`/app/hr/employees/${id}`); if (r.deactivated) { msg.value = r.message; await load() } else navigateTo('/hr/employees') } catch (x: any) { err.value = x.message } }
+async function remove() { if (!await uiConfirm(tt(`حذف الموظف ${e.value.name}؟`,`Delete employee ${e.value.name}?`))) return; try { const r = await api.del(`/app/hr/employees/${id}`); if (r.deactivated) { msg.value = r.message; await load() } else navigateTo('/hr/employees') } catch (x: any) { err.value = x.message } }
 </script>
 
 <template>

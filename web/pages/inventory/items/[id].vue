@@ -21,7 +21,7 @@ async function save() {
   try { await api.patch(`/app/inventory/items/${id}`, itemPayload(form)); msg.value = tt('تم حفظ التعديلات','Changes saved'); editing.value = false; await load() }
   catch (e: any) { err.value = e.message } finally { saving.value = false; window.scrollTo({ top: 0, behavior: 'smooth' }) }
 }
-async function remove() { if (!confirm(tt(`حذف الصنف ${item.value.name}؟`,`Delete item ${item.value.name}?`))) return; try { const r = await api.del(`/app/inventory/items/${id}`); if (r.deactivated) { msg.value = tt('الصنف له حركات، تم تعطيله بدل حذفه.','Item has movements; deactivated instead.'); await load() } else navigateTo('/inventory/items') } catch (e: any) { err.value = e.message } }
+async function remove() { if (!await uiConfirm(tt(`حذف الصنف ${item.value.name}؟`,`Delete item ${item.value.name}?`))) return; try { const r = await api.del(`/app/inventory/items/${id}`); if (r.deactivated) { msg.value = tt('الصنف له حركات، تم تعطيله بدل حذفه.','Item has movements; deactivated instead.'); await load() } else navigateTo('/inventory/items') } catch (e: any) { err.value = e.message } }
 </script>
 
 <template>

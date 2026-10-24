@@ -14,8 +14,8 @@ onMounted(async () => {
   if (route.query.open) await show(Number(route.query.open))
   if (route.query.print) { await show(Number(route.query.print)); printing.value = true; await nextTick(); setTimeout(() => window.print(), 300) }
 })
-async function doPay() { try { await api.post(`/app/pos/sales/${view.value.id}/pay`, pay); await show(view.value.id); await load() } catch (e: any) { alert(e.message) } }
-async function cancel() { if (!confirm(tt('إلغاء الفاتورة وإرجاع الكميات للمخزون؟','Cancel invoice and return quantities to stock?'))) return; try { await api.post(`/app/pos/sales/${view.value.id}/cancel`); await show(view.value.id); await load() } catch (e: any) { alert(e.message) } }
+async function doPay() { try { await api.post(`/app/pos/sales/${view.value.id}/pay`, pay); await show(view.value.id); await load() } catch (e: any) { uiAlert(e.message) } }
+async function cancel() { if (!await uiConfirm(tt('إلغاء الفاتورة وإرجاع الكميات للمخزون؟','Cancel invoice and return quantities to stock?'))) return; try { await api.post(`/app/pos/sales/${view.value.id}/cancel`); await show(view.value.id); await load() } catch (e: any) { uiAlert(e.message) } }
 function print() { printing.value = true; nextTick(() => { window.print(); setTimeout(() => (printing.value = false), 500) }) }
 </script>
 

@@ -38,7 +38,7 @@ async function convert() {
   try { const r = await api.post(`/app/quotes/${id}/convert`, { ...conv, payment_terms_days: conv.payment_terms_days === '' ? null : +conv.payment_terms_days }); navigateTo(`/crm/invoices/${r.invoice.id}`) }
   catch (e: any) { err.value = e.message; saving.value = false; window.scrollTo({ top: 0, behavior: 'smooth' }) }
 }
-async function remove() { if (!confirm(tt('حذف عرض السعر نهائياً؟','Delete quote permanently?'))) return; try { await api.del(`/app/quotes/${id}`); navigateTo('/crm/quotes') } catch (e: any) { err.value = e.message } }
+async function remove() { if (!await uiConfirm(tt('حذف عرض السعر نهائياً؟','Delete quote permanently?'))) return; try { await api.del(`/app/quotes/${id}`); navigateTo('/crm/quotes') } catch (e: any) { err.value = e.message } }
 </script>
 
 <template>

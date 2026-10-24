@@ -24,8 +24,8 @@ async function save() {
   } catch (e: any) { err.value = e.message } finally { saving.value = false }
 }
 async function remove() {
-  if (!confirm(tt(`حذف العميل ${detail.value.customer.name}؟`, `Delete customer ${detail.value.customer.name}?`))) return
-  try { await api.del(`/app/customers/${id}`); navigateTo('/crm/customers') } catch (e: any) { alert(e.message) }
+  if (!await uiConfirm(tt(`حذف العميل ${detail.value.customer.name}؟`, `Delete customer ${detail.value.customer.name}?`))) return
+  try { await api.del(`/app/customers/${id}`); navigateTo('/crm/customers') } catch (e: any) { uiAlert(e.message) }
 }
 const typeLabel = (t: string) => (t === 'company' ? tt('شركة / جهة', 'Company') : tt('فرد', 'Individual'))
 </script>

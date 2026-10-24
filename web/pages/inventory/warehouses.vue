@@ -23,9 +23,9 @@ async function save() {
   try { editing.value ? await api.patch(`/app/inventory/warehouses/${editing.value.id}`, form) : await api.post('/app/inventory/warehouses', form); modal.value = false; await load() }
   catch (e: any) { err.value = e.message }
 }
-async function remove(r: any) { if (!confirm(tt(`حذف ${r.name}؟`,`Delete ${r.name}?`))) return; try { await api.del(`/app/inventory/warehouses/${r.id}`); await load() } catch (e: any) { alert(e.message) } }
-async function doAdjust() { msg.value = ''; try { await api.post('/app/inventory/stock/adjust', adj); msg.value = tt('تم تحديث الرصيد','Balance updated'); adj.qty = 0 } catch (e: any) { alert(e.message) } }
-async function doTransfer() { msg.value = ''; try { await api.post('/app/inventory/stock/transfer', trf); msg.value = tt('تم التحويل','Transferred'); trf.qty = 0 } catch (e: any) { alert(e.message) } }
+async function remove(r: any) { if (!await uiConfirm(tt(`حذف ${r.name}؟`,`Delete ${r.name}?`))) return; try { await api.del(`/app/inventory/warehouses/${r.id}`); await load() } catch (e: any) { uiAlert(e.message) } }
+async function doAdjust() { msg.value = ''; try { await api.post('/app/inventory/stock/adjust', adj); msg.value = tt('تم تحديث الرصيد','Balance updated'); adj.qty = 0 } catch (e: any) { uiAlert(e.message) } }
+async function doTransfer() { msg.value = ''; try { await api.post('/app/inventory/stock/transfer', trf); msg.value = tt('تم التحويل','Transferred'); trf.qty = 0 } catch (e: any) { uiAlert(e.message) } }
 </script>
 
 <template>

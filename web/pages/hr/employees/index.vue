@@ -6,7 +6,7 @@ const filt = reactive({ q: '', department: '', status: '' })
 const canManage = computed(() => auth.can('hr.manage'))
 async function load(p = 1) { pg.value = p; page.value = await api.get('/app/hr/employees', { ...filt, page: p }) }
 onMounted(load)
-async function remove(e: any) { if (!confirm(tt(`حذف الموظف ${e.name}؟`,`Delete employee ${e.name}?`))) return; try { const r = await api.del(`/app/hr/employees/${e.id}`); if (r.deactivated) alert(r.message); await load(pg.value) } catch (x: any) { alert(x.message) } }
+async function remove(e: any) { if (!await uiConfirm(tt(`حذف الموظف ${e.name}؟`,`Delete employee ${e.name}?`))) return; try { const r = await api.del(`/app/hr/employees/${e.id}`); if (r.deactivated) uiAlert(r.message); await load(pg.value) } catch (x: any) { uiAlert(x.message) } }
 </script>
 
 <template>

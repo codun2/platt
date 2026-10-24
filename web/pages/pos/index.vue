@@ -46,7 +46,7 @@ async function checkout() {
     clear(); await loadItems()
   } catch (e: any) { err.value = e.message } finally { busy.value = false }
 }
-async function openShift() { try { shift.value = await api.post('/app/pos/shifts/open', { opening_cash: openCash.value, warehouse_id: warehouseId.value || null }) } catch (e: any) { alert(e.message) } }
+async function openShift() { try { shift.value = await api.post('/app/pos/shifts/open', { opening_cash: openCash.value, warehouse_id: warehouseId.value || null }) } catch (e: any) { uiAlert(e.message) } }
 function printLast() { window.open(`/app/pos/sales?print=${last.value.id}`, '_blank') }
 </script>
 

@@ -15,7 +15,7 @@ function openEdit(i: any) { editItem.value = i; Object.assign(ef, { overtime: +i
 const saveItem = () => act(async () => { await api.patch(`/app/hr/payroll/${id}/items/${editItem.value.id}`, ef); editItem.value = null }, tt('تم تحديث سطر الموظف','Line updated'))
 const approve = () => act(() => api.post(`/app/hr/payroll/${id}/approve`), tt('تم اعتماد الكشف','Payroll approved'))
 const pay = () => act(async () => { await api.post(`/app/hr/payroll/${id}/pay`, { paid_from_account_id: payAcc.value, date: payDate.value }); paying.value = false }, tt('تم صرف الرواتب وترحيل القيد','Salaries paid and entry posted'))
-async function remove() { if (!confirm(tt('حذف الكشف؟','Delete payroll?'))) return; try { await api.del(`/app/hr/payroll/${id}`); navigateTo('/hr/payroll') } catch (x: any) { err.value = x.message } }
+async function remove() { if (!await uiConfirm(tt('حذف الكشف؟','Delete payroll?'))) return; try { await api.del(`/app/hr/payroll/${id}`); navigateTo('/hr/payroll') } catch (x: any) { err.value = x.message } }
 const print = () => window.print()
 const deductions = (i: any) => +i.absence_deduction + +i.fixed_deductions + +i.other_deductions + +i.advance
 </script>

@@ -10,7 +10,7 @@ onMounted(load)
 function openNew() { editing.value = null; Object.assign(form, blank()); err.value = ''; modal.value = true }
 function openEdit(u: any) { editing.value = u; Object.assign(form, { ...blank(), ...u, name_en: u.name_en || '', capacity: u.capacity || '', location: u.location || '', description: u.description || '', price_day: +u.price_day, price_night: +u.price_night, price_hour: +u.price_hour, deposit: +u.deposit }); err.value = ''; modal.value = true }
 async function save() { err.value = ''; try { const b = { ...form, capacity: form.capacity || null }; editing.value ? await api.patch(`/app/bookings/units/${editing.value.id}`, b) : await api.post('/app/bookings/units', b); modal.value = false; await load() } catch (e: any) { err.value = e.message } }
-async function remove(u: any) { if (!confirm(tt(`حذف ${u.name}؟`,`Delete ${u.name}?`))) return; try { await api.del(`/app/bookings/units/${u.id}`); await load() } catch (e: any) { alert(e.message) } }
+async function remove(u: any) { if (!await uiConfirm(tt(`حذف ${u.name}؟`,`Delete ${u.name}?`))) return; try { await api.del(`/app/bookings/units/${u.id}`); await load() } catch (e: any) { uiAlert(e.message) } }
 </script>
 
 <template>

@@ -20,7 +20,7 @@ async function save() {
   try { await api.patch(`/app/accounting/journal/${id}`, journalPayload(form)); msg.value = tt('تم حفظ القيد','Entry saved'); editing.value = false; await load() }
   catch (x: any) { err.value = x.message } finally { saving.value = false; window.scrollTo({ top: 0, behavior: 'smooth' }) }
 }
-async function remove() { if (!confirm(tt('حذف القيد نهائياً؟','Delete entry permanently?'))) return; try { await api.del(`/app/accounting/journal/${id}`); navigateTo('/accounting/journal') } catch (x: any) { err.value = x.message } }
+async function remove() { if (!await uiConfirm(tt('حذف القيد نهائياً؟','Delete entry permanently?'))) return; try { await api.del(`/app/accounting/journal/${id}`); navigateTo('/accounting/journal') } catch (x: any) { err.value = x.message } }
 const print = () => window.print()
 </script>
 

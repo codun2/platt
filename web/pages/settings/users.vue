@@ -28,8 +28,8 @@ async function save() {
   } catch (e: any) { err.value = e.message }
 }
 async function remove(u: any) {
-  if (!confirm(tt(`حذف المستخدم ${u.name}؟`,`Delete user ${u.name}?`))) return
-  try { await api.del(`/app/users/${u.id}`); await load() } catch (e: any) { alert(e.message) }
+  if (!await uiConfirm(tt(`حذف المستخدم ${u.name}؟`,`Delete user ${u.name}?`))) return
+  try { await api.del(`/app/users/${u.id}`); await load() } catch (e: any) { uiAlert(e.message) }
 }
 </script>
 

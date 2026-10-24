@@ -5,7 +5,7 @@ const rows = ref<any[]>([]); const q = ref(''); const type = ref('')
 const canManage = computed(() => auth.can('rental.manage'))
 async function load() { rows.value = await api.get('/app/rental/owners', { q: q.value, type: type.value }) }
 onMounted(load)
-async function remove(o: any) { if (!confirm(tt(`حذف ${o.name}؟`, `Delete ${o.name}?`))) return; try { await api.del(`/app/rental/owners/${o.id}`); await load() } catch (e: any) { alert(e.message) } }
+async function remove(o: any) { if (!await uiConfirm(tt(`حذف ${o.name}؟`, `Delete ${o.name}?`))) return; try { await api.del(`/app/rental/owners/${o.id}`); await load() } catch (e: any) { uiAlert(e.message) } }
 </script>
 
 <template>

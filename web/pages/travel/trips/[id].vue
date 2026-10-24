@@ -33,20 +33,20 @@ async function save() {
 }
 async function setStatus(s: string) {
   try { await api.patch(`/app/travel/trips/${id}`, { ...tripPayload(tripToForm(trip.value)), status: s }); await load() }
-  catch (e: any) { alert(e.message) }
+  catch (e: any) { uiAlert(e.message) }
 }
 async function addTraveler() {
   try { await api.post('/app/travel/travelers', { ...trav, trip_id: id, package_id: trav.package_id || null, price: trav.price === '' ? null : trav.price, gender: trav.gender || null }); await load() }
-  catch (e: any) { alert(e.message) }
+  catch (e: any) { uiAlert(e.message) }
 }
 async function addExpense() {
   try { await api.post(`/app/travel/trips/${id}/expenses`, exp); exp.amount = 0; exp.note = ''; await load() }
-  catch (e: any) { alert(e.message) }
+  catch (e: any) { uiAlert(e.message) }
 }
-async function delExpense(e: any) { if (!confirm(tt('حذف المصروف؟','Delete expense?'))) return; await api.del(`/app/travel/trips/${id}/expenses/${e.id}`); await load() }
+async function delExpense(e: any) { if (!await uiConfirm(tt('حذف المصروف؟','Delete expense?'))) return; await api.del(`/app/travel/trips/${id}/expenses/${e.id}`); await load() }
 async function remove() {
-  if (!confirm(tt('حذف الرحلة؟','Delete trip?'))) return
-  try { await api.del(`/app/travel/trips/${id}`); navigateTo('/travel/trips') } catch (e: any) { alert(e.message) }
+  if (!await uiConfirm(tt('حذف الرحلة؟','Delete trip?'))) return
+  try { await api.del(`/app/travel/trips/${id}`); navigateTo('/travel/trips') } catch (e: any) { uiAlert(e.message) }
 }
 </script>
 

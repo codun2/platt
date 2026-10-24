@@ -14,7 +14,7 @@ const rows = computed(() => {
   for (const a of all.filter((x: any) => !x.parent_id || !all.some((p: any) => p.id === x.parent_id))) { out.push({ ...a, depth: 0 }); for (const u of kids(a.id)) out.push({ ...u, depth: 1 }) }
   return out
 })
-async function remove(a: any) { if (!confirm(tt(`حذف ${a.name}؟`, `Delete ${a.name}?`))) return; try { await api.del(`/app/rental/assets/${a.id}`); await load() } catch (e: any) { alert(e.message) } }
+async function remove(a: any) { if (!await uiConfirm(tt(`حذف ${a.name}؟`, `Delete ${a.name}?`))) return; try { await api.del(`/app/rental/assets/${a.id}`); await load() } catch (e: any) { uiAlert(e.message) } }
 </script>
 
 <template>

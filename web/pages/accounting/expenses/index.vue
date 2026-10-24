@@ -6,7 +6,7 @@ const filt = reactive({ q: '', account_id: '', from: '', to: '' })
 const canManage = computed(() => auth.can('accounting.manage'))
 async function load(p = 1) { pg.value = p; page.value = await api.get('/app/accounting/expenses', { ...filt, page: p }) }
 onMounted(async () => { await load(); meta.value = await api.get('/app/accounting/expenses/meta') })
-async function remove(e: any) { if (!confirm(tt(`حذف المصروف ${e.number}؟ سيُحذف قيده أيضاً.`,`Delete expense ${e.number}? Its entry is removed too.`))) return; try { await api.del(`/app/accounting/expenses/${e.id}`); await load(pg.value) } catch (x: any) { alert(x.message) } }
+async function remove(e: any) { if (!await uiConfirm(tt(`حذف المصروف ${e.number}؟ سيُحذف قيده أيضاً.`,`Delete expense ${e.number}? Its entry is removed too.`))) return; try { await api.del(`/app/accounting/expenses/${e.id}`); await load(pg.value) } catch (x: any) { uiAlert(x.message) } }
 </script>
 
 <template>

@@ -14,8 +14,8 @@ onMounted(async () => { await load(); trips.value = await api.get('/app/travel/t
 async function show(id: number) { view.value = await api.get(`/app/travel/travelers/${id}`); editing.value = false; pay.amount = Math.max(0, Number(view.value.price) - Number(view.value.paid)) }
 function startEdit() { const t = view.value; Object.assign(form, { name: t.name, phone: t.phone || '', passport_no: t.passport_no || '', passport_expiry: t.passport_expiry || '', nationality: t.nationality || '', gender: t.gender || '', birth_date: t.birth_date || '', package_id: t.package_id || '', price: +t.price, status: t.status, notes: t.notes || '' }); editing.value = true; err.value = '' }
 async function save() { err.value = ''; try { await api.patch(`/app/travel/travelers/${view.value.id}`, { ...form, package_id: form.package_id || null, gender: form.gender || null, passport_expiry: form.passport_expiry || null, birth_date: form.birth_date || null }); await show(view.value.id); await load() } catch (e: any) { err.value = e.message } }
-async function doPay() { try { await api.post(`/app/travel/travelers/${view.value.id}/pay`, pay); await show(view.value.id); await load() } catch (e: any) { alert(e.message) } }
-async function remove() { if (!confirm(tt('حذف/إلغاء المسافر؟','Delete/cancel traveler?'))) return; try { await api.del(`/app/travel/travelers/${view.value.id}`); view.value = null; await load() } catch (e: any) { alert(e.message) } }
+async function doPay() { try { await api.post(`/app/travel/travelers/${view.value.id}/pay`, pay); await show(view.value.id); await load() } catch (e: any) { uiAlert(e.message) } }
+async function remove() { if (!await uiConfirm(tt('حذف/إلغاء المسافر؟','Delete/cancel traveler?'))) return; try { await api.del(`/app/travel/travelers/${view.value.id}`); view.value = null; await load() } catch (e: any) { uiAlert(e.message) } }
 </script>
 
 <template>

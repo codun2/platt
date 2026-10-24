@@ -15,7 +15,7 @@ async function save() {
   try { editing.value ? await api.patch(`/super/plans/${editing.value.id}`, form) : await api.post('/super/plans', form); modal.value = false; await load() }
   catch (e: any) { err.value = e.message }
 }
-async function remove(p: any) { if (!confirm(tt(`حذف الخطة ${p.name_ar}؟`,`Delete plan ${p.name_ar}?`))) return; try { await api.del(`/super/plans/${p.id}`); await load() } catch (e: any) { alert(e.message) } }
+async function remove(p: any) { if (!await uiConfirm(tt(`حذف الخطة ${p.name_ar}؟`,`Delete plan ${p.name_ar}?`))) return; try { await api.del(`/super/plans/${p.id}`); await load() } catch (e: any) { uiAlert(e.message) } }
 </script>
 
 <template>

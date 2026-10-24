@@ -17,7 +17,7 @@ async function save() {
   try { editing.value ? await api.patch(`/super/modules/${editing.value.id}`, body) : await api.post('/super/modules', body); modal.value = false; await load() }
   catch (e: any) { err.value = e.message }
 }
-async function remove(m: any) { if (!confirm(tt(`حذف الوحدة ${m.name_ar}؟`,`Delete module ${m.name_ar}?`))) return; try { await api.del(`/super/modules/${m.id}`); await load() } catch (e: any) { alert(e.message) } }
+async function remove(m: any) { if (!await uiConfirm(tt(`حذف الوحدة ${m.name_ar}؟`,`Delete module ${m.name_ar}?`))) return; try { await api.del(`/super/modules/${m.id}`); await load() } catch (e: any) { uiAlert(e.message) } }
 const tree = computed(() => parents.value.map(p => ({ ...p, children: modules.value.filter(c => c.parent_key === p.key) })))
 </script>
 

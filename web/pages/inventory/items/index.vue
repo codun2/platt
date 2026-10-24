@@ -9,7 +9,7 @@ const canManage = computed(() => auth.can('inventory.manage'))
 async function load(p = 1) { pg.value = p; page.value = await api.get('/app/inventory/items', { q: filt.q, category_id: filt.category_id, low_stock: filt.low_stock ? 1 : '', page: p }) }
 async function loadMeta() { meta.value = await api.get('/app/inventory/items/meta') }
 onMounted(async () => { await loadMeta(); await load() })
-async function remove(i: any) { if (!confirm(tt(`حذف الصنف ${i.name}؟`,`Delete item ${i.name}?`))) return; try { const r = await api.del(`/app/inventory/items/${i.id}`); if (r.deactivated) alert(tt('الصنف له حركات، تم تعطيله بدل حذفه.','Item has movements; deactivated instead.')); await load(pg.value) } catch (e: any) { alert(e.message) } }
+async function remove(i: any) { if (!await uiConfirm(tt(`حذف الصنف ${i.name}؟`,`Delete item ${i.name}?`))) return; try { const r = await api.del(`/app/inventory/items/${i.id}`); if (r.deactivated) uiAlert(tt('الصنف له حركات، تم تعطيله بدل حذفه.','Item has movements; deactivated instead.')); await load(pg.value) } catch (e: any) { uiAlert(e.message) } }
 async function addSub() {
   subErr.value = ''
   try {

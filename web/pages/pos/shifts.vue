@@ -5,8 +5,8 @@ const page = ref<any>(null); const current = ref<any>(null); const view = ref<an
 const openCash = ref(0); const closing = ref(0); const note = ref('')
 async function load() { page.value = await api.get('/app/pos/shifts'); current.value = await api.get('/app/pos/shifts/current'); if (current.value) closing.value = Number(current.value.expected_cash) }
 onMounted(load)
-async function open() { try { await api.post('/app/pos/shifts/open', { opening_cash: openCash.value }); await load() } catch (e: any) { alert(e.message) } }
-async function close() { if (!confirm(tt('إغلاق الوردية؟','Close shift?'))) return; try { await api.post(`/app/pos/shifts/${current.value.id}/close`, { closing_cash: closing.value, note: note.value }); await load() } catch (e: any) { alert(e.message) } }
+async function open() { try { await api.post('/app/pos/shifts/open', { opening_cash: openCash.value }); await load() } catch (e: any) { uiAlert(e.message) } }
+async function close() { if (!await uiConfirm(tt('إغلاق الوردية؟','Close shift?'))) return; try { await api.post(`/app/pos/shifts/${current.value.id}/close`, { closing_cash: closing.value, note: note.value }); await load() } catch (e: any) { uiAlert(e.message) } }
 async function show(s: any) { view.value = await api.get(`/app/pos/shifts/${s.id}`) }
 </script>
 

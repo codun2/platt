@@ -9,7 +9,7 @@ onMounted(load)
 function openNew() { editing.value = null; Object.assign(form, { name: '', type: 'umrah', price: 0, includes: '', is_active: true }); err.value = ''; modal.value = true }
 function openEdit(p: any) { editing.value = p; Object.assign(form, { name: p.name, type: p.type, price: +p.price, includes: p.includes || '', is_active: p.is_active }); err.value = ''; modal.value = true }
 async function save() { err.value = ''; try { editing.value ? await api.patch(`/app/travel/packages/${editing.value.id}`, form) : await api.post('/app/travel/packages', form); modal.value = false; await load() } catch (e: any) { err.value = e.message } }
-async function remove(p: any) { if (!confirm(tt(`حذف ${p.name}؟`,`Delete ${p.name}?`))) return; try { await api.del(`/app/travel/packages/${p.id}`); await load() } catch (e: any) { alert(e.message) } }
+async function remove(p: any) { if (!await uiConfirm(tt(`حذف ${p.name}؟`,`Delete ${p.name}?`))) return; try { await api.del(`/app/travel/packages/${p.id}`); await load() } catch (e: any) { uiAlert(e.message) } }
 </script>
 
 <template>

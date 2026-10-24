@@ -69,7 +69,7 @@ const doPay = () => act(async () => { await api.post(`/app/bookings/list/${id}/p
             <button v-if="b.status !== 'cancelled'" class="btn ghost sm" @click="paying = !paying"><i class="ti ti-cash" /> {{ tt('حركة مالية','Transaction') }}</button>
             <button v-if="b.deposit_status === 'held' && b.status !== 'cancelled'" class="btn ghost sm" @click="setStatus(b.status, 'forfeited', tt('تمت مصادرة التأمين','Deposit forfeited'))"><i class="ti ti-shield-x" /> {{ tt('مصادرة التأمين','Forfeit deposit') }}</button>
             <button v-if="open" class="btn ghost sm" @click="editing = true"><i class="ti ti-pencil" /> {{ tt('تعديل','Edit') }}</button>
-            <button v-if="open" class="btn ghost sm" style="color:var(--primary)" @click="confirm(tt('إلغاء الحجز؟','Cancel booking?')) && setStatus('cancelled', undefined, tt('تم إلغاء الحجز','Booking cancelled'))"><i class="ti ti-ban" /> {{ tt('إلغاء الحجز','Cancel booking') }}</button>
+            <button v-if="open" class="btn ghost sm" style="color:var(--primary)" @click="uiConfirm(tt('إلغاء الحجز؟','Cancel booking?')).then(ok => ok && setStatus('cancelled', undefined, tt('تم إلغاء الحجز','Booking cancelled')))"><i class="ti ti-ban" /> {{ tt('إلغاء الحجز','Cancel booking') }}</button>
           </div>
         </div>
 

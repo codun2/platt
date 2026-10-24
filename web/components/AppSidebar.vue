@@ -11,7 +11,22 @@ const open = ref<Record<string, boolean>>({})
 // Prefer name_en in English (falls back to Arabic when a module has no English name).
 const label = (i: { name_ar: string; name_en: string | null }) => (isEn.value && i.name_en) ? i.name_en : i.name_ar
 
-const isActive = (r: string | null) => !!r && (route.path === r || (r !== '/' && route.path.startsWith(r)))
+// Exactly one menu route is active: the most specific one matching the current
+// path (so /pos/sales highlights "فواتير المبيعات", not also "شاشة البيع" at /pos).
+const bestRoute = computed(() => {
+  const p = route.path
+  let best: string | null = null
+  const walk = (items: SidebarItem[]) => {
+    for (const i of items) {
+      const r = i.route
+      if (r && (p === r || (r !== '/' && p.startsWith(r.endsWith('/') ? r : r + '/'))) && (!best || r.length > best.length)) best = r
+      walk(i.children || [])
+    }
+  }
+  walk(props.items)
+  return best
+})
+const isActive = (r: string | null) => !!r && r === bestRoute.value
 
 const filtered = computed(() => {
   const s = q.value.trim()

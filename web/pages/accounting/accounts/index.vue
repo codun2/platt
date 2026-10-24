@@ -25,7 +25,7 @@ async function save() {
   const body = { ...form, parent_id: form.parent_id || null, opening_balance: +form.opening_balance || 0 }
   try { editing.value ? await api.patch(`/app/accounting/accounts/${editing.value.id}`, body) : await api.post('/app/accounting/accounts', body); modal.value = false; await load() } catch (e: any) { err.value = e.message }
 }
-async function remove(a: any) { if (!confirm(tt(`حذف الحساب ${a.name}؟`,`Delete account ${a.name}?`))) return; try { const r = await api.del(`/app/accounting/accounts/${a.id}`); if (r.deactivated) alert(r.message); await load() } catch (e: any) { alert(e.message) } }
+async function remove(a: any) { if (!await uiConfirm(tt(`حذف الحساب ${a.name}؟`,`Delete account ${a.name}?`))) return; try { const r = await api.del(`/app/accounting/accounts/${a.id}`); if (r.deactivated) uiAlert(r.message); await load() } catch (e: any) { uiAlert(e.message) } }
 const typeTotal = (t: string) => rows.value.filter(a => a.type === t && !a.parent_id).reduce((s, a) => s + (+a.balance || 0), 0)
 </script>
 

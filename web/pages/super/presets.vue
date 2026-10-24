@@ -22,7 +22,7 @@ async function save() {
   try { editing.value ? await api.patch(`/super/presets/${editing.value.id}`, form) : await api.post('/super/presets', form); modal.value = false; await load() }
   catch (e: any) { err.value = e.message }
 }
-async function remove(p: any) { if (!confirm(tt(`حذف الباقة ${p.name_ar}؟`,`Delete preset ${p.name_ar}?`))) return; try { await api.del(`/super/presets/${p.id}`); await load() } catch (e: any) { alert(e.message) } }
+async function remove(p: any) { if (!await uiConfirm(tt(`حذف الباقة ${p.name_ar}؟`,`Delete preset ${p.name_ar}?`))) return; try { await api.del(`/super/presets/${p.id}`); await load() } catch (e: any) { uiAlert(e.message) } }
 const topNames = (p: any) => p.modules.filter((m: any) => tops.value.some(t => t.id === m.id)).map((m: any) => tt(m.name_ar, m.name_en || m.name_ar))
 </script>
 

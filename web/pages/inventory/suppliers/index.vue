@@ -6,7 +6,7 @@ const canManage = computed(() => auth.can('inventory.manage'))
 async function load() { rows.value = await api.get('/app/inventory/suppliers') }
 onMounted(load)
 const list = computed(() => rows.value.filter((s: any) => (!activeOnly.value || s.is_active) && (!q.value || [s.name, s.phone, s.email, s.city, s.contact_person].some(v => String(v || '').includes(q.value)))))
-async function remove(s: any) { if (!confirm(tt(`حذف المورد ${s.name}؟`,`Delete supplier ${s.name}?`))) return; try { const r = await api.del(`/app/inventory/suppliers/${s.id}`); if (r.deactivated) alert(tt('المورد له فواتير، تم تعطيله بدل حذفه.','Supplier has invoices; deactivated instead.')); await load() } catch (e: any) { alert(e.message) } }
+async function remove(s: any) { if (!await uiConfirm(tt(`حذف المورد ${s.name}؟`,`Delete supplier ${s.name}?`))) return; try { const r = await api.del(`/app/inventory/suppliers/${s.id}`); if (r.deactivated) uiAlert(tt('المورد له فواتير، تم تعطيله بدل حذفه.','Supplier has invoices; deactivated instead.')); await load() } catch (e: any) { uiAlert(e.message) } }
 </script>
 
 <template>

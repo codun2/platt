@@ -11,7 +11,7 @@ async function setStatus(status: string, label: string) {
   err.value = ''; msg.value = ''; saving.value = true
   try { await api.post(`/app/hr/leaves/${id}/status`, { status, note: note.value }); msg.value = label; await load() } catch (x: any) { err.value = x.message } finally { saving.value = false }
 }
-async function remove() { if (!confirm(tt('حذف الطلب؟','Delete request?'))) return; try { await api.del(`/app/hr/leaves/${id}`); navigateTo('/hr/attendance?tab=leaves') } catch (x: any) { err.value = x.message } }
+async function remove() { if (!await uiConfirm(tt('حذف الطلب؟','Delete request?'))) return; try { await api.del(`/app/hr/leaves/${id}`); navigateTo('/hr/attendance?tab=leaves') } catch (x: any) { err.value = x.message } }
 </script>
 
 <template>

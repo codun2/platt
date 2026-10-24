@@ -18,7 +18,7 @@ async function save() {
   try { await api.patch(`/app/inventory/suppliers/${id}`, supplierPayload(form)); msg.value = tt('تم حفظ التعديلات','Changes saved'); editing.value = false; await load() }
   catch (e: any) { err.value = e.message } finally { saving.value = false; window.scrollTo({ top: 0, behavior: 'smooth' }) }
 }
-async function remove() { if (!confirm(tt(`حذف المورد ${s.value.name}؟`,`Delete supplier ${s.value.name}?`))) return; try { const r = await api.del(`/app/inventory/suppliers/${id}`); if (r.deactivated) { msg.value = tt('المورد له فواتير، تم تعطيله بدل حذفه.','Supplier has invoices; deactivated instead.'); await load() } else navigateTo('/inventory/suppliers') } catch (e: any) { err.value = e.message } }
+async function remove() { if (!await uiConfirm(tt(`حذف المورد ${s.value.name}؟`,`Delete supplier ${s.value.name}?`))) return; try { const r = await api.del(`/app/inventory/suppliers/${id}`); if (r.deactivated) { msg.value = tt('المورد له فواتير، تم تعطيله بدل حذفه.','Supplier has invoices; deactivated instead.'); await load() } else navigateTo('/inventory/suppliers') } catch (e: any) { err.value = e.message } }
 </script>
 
 <template>
