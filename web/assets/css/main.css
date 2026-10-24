@@ -54,6 +54,9 @@ h1, h2, h3 { margin: 0; }
 /* ---------- Components ---------- */
 .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; }
 .card + .card { margin-top: 18px; }
+/* Cards laid out side by side in a grid row must not inherit the stacking gap,
+   or every card after the first drops 18px (uneven stat tiles). */
+.grid > .card + .card { margin-top: 0; }
 .card-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
 .card-title i { color: var(--primary); }
 .grid { display: grid; gap: 16px; }
