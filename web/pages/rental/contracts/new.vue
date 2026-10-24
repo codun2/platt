@@ -4,6 +4,7 @@ const api = useApi(); const auth = useAuth(); const route = useRoute(); const te
 if (!auth.can('rental.manage')) navigateTo('/rental/contracts')
 const err = ref(''); const saving = ref(false); const assets = ref<any[]>([]); const customers = ref<any[]>([])
 const form = reactive<any>(blankContract(terms.isSale))
+useDraft('rental-contract-new', form)   // kept if the user jumps to an add page from a dropdown
 onMounted(async () => {
   const all = (await api.get('/app/rental/assets', { leasable: 1 })).data
   assets.value = all.filter((a: any) => ['available', 'rented'].includes(a.status))

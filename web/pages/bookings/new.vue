@@ -5,6 +5,7 @@ if (!auth.can('bookings.manage')) navigateTo('/bookings')
 const units = ref<any[]>([]); const services = ref<any[]>([]); const customers = ref<any[]>([])
 const err = ref(''); const saving = ref(false); const formRef = ref<any>(null)
 const form = reactive<any>(blankBooking(typeof route.query.date === 'string' ? route.query.date : undefined))
+useDraft('booking-new', form)   // kept if the user jumps to an add page from a dropdown
 if (route.query.unit_id) form.unit_id = String(route.query.unit_id)
 if (route.query.customer_id) form.customer_id = String(route.query.customer_id)
 onMounted(async () => { units.value = await api.get('/app/bookings/units'); services.value = await api.get('/app/bookings/services'); customers.value = await api.get('/app/customers', { all: 1, active_only: 1 }) })

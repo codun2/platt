@@ -2,6 +2,7 @@
 /** Purchase invoice form: header + item lines + totals. Mutates `form` in place. */
 const props = defineProps<{ form: any; suppliers: any[]; warehouses: any[]; isNew?: boolean }>()
 const api = useApi(); const f = useFmt(); const { tt } = useI18n()
+async function addWarehouse(name: string) { const r = await api.post('/app/inventory/warehouses', { name }); props.warehouses.push(r); return r.id }
 const iq = ref(''); const found = ref<any[]>([]); let timer: any = null
 const totals = computed(() => calcPurchase(props.form))
 const supplier = computed(() => props.suppliers.find((s: any) => String(s.id) === String(props.form.supplier_id)))
@@ -29,8 +30,8 @@ watch(() => [props.form.supplier_id, props.form.date], () => {
   <div>
     <div class="card-title"><i class="ti ti-truck-delivery" /> {{ tt('بيانات الفاتورة','Invoice details') }}</div>
     <div class="grid grid-4">
-      <div class="field"><label>{{ tt('المورد','Supplier') }}</label><UiSelect v-model="form.supplier_id" placeholder="—"><option value="">—</option><option v-for="s in suppliers" :key="s.id" :value="s.id">{{ s.name }}</option></UiSelect><small v-if="supplier" class="muted">{{ [supplier.phone, supplier.payment_terms_days ? tt(`سداد ${supplier.payment_terms_days} يوم`,`${supplier.payment_terms_days}d terms`) : ''].filter(Boolean).join(' · ') }}</small></div>
-      <div class="field"><label>{{ tt('المستودع المستلم','Receiving warehouse') }}</label><UiSelect v-model="form.warehouse_id"><option v-for="w in warehouses" :key="w.id" :value="w.id">{{ w.name }}</option></UiSelect></div>
+      <div class="field"><label>{{ tt('المورد','Supplier') }}</label><UiSelect v-model="form.supplier_id" placeholder="—" :add-label="tt('إضافة مورد','Add supplier')" add-to="/inventory/suppliers/new" add-key="supplier"><option value="">—</option><option v-for="s in suppliers" :key="s.id" :value="s.id">{{ s.name }}</option></UiSelect><small v-if="supplier" class="muted">{{ [supplier.phone, supplier.payment_terms_days ? tt(`سداد ${supplier.payment_terms_days} يوم`,`${supplier.payment_terms_days}d terms`) : ''].filter(Boolean).join(' · ') }}</small></div>
+      <div class="field"><label>{{ tt('المستودع المستلم','Receiving warehouse') }}</label><UiSelect v-model="form.warehouse_id" :add-label="tt('إضافة مستودع','Add warehouse')" :quick-add="addWarehouse"><option v-for="w in warehouses" :key="w.id" :value="w.id">{{ w.name }}</option></UiSelect></div>
       <div class="field"><label>{{ tt('تاريخ الفاتورة','Invoice date') }} <span style="color:var(--primary)">*</span></label><input v-model="form.date" type="date" dir="ltr" /></div>
       <div class="field"><label>{{ tt('تاريخ الاستحقاق','Due date') }}</label><input v-model="form.due_date" type="date" dir="ltr" /></div>
       <div class="field"><label>{{ tt('رقم فاتورة المورد','Supplier invoice no.') }}</label><input v-model="form.supplier_invoice" dir="ltr" /></div>

@@ -5,6 +5,7 @@ if (!auth.can('inventory.manage')) navigateTo('/inventory/items')
 const meta = ref<any>({ categories: [], units: [], warehouses: [] }); const suppliers = ref<any[]>([])
 const err = ref(''); const saving = ref(false)
 const form = reactive<any>(blankItem())
+useDraft('item-new', form)   // kept if the user jumps to an add page from a dropdown
 onMounted(async () => { meta.value = await api.get('/app/inventory/items/meta'); suppliers.value = await api.get('/app/inventory/suppliers') })
 
 async function save(stay = false) {

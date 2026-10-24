@@ -174,6 +174,13 @@ select option:checked { background: var(--primary-50); color: var(--primary); fo
 .ui-select-opt.sel { background: var(--primary-50); color: var(--primary); font-weight: 700; }
 .ui-select-opt.dis { opacity: .5; cursor: default; }
 .ui-select-opt .ti-check { font-size: 15px; color: var(--primary); flex-shrink: 0; }
+.ui-select-empty { padding: 10px 12px; color: var(--muted); font-size: 13px; text-align: center; }
+.ui-select-add { display: flex; align-items: center; gap: 8px; width: 100%; padding: 9px 12px; margin-top: 4px; border: 0; border-top: 1px dashed var(--line); background: transparent; color: var(--primary); font: inherit; font-weight: 700; cursor: pointer; border-radius: 0 0 8px 8px; text-align: start; }
+.ui-select-add:hover { background: var(--primary-50); }
+.ui-select-add.prominent { border: 1px dashed var(--primary); border-radius: 10px; justify-content: center; background: var(--primary-50); margin: 2px 0; }
+.ui-select-add-form { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; padding: 8px 4px 4px; border-top: 1px dashed var(--line); margin-top: 4px; }
+.ui-select-add-form input { flex: 1; min-width: 0; padding: 7px 10px; border: 1px solid var(--primary); border-radius: 8px; font: inherit; }
+.ui-select-add-err { width: 100%; color: var(--bad, #dc2626); font-size: 12px; }
 .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 .row.between { justify-content: space-between; }
 .row.end { justify-content: flex-end; }

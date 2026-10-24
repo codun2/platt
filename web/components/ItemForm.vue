@@ -2,6 +2,10 @@
 /** Full inventory item form (new + edit). */
 const props = defineProps<{ form: any; meta: any; suppliers: any[]; isNew?: boolean }>()
 const f = useFmt(); const { tt } = useI18n()
+const api = useApi()
+// Inline quick-add for simple lookups: create, add to the list, return the id to select.
+async function addCategory(name: string) { const r = await api.post('/app/inventory/categories', { name }); props.meta.categories.push(r); return r.id }
+async function addUnit(name: string) { const r = await api.post('/app/inventory/units', { name }); props.meta.units.push(r); return r.id }
 const margin = computed(() => { const c = +props.form.cost_price || 0, s = +props.form.sale_price || 0; return c > 0 ? Math.round((s - c) / c * 1000) / 10 : null })
 </script>
 
@@ -11,13 +15,13 @@ const margin = computed(() => { const c = +props.form.cost_price || 0, s = +prop
     <div class="grid grid-3">
       <div class="field"><label>{{ tt('اسم الصنف','Item name') }} <span style="color:var(--primary)">*</span></label><input v-model="form.name" /></div>
       <div class="field"><label>{{ tt('الاسم بالإنجليزية','Name (English)') }}</label><input v-model="form.name_en" dir="ltr" /></div>
-      <div class="field"><label>{{ tt('التصنيف','Category') }}</label><UiSelect v-model="form.category_id"><option value="">—</option><option v-for="c in meta.categories" :key="c.id" :value="c.id">{{ c.name }}</option></UiSelect></div>
+      <div class="field"><label>{{ tt('التصنيف','Category') }}</label><UiSelect v-model="form.category_id" :add-label="tt('إضافة تصنيف','Add category')" :quick-add="addCategory"><option value="">—</option><option v-for="c in meta.categories" :key="c.id" :value="c.id">{{ c.name }}</option></UiSelect></div>
       <div class="field"><label>{{ tt('SKU (رمز الصنف)','SKU') }}</label><input v-model="form.sku" dir="ltr" /></div>
       <div class="field"><label>{{ tt('الباركود','Barcode') }}</label><input v-model="form.barcode" dir="ltr" /></div>
-      <div class="field"><label>{{ tt('وحدة القياس','Unit') }}</label><UiSelect v-model="form.unit_id"><option value="">—</option><option v-for="u in meta.units" :key="u.id" :value="u.id">{{ u.name }}<template v-if="u.symbol"> ({{ u.symbol }})</template></option></UiSelect></div>
+      <div class="field"><label>{{ tt('وحدة القياس','Unit') }}</label><UiSelect v-model="form.unit_id" :add-label="tt('إضافة وحدة قياس','Add unit')" :quick-add="addUnit"><option value="">—</option><option v-for="u in meta.units" :key="u.id" :value="u.id">{{ u.name }}<template v-if="u.symbol"> ({{ u.symbol }})</template></option></UiSelect></div>
       <div class="field"><label>{{ tt('العلامة التجارية','Brand') }}</label><input v-model="form.brand" /></div>
       <div class="field"><label>{{ tt('الموديل / الصنف الفرعي','Model') }}</label><input v-model="form.model" dir="ltr" /></div>
-      <div class="field"><label>{{ tt('المورد الافتراضي','Default supplier') }}</label><UiSelect v-model="form.supplier_id"><option value="">—</option><option v-for="s in suppliers" :key="s.id" :value="s.id">{{ s.name }}</option></UiSelect></div>
+      <div class="field"><label>{{ tt('المورد الافتراضي','Default supplier') }}</label><UiSelect v-model="form.supplier_id" :add-label="tt('إضافة مورد','Add supplier')" add-to="/inventory/suppliers/new" add-key="supplier"><option value="">—</option><option v-for="s in suppliers" :key="s.id" :value="s.id">{{ s.name }}</option></UiSelect></div>
     </div>
 
     <div class="card-title" style="margin-top:8px"><i class="ti ti-tag" /> {{ tt('التسعير','Pricing') }}</div>

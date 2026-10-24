@@ -5,6 +5,7 @@ if (!auth.can('crm.manage')) navigateTo('/crm/invoices')
 
 const customers = ref<any[]>([]); const err = ref(''); const saving = ref(false)
 const form = reactive<any>(blankDoc('invoice', +(auth.state.value.tenant?.tax_rate ?? 0)))
+useDraft('invoice-new', form)   // kept if the user jumps to an add page from a dropdown
 if (route.query.customer_id) form.customer_id = String(route.query.customer_id)
 onMounted(async () => { customers.value = await api.get('/app/customers', { all: 1, active_only: 1 }) })
 

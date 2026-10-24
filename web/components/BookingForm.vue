@@ -51,7 +51,7 @@ defineExpose({ avail })
 
     <div class="card-title" style="margin-top:8px"><i class="ti ti-user" /> {{ tt('العميل والضيوف','Customer & guests') }}</div>
     <div class="grid grid-3">
-      <div class="field"><label>{{ tt('عميل مسجّل','Registered customer') }}</label><UiSelect v-model="form.customer_id" :placeholder="tt('— بدون —','— none —')"><option value="">{{ tt('— بدون —','— none —') }}</option><option v-for="c in customers" :key="c.id" :value="c.id">{{ c.name }}<template v-if="c.phone"> — {{ c.phone }}</template></option></UiSelect></div>
+      <div class="field"><label>{{ tt('عميل مسجّل','Registered customer') }}</label><UiSelect v-model="form.customer_id" :placeholder="tt('— بدون —','— none —')" :add-label="tt('إضافة عميل','Add customer')" add-to="/crm/customers/new" add-key="customer"><option value="">{{ tt('— بدون —','— none —') }}</option><option v-for="c in customers" :key="c.id" :value="c.id">{{ c.name }}<template v-if="c.phone"> — {{ c.phone }}</template></option></UiSelect></div>
       <div class="field"><label>{{ tt('اسم العميل','Customer name') }}</label><input v-model="form.customer_name" :placeholder="tt('للحجز السريع بدون تسجيل','Quick booking without registration')" /></div>
       <div class="field"><label>{{ tt('الهاتف','Phone') }}</label><input v-model="form.customer_phone" dir="ltr" /></div>
       <div class="field"><label>{{ tt('البريد الإلكتروني','Email') }}</label><input v-model="form.customer_email" dir="ltr" /></div>

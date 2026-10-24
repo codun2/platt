@@ -5,6 +5,7 @@ if (!auth.can('crm.manage')) navigateTo('/crm/quotes')
 
 const customers = ref<any[]>([]); const err = ref(''); const saving = ref(false)
 const form = reactive<any>(blankDoc('quote', +(auth.state.value.tenant?.tax_rate ?? 0)))
+useDraft('quote-new', form)   // kept if the user jumps to an add page from a dropdown
 if (route.query.customer_id) form.customer_id = String(route.query.customer_id)
 // Default validity: 15 days.
 { const d = new Date(); d.setDate(d.getDate() + 15); form.valid_until = d.toISOString().slice(0, 10) }

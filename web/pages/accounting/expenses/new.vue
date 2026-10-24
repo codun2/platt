@@ -5,6 +5,7 @@ if (!auth.can('accounting.manage')) navigateTo('/accounting/expenses')
 const meta = ref<any>({ categories: [], money: [] }); const suppliers = ref<any[]>([])
 const err = ref(''); const saving = ref(false)
 const form = reactive<any>(blankExpense())
+useDraft('expense-new', form)   // kept if the user jumps to an add page from a dropdown
 onMounted(async () => {
   meta.value = await api.get('/app/accounting/expenses/meta')
   try { suppliers.value = await api.get('/app/inventory/suppliers') } catch { suppliers.value = [] }   // tenant may not have inventory

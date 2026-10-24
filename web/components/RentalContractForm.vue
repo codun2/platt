@@ -33,7 +33,7 @@ watch(() => [props.form.start_date, props.form.end_date, props.form.frequency, p
     <div class="card-title"><i :class="`ti ${terms.isVehicle ? 'ti-car' : 'ti-building-community'}`" /> {{ terms.asset }} {{ tt('والطرف الآخر', '& party') }}</div>
     <div class="grid grid-3">
       <div class="field" style="grid-column:span 2"><label>{{ terms.asset }} <span style="color:var(--primary)">*</span></label>
-        <UiSelect v-model="form.asset_id" :placeholder="tt('اختر', 'Select')"><option value="">—</option><option v-for="a in assets" :key="a.id" :value="a.id">{{ assetLabel(a) }} · {{ assetStatus[a.status]?.label }}</option></UiSelect>
+        <UiSelect v-model="form.asset_id" :placeholder="tt('اختر', 'Select')" :add-label="terms.newAsset" add-to="/rental/assets/new" add-key="asset"><option value="">—</option><option v-for="a in assets" :key="a.id" :value="a.id">{{ assetLabel(a) }} · {{ assetStatus[a.status]?.label }}</option></UiSelect>
         <small v-if="asset" class="muted">{{ assetTypes[asset.type] }}<template v-if="asset.area"> · {{ asset.area }} {{ tt('م²', 'm²') }}</template><template v-if="asset.rooms"> · {{ asset.rooms }} {{ tt('غرف', 'rooms') }}</template><template v-if="asset.owner"> · {{ tt('المالك', 'Owner') }}: {{ asset.owner.name }}</template></small>
       </div>
       <div v-if="terms.isSale" class="field"><label>{{ tt('نوع العقد', 'Contract type') }}</label><UiSelect v-model="form.kind"><option value="installment">{{ tt('بيع بالتقسيط', 'Installment sale') }}</option><option value="lease">{{ tt('تأجير', 'Lease') }}</option></UiSelect></div>

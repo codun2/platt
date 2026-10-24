@@ -4,6 +4,7 @@ const api = useApi(); const auth = useAuth(); const route = useRoute(); const { 
 if (!auth.can('hr.manage')) navigateTo('/hr/attendance?tab=leaves')
 const employees = ref<any[]>([]); const err = ref(''); const saving = ref(false)
 const form = reactive<any>(blankLeave(route.query.employee_id ? String(route.query.employee_id) : ''))
+useDraft('leave-new', form)   // kept if the user jumps to an add page from a dropdown
 const days = computed(() => leaveDays(form.from, form.to))
 const employee = computed(() => employees.value.find((e: any) => String(e.id) === String(form.employee_id)))
 onMounted(async () => { employees.value = (await api.get('/app/hr/employees', { all: 1, status: 'active' })).data })
@@ -21,7 +22,7 @@ async function save() {
       <div v-if="err" class="alert bad">{{ err }}</div>
       <div class="card-title"><i class="ti ti-beach" /> {{ tt('بيانات الإجازة','Leave details') }}</div>
       <div class="grid grid-3">
-        <div class="field"><label>{{ tt('الموظف','Employee') }} <span style="color:var(--primary)">*</span></label><UiSelect v-model="form.employee_id" :placeholder="tt('اختر الموظف','Select employee')"><option value="">—</option><option v-for="e in employees" :key="e.id" :value="e.id">{{ e.name }}<template v-if="e.department"> — {{ e.department }}</template></option></UiSelect><small v-if="employee" class="muted">{{ tt('رصيد سنوي','Annual balance') }} {{ employee.annual_leave_days }} {{ tt('يوم','days') }}</small></div>
+        <div class="field"><label>{{ tt('الموظف','Employee') }} <span style="color:var(--primary)">*</span></label><UiSelect v-model="form.employee_id" :placeholder="tt('اختر الموظف','Select employee')" :add-label="tt('إضافة موظف','Add employee')" add-to="/hr/employees/new" add-key="employee"><option value="">—</option><option v-for="e in employees" :key="e.id" :value="e.id">{{ e.name }}<template v-if="e.department"> — {{ e.department }}</template></option></UiSelect><small v-if="employee" class="muted">{{ tt('رصيد سنوي','Annual balance') }} {{ employee.annual_leave_days }} {{ tt('يوم','days') }}</small></div>
         <div class="field"><label>{{ tt('نوع الإجازة','Leave type') }}</label><UiSelect v-model="form.type"><option v-for="(l, k) in leaveTypes" :key="k" :value="k">{{ l }}</option></UiSelect></div>
         <div class="field"><label>{{ tt('عدد الأيام','Days') }}</label><input :value="days" disabled dir="ltr" /></div>
         <div class="field"><label>{{ tt('من','From') }} <span style="color:var(--primary)">*</span></label><input v-model="form.from" type="date" dir="ltr" /></div>

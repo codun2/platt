@@ -21,7 +21,7 @@ watch(() => [props.form.payment_terms_days, props.form.date], () => {
     <div class="grid grid-3">
       <div class="field">
         <label>{{ tt('العميل','Customer') }}</label>
-        <UiSelect v-model="form.customer_id" placeholder="—">
+        <UiSelect v-model="form.customer_id" placeholder="—" :add-label="tt('إضافة عميل','Add customer')" add-to="/crm/customers/new" add-key="customer">
           <option value="">{{ tt('بدون عميل (نقدي)','No customer (cash)') }}</option>
           <option v-for="c in customers" :key="c.id" :value="c.id">{{ c.name }}<template v-if="c.phone"> — {{ c.phone }}</template></option>
         </UiSelect>

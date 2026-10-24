@@ -4,6 +4,7 @@ const api = useApi(); const auth = useAuth(); const route = useRoute(); const te
 if (!auth.can('rental.manage')) navigateTo('/rental/assets')
 const err = ref(''); const saving = ref(false); const owners = ref<any[]>([]); const buildings = ref<any[]>([])
 const form = reactive<any>(blankAsset(terms.isVehicle))
+useDraft('rental-asset-new', form)   // kept if the user jumps to an add page from a dropdown
 if (route.query.parent_id) { form.parent_id = Number(route.query.parent_id); form.type = 'apartment' }
 onMounted(async () => { owners.value = await api.get('/app/rental/owners'); buildings.value = (await api.get('/app/rental/assets', { type: 'building' })).data })
 // A unit inherits its building's owner/location when added from the building page.
@@ -13,7 +14,7 @@ async function save(stay = false) {
   try {
     const a = await api.post('/app/rental/assets', assetPayload(form))
     if (stay) { const keep = { parent_id: form.parent_id, owner_id: form.owner_id, type: form.type, city: form.city, address: form.address, rent_frequency: form.rent_frequency }; Object.assign(form, blankAsset(terms.isVehicle), keep) }
-    else navigateTo(`/rental/assets/${a.id}`)
+    else if (!returnAfterCreate(a.id)) navigateTo(`/rental/assets/${a.id}`)
   } catch (e: any) { err.value = e.message; window.scrollTo({ top: 0, behavior: 'smooth' }) } finally { saving.value = false }
 }
 </script>
@@ -27,7 +28,7 @@ async function save(stay = false) {
       <div class="row" style="gap:10px;margin-top:18px;border-top:1px solid var(--line);padding-top:16px">
         <button class="btn" :disabled="saving" @click="save(false)"><i class="ti ti-check" /> {{ tt('حفظ', 'Save') }}</button>
         <button class="btn ghost" :disabled="saving" @click="save(true)"><i class="ti ti-plus" /> {{ tt('حفظ وإضافة أخرى', 'Save & add another') }}</button>
-        <NuxtLink class="btn ghost" to="/rental/assets">{{ tt('إلغاء', 'Cancel') }}</NuxtLink>
+        <NuxtLink class="btn ghost" :to="cancelLink('/rental/assets')">{{ tt('إلغاء', 'Cancel') }}</NuxtLink>
       </div>
     </div>
   </div>
