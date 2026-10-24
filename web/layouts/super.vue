@@ -13,13 +13,14 @@ const items: SidebarItem[] = [
   { key: 'modules', name_ar: 'سجل الوحدات', name_en: 'Modules', icon: 'ti-apps', route: '/super/modules', engine: 'platform', children: [] },
   { key: 'plans', name_ar: 'خطط الأسعار', name_en: 'Plans', icon: 'ti-tag', route: '/super/plans', engine: 'platform', children: [] },
 ]
+const back = useBackLink(() => items)
 </script>
 
 <template>
   <div class="shell">
     <AppSidebar :items="items" :brand="tt('إدارة المنصّة', 'Platform Admin')" sub="Super Admin" />
     <div class="main">
-      <TopBar :title="title" />
+      <TopBar :title="title" :back="back" />
       <main class="content"><slot /></main>
       <footer class="footer">{{ tt('ركائز — لوحة تحكم المنصّة', 'Rakeez — Platform Console') }}</footer>
     </div>

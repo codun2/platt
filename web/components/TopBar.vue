@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{ title: string }>()
+defineProps<{ title: string; back?: { to: string; label: string } | null }>()
 const auth = useAuth()
 const { toggle, isEn, t } = useI18n()
 const now = ref(new Date())
@@ -13,6 +13,9 @@ const initials = computed(() => (auth.state.value.user?.name || '?').slice(0, 1)
 
 <template>
   <header class="topbar">
+    <NuxtLink v-if="back" :to="back.to" class="btn ghost sm back-btn" :title="back.label">
+      <i :class="`ti ${isEn ? 'ti-arrow-left' : 'ti-arrow-right'}`" /> {{ isEn ? 'Back to' : 'رجوع إلى' }} {{ back.label }}
+    </NuxtLink>
     <h1>{{ title }}</h1>
     <div class="spacer" />
     <div class="clock">{{ time }}<br />{{ date }}</div>
