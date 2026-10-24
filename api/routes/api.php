@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Hr;
 use App\Http\Controllers\Api\Inventory;
 use App\Http\Controllers\Api\Travel;
 use App\Http\Controllers\Api\Pos;
+use App\Http\Controllers\Api\Projects;
 use App\Http\Controllers\Api\PublicController;
 use App\Http\Controllers\Api\Rental;
 use App\Http\Controllers\Api\Super;
@@ -247,6 +248,30 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant'])->prefix('app')->gro
             Route::post('{kind}', [Bookings\CatalogController::class, 'store'])->where('kind', 'units|services');
             Route::match(['put', 'patch'], '{kind}/{id}', [Bookings\CatalogController::class, 'update'])->where('kind', 'units|services')->whereNumber('id');
             Route::delete('{kind}/{id}', [Bookings\CatalogController::class, 'destroy'])->where('kind', 'units|services')->whereNumber('id');
+        });
+    });
+
+    /* ---- Engine: Projects (legal cases / engineering projects) ---- */
+    Route::prefix('projects')->middleware('perm:projects.view')->group(function () {
+        Route::get('summary', [Projects\ProjectController::class, 'summary']);
+        Route::get('people', [Projects\ProjectController::class, 'people']);
+        Route::get('items', [Projects\ProjectController::class, 'index']);
+        Route::get('items/{id}', [Projects\ProjectController::class, 'show'])->whereNumber('id');
+        Route::get('tasks', [Projects\TaskController::class, 'index']);
+        Route::get('timesheets', [Projects\TimesheetController::class, 'index']);
+        // Day-to-day work any team member does.
+        Route::post('tasks', [Projects\TaskController::class, 'store']);
+        Route::match(['put', 'patch'], 'tasks/{id}', [Projects\TaskController::class, 'update'])->whereNumber('id');
+        Route::post('tasks/{id}/complete', [Projects\TaskController::class, 'complete'])->whereNumber('id');
+        Route::post('timesheets', [Projects\TimesheetController::class, 'store']);
+        Route::match(['put', 'patch'], 'timesheets/{id}', [Projects\TimesheetController::class, 'update'])->whereNumber('id');
+        Route::delete('timesheets/{id}', [Projects\TimesheetController::class, 'destroy'])->whereNumber('id');
+        Route::middleware('perm:projects.manage')->group(function () {
+            Route::post('items', [Projects\ProjectController::class, 'store']);
+            Route::match(['put', 'patch'], 'items/{id}', [Projects\ProjectController::class, 'update'])->whereNumber('id');
+            Route::delete('items/{id}', [Projects\ProjectController::class, 'destroy'])->whereNumber('id');
+            Route::post('items/{id}/bill', [Projects\ProjectController::class, 'bill'])->whereNumber('id');
+            Route::delete('tasks/{id}', [Projects\TaskController::class, 'destroy'])->whereNumber('id');
         });
     });
 

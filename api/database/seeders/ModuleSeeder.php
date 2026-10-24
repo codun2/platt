@@ -91,6 +91,7 @@ class ModuleSeeder extends Seeder
 
             // ---- Engine: Projects / Cases ----
             ['key' => 'projects', 'engine' => 'projects', 'name_ar' => 'المشاريع والقضايا', 'name_en' => 'Projects', 'icon' => 'ti-briefcase', 'route' => '/projects'],
+            ['key' => 'projects_overview', 'parent_key' => 'projects', 'engine' => 'projects', 'name_ar' => 'نظرة عامة', 'name_en' => 'Overview', 'icon' => 'ti-layout-dashboard', 'route' => '/projects'],
             ['key' => 'projects_list', 'parent_key' => 'projects', 'engine' => 'projects', 'name_ar' => 'المشاريع', 'name_en' => 'Projects', 'icon' => 'ti-folders', 'route' => '/projects/list'],
             ['key' => 'projects_cases', 'parent_key' => 'projects', 'engine' => 'projects', 'name_ar' => 'القضايا', 'name_en' => 'Cases', 'icon' => 'ti-gavel', 'route' => '/projects/cases'],
             ['key' => 'projects_tasks', 'parent_key' => 'projects', 'engine' => 'projects', 'name_ar' => 'المهام', 'name_en' => 'Tasks', 'icon' => 'ti-checklist', 'route' => '/projects/tasks'],
