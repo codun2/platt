@@ -100,6 +100,7 @@ class ModuleSeeder extends Seeder
 
             // ---- Engine: Education ----
             ['key' => 'education', 'engine' => 'education', 'name_ar' => 'المدارس', 'name_en' => 'Education', 'icon' => 'ti-school', 'route' => '/education'],
+            ['key' => 'education_overview', 'parent_key' => 'education', 'engine' => 'education', 'name_ar' => 'نظرة عامة', 'name_en' => 'Overview', 'icon' => 'ti-layout-dashboard', 'route' => '/education'],
             ['key' => 'education_students', 'parent_key' => 'education', 'engine' => 'education', 'name_ar' => 'الطلاب', 'name_en' => 'Students', 'icon' => 'ti-users', 'route' => '/education/students'],
             ['key' => 'education_classes', 'parent_key' => 'education', 'engine' => 'education', 'name_ar' => 'الصفوف والشعب', 'name_en' => 'Classes', 'icon' => 'ti-chalkboard', 'route' => '/education/classes'],
             ['key' => 'education_fees', 'parent_key' => 'education', 'engine' => 'education', 'name_ar' => 'الرسوم والأقساط', 'name_en' => 'Fees', 'icon' => 'ti-coins', 'route' => '/education/fees'],

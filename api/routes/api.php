@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Accounting;
 use App\Http\Controllers\Api\App;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Bookings;
+use App\Http\Controllers\Api\Education;
 use App\Http\Controllers\Api\Hr;
 use App\Http\Controllers\Api\Inventory;
 use App\Http\Controllers\Api\Travel;
@@ -249,6 +250,28 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant'])->prefix('app')->gro
             Route::post('{kind}', [Bookings\CatalogController::class, 'store'])->where('kind', 'units|services');
             Route::match(['put', 'patch'], '{kind}/{id}', [Bookings\CatalogController::class, 'update'])->where('kind', 'units|services')->whereNumber('id');
             Route::delete('{kind}/{id}', [Bookings\CatalogController::class, 'destroy'])->where('kind', 'units|services')->whereNumber('id');
+        });
+    });
+
+    /* ---- Engine: Education (schools) ---- */
+    Route::prefix('education')->middleware('perm:education.view')->group(function () {
+        Route::get('summary', [Education\DashboardController::class, 'summary']);
+        Route::get('classes', [Education\ClassController::class, 'index']);
+        Route::get('teachers', [Education\ClassController::class, 'teachers']);
+        Route::get('students', [Education\StudentController::class, 'index']);
+        Route::get('students/{id}', [Education\StudentController::class, 'show'])->whereNumber('id');
+        Route::get('attendance', [Education\AttendanceController::class, 'sheet']);
+        Route::post('attendance', [Education\AttendanceController::class, 'save']);
+        Route::get('attendance/report', [Education\AttendanceController::class, 'report']);
+        Route::get('fees', [Education\FeeController::class, 'summary']);
+        Route::middleware('perm:education.manage')->group(function () {
+            Route::post('classes', [Education\ClassController::class, 'store']);
+            Route::match(['put', 'patch'], 'classes/{id}', [Education\ClassController::class, 'update'])->whereNumber('id');
+            Route::delete('classes/{id}', [Education\ClassController::class, 'destroy'])->whereNumber('id');
+            Route::post('students', [Education\StudentController::class, 'store']);
+            Route::match(['put', 'patch'], 'students/{id}', [Education\StudentController::class, 'update'])->whereNumber('id');
+            Route::delete('students/{id}', [Education\StudentController::class, 'destroy'])->whereNumber('id');
+            Route::post('fees/generate', [Education\FeeController::class, 'generate']);
         });
     });
 

@@ -14,7 +14,7 @@ class Invoice extends Model
     public const STATUSES = ['draft', 'sent', 'partial', 'paid', 'cancelled'];
 
     protected $fillable = [
-        'tenant_id', 'number', 'quote_id', 'customer_id', 'date', 'due_date', 'status', 'subject', 'reference',
+        'tenant_id', 'number', 'quote_id', 'customer_id', 'student_id', 'date', 'due_date', 'status', 'subject', 'reference',
         'subtotal', 'discount_type', 'discount_value', 'discount', 'tax_rate', 'tax', 'total', 'paid',
         'payment_terms_days', 'notes', 'internal_notes', 'created_by', 'sent_at', 'paid_at', 'cancelled_at',
     ];
@@ -68,5 +68,10 @@ class Invoice extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function student(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(EduStudent::class, 'student_id');
     }
 }
