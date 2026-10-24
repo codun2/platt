@@ -1,9 +1,10 @@
 :root {
   --primary: #e11d48;
-  /* Derived from --primary so a per-sector accent recolours everything. */
-  --primary-600: color-mix(in srgb, var(--primary) 82%, #000);
-  --primary-50: color-mix(in srgb, var(--primary) 8%, #fff);
-  --primary-ring: color-mix(in srgb, var(--primary) 14%, transparent);
+  /* Defaults for the brand red; a sector accent overrides all four from
+     useAuth.applyAccent (plain colours, no color-mix, for older browsers). */
+  --primary-600: #be123c;
+  --primary-50: #fff1f2;
+  --primary-ring: rgba(225, 29, 72, .14);
   --ink: #0f172a;
   --muted: #64748b;
   --line: #e2e8f0;

@@ -31,13 +31,15 @@ export function useApi() {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
+        'X-Locale': currentLocale(),
         ...(token.value ? { Authorization: `Bearer ${token.value}` } : {}),
       },
       body: opts.body ? JSON.stringify(opts.body) : undefined,
     })
 
     const text = await res.text()
-    const data = text ? JSON.parse(text) : null
+    let data: any = null
+    try { data = text ? JSON.parse(text) : null } catch { data = null }
 
     if (!res.ok) {
       if (res.status === 401) {
@@ -47,7 +49,11 @@ export function useApi() {
       }
       const errors = data?.errors || {}
       const first = Object.values(errors)[0] as string[] | undefined
-      throw new ApiError(res.status, first?.[0] || data?.message || tt('حدث خطأ غير متوقع', 'An unexpected error occurred'), errors)
+      // Never show a raw "Server Error": explain it in the user's language.
+      const msg = res.status >= 500
+        ? tt('تعذّر حفظ البيانات بسبب خطأ في الخادم. راجع القيم المدخلة وحاول مرة أخرى.', 'The server could not process this request. Check the values and try again.')
+        : (first?.[0] || data?.message || tt('حدث خطأ غير متوقع', 'An unexpected error occurred'))
+      throw new ApiError(res.status, msg, errors)
     }
     return data as T
   }

@@ -77,6 +77,7 @@ class ModuleSeeder extends Seeder
 
             // ---- Engine: Rental + contracts + installments ----
             ['key' => 'rental', 'engine' => 'rental', 'name_ar' => 'التأجير والعقود', 'name_en' => 'Rental', 'icon' => 'ti-file-text', 'route' => '/rental'],
+            ['key' => 'rental_overview', 'parent_key' => 'rental', 'engine' => 'rental', 'name_ar' => 'نظرة عامة', 'name_en' => 'Overview', 'icon' => 'ti-layout-dashboard', 'route' => '/rental'],
             ['key' => 'rental_assets', 'parent_key' => 'rental', 'engine' => 'rental', 'name_ar' => 'الأصول المؤجّرة', 'name_en' => 'Assets', 'icon' => 'ti-building-skyscraper', 'route' => '/rental/assets'],
             ['key' => 'rental_contracts', 'parent_key' => 'rental', 'engine' => 'rental', 'name_ar' => 'العقود', 'name_en' => 'Contracts', 'icon' => 'ti-file-certificate', 'route' => '/rental/contracts'],
             ['key' => 'rental_installments', 'parent_key' => 'rental', 'engine' => 'rental', 'name_ar' => 'الأقساط والتحصيل', 'name_en' => 'Installments', 'icon' => 'ti-coins', 'route' => '/rental/installments'],

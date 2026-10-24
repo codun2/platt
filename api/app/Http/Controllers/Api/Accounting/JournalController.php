@@ -44,7 +44,13 @@ class JournalController extends Controller
 
     public function show(int $id): JsonResponse
     {
-        return response()->json(JournalEntry::with('lines.account:id,code,name,type', 'creator:id,name')->findOrFail($id));
+        $e = JournalEntry::with('lines.account:id,code,name,type', 'creator:id,name')->findOrFail($id);
+        // Rental payments link back to their contract page.
+        if ($e->source_type === 'rental_payment') {
+            $e->setAttribute('source_contract_id', \App\Models\RentalPayment::whereKey($e->source_id)->value('contract_id'));
+        }
+
+        return response()->json($e);
     }
 
     public function store(Request $request): JsonResponse

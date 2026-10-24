@@ -8,7 +8,7 @@ const form = reactive<any>(blankJournal())
 const canManage = computed(() => auth.can('accounting.manage'))
 const isManual = computed(() => !e.value?.source_type || e.value.source_type === 'manual')
 const totals = computed(() => journalTotals(form.lines))
-const link = computed(() => sourceLink(e.value?.source_type, e.value?.source_id))
+const link = computed(() => sourceLink(e.value?.source_type, e.value?.source_id, e.value?.source_contract_id))
 
 async function load() {
   try { e.value = await api.get(`/app/accounting/journal/${id}`) } catch (x: any) { if (x.status === 404) { notFound.value = true; return } throw x }

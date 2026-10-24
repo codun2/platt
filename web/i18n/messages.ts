@@ -27,7 +27,7 @@ export const messages: Record<'ar' | 'en', Record<string, any>> = {
       users: 'المستخدمون', activeModules: 'الوحدات المفعّلة', roles: 'الأدوار', renewDate: 'تاريخ التجديد', noPlan: 'بدون خطة',
       todaySales: 'مبيعات اليوم', monthSales: 'مبيعات الشهر', invoices: 'فاتورة', unpaid: 'مستحقات غير مسددة', lowStock: 'أصناف تحت الحد الأدنى',
     },
-    locked: { title: 'هذه الصفحة', msg: 'هذه الوحدة مفعّلة لحسابك وستتوفر شاشاتها في المرحلة القادمة (محرّك {engine}).', back: 'العودة للرئيسية' },
+    locked: { title: 'هذه الصفحة', msg: 'هذه الوحدة مفعّلة لحسابك وشاشاتها قيد التجهيز وستتوفر قريباً.', back: 'العودة للرئيسية' },
   },
   en: {
     app: { name: 'Rakeez', tagline: 'All-in-one business platform', brandSub: 'Rakeez — Business Platform', platformAdmin: 'Platform Admin' },
@@ -53,6 +53,6 @@ export const messages: Record<'ar' | 'en', Record<string, any>> = {
       users: 'Users', activeModules: 'Active modules', roles: 'Roles', renewDate: 'Renewal date', noPlan: 'No plan',
       todaySales: "Today's sales", monthSales: 'Month sales', invoices: 'invoices', unpaid: 'Unpaid balances', lowStock: 'Items below minimum',
     },
-    locked: { title: 'This page', msg: 'This module is enabled for your account; its screens arrive in the next phase ({engine} engine).', back: 'Back to home' },
+    locked: { title: 'This page', msg: 'This module is enabled for your account; its screens are being prepared and will be available soon.', back: 'Back to home' },
   },
 }

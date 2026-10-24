@@ -70,10 +70,10 @@ return [
 
     'car_showroom' => [
         'accent' => '#1d4ed8',
-        'order' => ['vehicles', 'rental', 'crm', 'inventory', 'accounting', 'hr', 'whatsapp'],
+        'order' => ['rental', 'crm', 'inventory', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
-            'vehicles' => ['السيارات المعروضة', 'Showroom Cars', 'ti-car'],
-            'rental' => ['البيع بالتقسيط', 'Installment Sales', 'ti-receipt-2'],
+            'rental' => ['السيارات والتقسيط', 'Cars & Installments', 'ti-car'],
+            'rental_assets' => ['السيارات المعروضة', 'Showroom Cars', 'ti-car'],
             'rental_contracts' => ['عقود التقسيط', 'Installment Contracts'],
             'rental_installments' => ['الأقساط والتحصيل', 'Installments'],
             'inventory' => ['قطع الغيار والإكسسوارات', 'Parts & Accessories', 'ti-engine'],
@@ -81,7 +81,9 @@ return [
             'crm_customers' => ['المشترون', 'Buyers'],
             'crm_quotes' => ['عروض أسعار السيارات', 'Car Quotes'],
         ],
-        'hide' => ['rental_assets', 'rental_owners'],
+        // Cars are managed as rental assets (sold on installment contracts);
+        // the separate vehicles placeholder adds nothing yet.
+        'hide' => ['vehicles', 'rental_owners'],
     ],
 
     'sweets_shop' => [

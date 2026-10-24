@@ -13,6 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Locale + Arabic digits + phone format for every API request.
+        $middleware->api(prepend: [\App\Http\Middleware\LocalizeRequest::class]);
+
         $middleware->alias([
             'tenant' => \App\Http\Middleware\SetTenantContext::class,
             'tenant-user' => \App\Http\Middleware\EnsureTenantUser::class,

@@ -5,9 +5,10 @@ export const accountTypes: Record<string, { label: string; cls: string }> = {
 }
 export const journalSources: Record<string, any> = {
   manual: L('يدوي', 'Manual'), invoice: L('فاتورة مبيعات', 'Sales invoice'), invoice_payment: L('تحصيل فاتورة', 'Invoice payment'), sale: L('نقطة بيع', 'POS sale'), sale_payment: L('تحصيل نقطة بيع', 'POS payment'),
-  expense: L('مصروف', 'Expense'), booking_payment: L('حجز', 'Booking'), payroll: L('رواتب', 'Payroll'), reversal: L('قيد عكسي', 'Reversal'),
+  expense: L('مصروف', 'Expense'), booking_payment: L('حجز', 'Booking'), rental_payment: L('تحصيل إيجار', 'Rent payment'), payroll: L('رواتب', 'Payroll'), reversal: L('قيد عكسي', 'Reversal'),
 }
-export const sourceLink = (type: string | null, id: number | null) => {
+export const sourceLink = (type: string | null, id: number | null, contractId?: number | null) => {
+  if (type === 'rental_payment') return contractId ? `/rental/contracts/${contractId}` : null
   if (!id) return null
   if (type === 'invoice') return `/crm/invoices/${id}`
   if (type === 'expense') return `/accounting/expenses/${id}`

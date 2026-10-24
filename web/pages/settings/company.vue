@@ -15,6 +15,16 @@ async function load() {
 }
 onMounted(load)
 
+// Only this account's own modules, named as its sector menu names them —
+// other sectors' modules (travel, schools…) are not shown to a tenant.
+const myModules = computed(() => {
+  const menu = new Map<string, any>((auth.state.value.sidebar || []).map((i: any) => [i.key, i]))
+  return (data.value?.modules || [])
+    .filter((m: any) => menu.has(m.key) && m.key !== 'dashboard' && m.key !== 'settings')
+    .sort((a: any, b: any) => [...menu.keys()].indexOf(a.key) - [...menu.keys()].indexOf(b.key))
+    .map((m: any) => { const i = menu.get(m.key); return { ...m, name_ar: i.name_ar, name_en: i.name_en, icon: i.icon } })
+})
+
 async function save() {
   msg.value = ''; err.value = ''
   try { await api.patch('/app/company', form); msg.value = tt('تم الحفظ','Saved'); await auth.fetchMe() }
@@ -56,12 +66,11 @@ async function save() {
         <div class="card-title"><i class="ti ti-apps" /> {{ tt('الوحدات المفعّلة','Enabled modules') }}</div>
         <p class="muted" style="margin-top:0">{{ tt('القطاع:','Sector:') }} <b>{{ tt(data?.tenant?.sector_preset?.name_ar, data?.tenant?.sector_preset?.name_en || data?.tenant?.sector_preset?.name_ar) }}</b> · {{ tt('الخطة:','Plan:') }} <b>{{ tt(data?.tenant?.plan?.name_ar, data?.tenant?.plan?.name_en || data?.tenant?.plan?.name_ar) }}</b> ({{ tt('حتى','up to') }} {{ data?.tenant?.plan?.max_users }} {{ tt('مستخدمين','users') }})</p>
         <table class="table">
-          <thead><tr><th>{{ tt('الوحدة','Module') }}</th><th>{{ tt('المحرّك','Engine') }}</th><th>{{ tt('الحالة','Status') }}</th></tr></thead>
+          <thead><tr><th>{{ tt('الوحدة','Module') }}</th><th>{{ tt('الحالة','Status') }}</th></tr></thead>
           <tbody>
-            <tr v-for="m in data?.modules" :key="m.key">
+            <tr v-for="m in myModules" :key="m.key">
               <td><i :class="`ti ${m.icon}`" /> {{ tt(m.name_ar, m.name_en || m.name_ar) }}</td>
-              <td class="muted">{{ m.engine }}</td>
-              <td><span class="badge" :class="m.enabled ? 'ok' : 'muted'">{{ m.is_core ? tt('أساسية','Core') : (m.enabled ? tt('مفعّلة','Enabled') : tt('غير مفعّلة','Disabled')) }}</span></td>
+              <td><span class="badge ok">{{ m.is_core ? tt('أساسية','Core') : tt('مفعّلة','Enabled') }}</span></td>
             </tr>
           </tbody>
         </table>

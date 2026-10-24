@@ -15,11 +15,13 @@ class CompanyController extends Controller
         $tenant = app('currentTenant')->load('sectorPreset:id,key,name_ar', 'plan:id,key,name_ar,price_monthly,max_users');
         $enabled = array_flip($tenant->enabledModuleKeys());
 
+        // Only this tenant's own modules: other sectors' modules are not its business.
         $modules = Module::whereNull('parent_key')->where('is_active', true)->orderBy('sort')->get()
+            ->filter(fn (Module $m) => $m->is_core || isset($enabled[$m->key]))
             ->map(fn (Module $m) => [
-                'key' => $m->key, 'name_ar' => $m->name_ar, 'icon' => $m->icon, 'engine' => $m->engine,
-                'is_core' => $m->is_core, 'enabled' => isset($enabled[$m->key]),
-            ]);
+                'key' => $m->key, 'name_ar' => $m->name_ar, 'name_en' => $m->name_en, 'icon' => $m->icon,
+                'is_core' => $m->is_core, 'enabled' => true,
+            ])->values();
 
         return response()->json(['tenant' => $tenant, 'modules' => $modules]);
     }

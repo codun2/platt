@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Inventory;
 use App\Http\Controllers\Api\Travel;
 use App\Http\Controllers\Api\Pos;
 use App\Http\Controllers\Api\PublicController;
+use App\Http\Controllers\Api\Rental;
 use App\Http\Controllers\Api\Super;
 use Illuminate\Support\Facades\Route;
 
@@ -246,6 +247,33 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant'])->prefix('app')->gro
             Route::post('{kind}', [Bookings\CatalogController::class, 'store'])->where('kind', 'units|services');
             Route::match(['put', 'patch'], '{kind}/{id}', [Bookings\CatalogController::class, 'update'])->where('kind', 'units|services')->whereNumber('id');
             Route::delete('{kind}/{id}', [Bookings\CatalogController::class, 'destroy'])->where('kind', 'units|services')->whereNumber('id');
+        });
+    });
+
+    /* ---- Engine: Rental (real estate / car rental / installment sales) ---- */
+    Route::prefix('rental')->middleware('perm:rental.view')->group(function () {
+        Route::get('summary', [Rental\DashboardController::class, 'summary']);
+        Route::get('installments', [Rental\DashboardController::class, 'installments']);
+        Route::get('assets', [Rental\AssetController::class, 'index']);
+        Route::get('assets/{id}', [Rental\AssetController::class, 'show'])->whereNumber('id');
+        Route::get('owners', [Rental\OwnerController::class, 'index']);
+        Route::get('owners/{id}', [Rental\OwnerController::class, 'show'])->whereNumber('id');
+        Route::get('contracts', [Rental\ContractController::class, 'index']);
+        Route::get('contracts/{id}', [Rental\ContractController::class, 'show'])->whereNumber('id');
+        Route::post('contracts/preview', [Rental\ContractController::class, 'preview']);
+        Route::post('contracts/{id}/collect', [Rental\ContractController::class, 'collect'])->whereNumber('id');
+        Route::middleware('perm:rental.manage')->group(function () {
+            Route::post('assets', [Rental\AssetController::class, 'store']);
+            Route::match(['put', 'patch'], 'assets/{id}', [Rental\AssetController::class, 'update'])->whereNumber('id');
+            Route::delete('assets/{id}', [Rental\AssetController::class, 'destroy'])->whereNumber('id');
+            Route::post('owners', [Rental\OwnerController::class, 'store']);
+            Route::match(['put', 'patch'], 'owners/{id}', [Rental\OwnerController::class, 'update'])->whereNumber('id');
+            Route::delete('owners/{id}', [Rental\OwnerController::class, 'destroy'])->whereNumber('id');
+            Route::post('contracts', [Rental\ContractController::class, 'store']);
+            Route::match(['put', 'patch'], 'contracts/{id}', [Rental\ContractController::class, 'update'])->whereNumber('id');
+            Route::delete('contracts/{id}', [Rental\ContractController::class, 'destroy'])->whereNumber('id');
+            Route::post('contracts/{id}/deposit', [Rental\ContractController::class, 'deposit'])->whereNumber('id');
+            Route::post('contracts/{id}/close', [Rental\ContractController::class, 'close'])->whereNumber('id');
         });
     });
 

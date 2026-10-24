@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Account;
 use App\Models\Booking;
 use App\Models\BookingPayment;
+use App\Models\RentalContract;
+use App\Models\RentalPayment;
 use App\Models\Invoice;
 use App\Models\InvoicePayment;
 use App\Models\JournalEntry;
@@ -49,6 +51,7 @@ class LedgerService
         ['4100', 'إيرادات المبيعات', 'revenue', 'sales', '4000'],
         ['4200', 'إيرادات الخدمات والحجوزات', 'revenue', 'service_revenue', '4000'],
         ['4300', 'خصومات مسموح بها', 'revenue', 'discounts', '4000'],
+        ['4400', 'إيرادات الإيجارات', 'revenue', 'rent_revenue', '4000'],
         ['4900', 'إيرادات أخرى', 'revenue', 'other_income', '4000'],
         ['5000', 'المصروفات', 'expense', null, null],
         ['5100', 'تكلفة البضاعة المباعة', 'expense', 'cogs', '5000'],
@@ -81,6 +84,21 @@ class LedgerService
     public function account(string $systemKey): Account
     {
         $this->ensureChart();
+
+        $acc = Account::where('system_key', $systemKey)->first();
+        if ($acc) {
+            return $acc;
+        }
+        // A system account added to CHART after this tenant's chart was seeded
+        // (e.g. rent_revenue): create it under its parent group on first use.
+        foreach (self::CHART as [$code, $name, $type, $key, $parent]) {
+            if ($key === $systemKey) {
+                return Account::create([
+                    'code' => $code, 'name' => $name, 'type' => $type, 'system_key' => $key, 'is_group' => false,
+                    'parent_id' => $parent ? Account::where('code', $parent)->value('id') : null,
+                ]);
+            }
+        }
 
         return Account::where('system_key', $systemKey)->firstOrFail();
     }
@@ -253,6 +271,31 @@ class LedgerService
             return;
         }
         $this->post($lines, ['date' => $p->date->toDateString(), 'description' => 'حجز '.$b->number.' — '.$p->kind, 'reference' => $b->number, 'source_type' => 'booking_payment', 'source_id' => $p->id]);
+    }
+
+    /**
+     * Rental payment: rent (lease) → rent revenue; installment sale → sales;
+     * security deposit is a liability until returned.
+     */
+    public function postRentalPayment(RentalPayment $p, RentalContract $c): void
+    {
+        if ($this->posted('rental_payment', $p->id)) {
+            return;
+        }
+        $amt = (float) $p->amount;
+        $money = $this->accountForMethod($p->method);
+        $income = $c->kind === 'installment' ? 'sales' : 'rent_revenue';
+        $lines = match ($p->kind) {
+            'rent' => [['account' => $money, 'debit' => $amt], ['account' => $income, 'credit' => $amt]],
+            'deposit' => [['account' => $money, 'debit' => $amt], ['account' => 'customer_deposits', 'credit' => $amt]],
+            'deposit_return' => [['account' => 'customer_deposits', 'debit' => $amt], ['account' => $money, 'credit' => $amt]],
+            default => [],
+        };
+        if (! $lines) {
+            return;
+        }
+        $label = ['rent' => 'دفعة', 'deposit' => 'تأمين', 'deposit_return' => 'إرجاع تأمين'][$p->kind];
+        $this->post($lines, ['date' => $p->date->toDateString(), 'description' => 'عقد '.$c->number.' — '.$label, 'reference' => $c->number, 'source_type' => 'rental_payment', 'source_id' => $p->id]);
     }
 
     /* -------------------------------- balances ------------------------------- */

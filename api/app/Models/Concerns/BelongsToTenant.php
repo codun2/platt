@@ -18,6 +18,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 trait BelongsToTenant
 {
+    // Empty form fields never crash a NOT NULL column (see the trait).
+    use RespectsColumnDefaults;
+
     protected static function bootBelongsToTenant(): void
     {
         static::addGlobalScope('tenant', function (Builder $builder) {
