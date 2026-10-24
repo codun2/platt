@@ -49,7 +49,7 @@ class ModuleSeeder extends Seeder
             ['key' => 'hr_attendance', 'parent_key' => 'hr', 'engine' => 'core', 'name_ar' => 'الحضور والإجازات', 'name_en' => 'Attendance', 'icon' => 'ti-calendar-check', 'route' => '/hr/attendance'],
             ['key' => 'hr_payroll', 'parent_key' => 'hr', 'engine' => 'core', 'name_ar' => 'الرواتب', 'name_en' => 'Payroll', 'icon' => 'ti-cash', 'route' => '/hr/payroll'],
 
-            ['key' => 'whatsapp', 'engine' => 'core', 'name_ar' => 'أتمتة واتساب', 'name_en' => 'WhatsApp', 'icon' => 'ti-brand-whatsapp', 'route' => '/whatsapp'],
+            ['key' => 'whatsapp', 'engine' => 'core', 'name_ar' => 'رسائل واتساب', 'name_en' => 'WhatsApp Messages', 'icon' => 'ti-brand-whatsapp', 'route' => '/whatsapp'],
 
             // ---- Engine: Inventory + POS ----
             ['key' => 'inventory', 'engine' => 'inventory', 'name_ar' => 'المخزون', 'name_en' => 'Inventory', 'icon' => 'ti-package', 'route' => '/inventory'],

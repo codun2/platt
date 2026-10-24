@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Hr;
 use App\Http\Controllers\Api\Inventory;
 use App\Http\Controllers\Api\Manufacturing;
 use App\Http\Controllers\Api\Travel;
+use App\Http\Controllers\Api\Whatsapp;
 use App\Http\Controllers\Api\Pos;
 use App\Http\Controllers\Api\Projects;
 use App\Http\Controllers\Api\PublicController;
@@ -252,6 +253,18 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant'])->prefix('app')->gro
             Route::match(['put', 'patch'], '{kind}/{id}', [Bookings\CatalogController::class, 'update'])->where('kind', 'units|services')->whereNumber('id');
             Route::delete('{kind}/{id}', [Bookings\CatalogController::class, 'destroy'])->where('kind', 'units|services')->whereNumber('id');
         });
+    });
+
+    /* ---- WhatsApp messages (click-to-chat; no Business API needed) ---- */
+    Route::prefix('whatsapp')->middleware('perm:whatsapp.view')->group(function () {
+        Route::get('audiences', [Whatsapp\WhatsappController::class, 'audiences']);
+        Route::get('templates', [Whatsapp\WhatsappController::class, 'templates']);
+        Route::get('recipients', [Whatsapp\WhatsappController::class, 'recipients']);
+        Route::get('history', [Whatsapp\WhatsappController::class, 'history']);
+        Route::post('log', [Whatsapp\WhatsappController::class, 'log']);
+        Route::post('templates', [Whatsapp\WhatsappController::class, 'storeTemplate']);
+        Route::match(['put', 'patch'], 'templates/{id}', [Whatsapp\WhatsappController::class, 'updateTemplate'])->whereNumber('id');
+        Route::delete('templates/{id}', [Whatsapp\WhatsappController::class, 'destroyTemplate'])->whereNumber('id');
     });
 
     /* ---- Engine: Manufacturing (recipes / production) ---- */
