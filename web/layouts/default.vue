@@ -13,7 +13,8 @@ const menuLabel = computed(() => {
   const h = hit as SidebarItem | null
   return h ? ((isEn.value && h.name_en) || h.name_ar) : null
 })
-const title = computed(() => menuLabel.value || (isEn.value && (route.meta.titleEn as string)) || (route.meta.title as string) || t('app.name'))
+const pageTitle = useState<string | null>('page-title', () => null)
+const title = computed(() => pageTitle.value || menuLabel.value || (isEn.value && (route.meta.titleEn as string)) || (route.meta.title as string) || t('app.name'))
 const back = useBackLink(() => auth.state.value.sidebar)
 const sector = computed(() => { const p = auth.state.value.tenant?.sector_preset; return p ? ((isEn.value && p.name_en) || p.name_ar) : '' })
 </script>

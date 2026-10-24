@@ -26,6 +26,7 @@ class PermissionSeeder extends Seeder
             ['key' => 'inventory.manage', 'name_ar' => 'إدارة الأصناف والمخزون والمشتريات', 'group_key' => 'inventory'],
             ['key' => 'pos.manage', 'name_ar' => 'إلغاء الفواتير', 'group_key' => 'pos'],
             ['key' => 'bookings.manage', 'name_ar' => 'إدارة الوحدات والخدمات', 'group_key' => 'bookings'],
+            ['key' => 'service.manage', 'name_ar' => 'إدارة الفنيين وقائمة الأسعار وحذف أوامر العمل', 'group_key' => 'service'],
             ['key' => 'projects.manage', 'name_ar' => 'إدارة القضايا والمشاريع والفوترة', 'group_key' => 'projects'],
             ['key' => 'rental.manage', 'name_ar' => 'إدارة الأصول والعقود والملّاك', 'group_key' => 'rental'],
             ['key' => 'travel.manage', 'name_ar' => 'إدارة الرحلات والباقات والمصروفات', 'group_key' => 'travel'],

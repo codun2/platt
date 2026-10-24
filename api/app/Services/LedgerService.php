@@ -14,6 +14,7 @@ use App\Models\JournalLine;
 use App\Models\Sale;
 use App\Models\SalePayment;
 use App\Models\Sequence;
+use App\Models\ServiceOrder;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -296,6 +297,16 @@ class LedgerService
         }
         $label = ['rent' => 'دفعة', 'deposit' => 'تأمين', 'deposit_return' => 'إرجاع تأمين'][$p->kind];
         $this->post($lines, ['date' => $p->date->toDateString(), 'description' => 'عقد '.$c->number.' — '.$label, 'reference' => $c->number, 'source_type' => 'rental_payment', 'source_id' => $p->id]);
+    }
+
+    /** Cost of parts / materials used on a delivered work order: Dr COGS / Cr inventory. */
+    public function postServiceCost(ServiceOrder $o, float $cost): void
+    {
+        if ($cost <= 0 || $this->posted('service_order', $o->id)) {
+            return;
+        }
+        $this->post([['account' => 'cogs', 'debit' => $cost], ['account' => 'inventory', 'credit' => $cost]],
+            ['date' => now()->toDateString(), 'description' => 'تكلفة قطع ومواد أمر العمل '.$o->number, 'reference' => $o->number, 'source_type' => 'service_order', 'source_id' => $o->id]);
     }
 
     /* -------------------------------- balances ------------------------------- */

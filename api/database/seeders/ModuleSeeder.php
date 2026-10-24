@@ -85,9 +85,10 @@ class ModuleSeeder extends Seeder
 
             // ---- Engine: Service tickets ----
             ['key' => 'service', 'engine' => 'service', 'name_ar' => 'الصيانة وأوامر العمل', 'name_en' => 'Service', 'icon' => 'ti-tool', 'route' => '/service'],
+            ['key' => 'service_overview', 'parent_key' => 'service', 'engine' => 'service', 'name_ar' => 'نظرة عامة', 'name_en' => 'Overview', 'icon' => 'ti-layout-dashboard', 'route' => '/service'],
             ['key' => 'service_tickets', 'parent_key' => 'service', 'engine' => 'service', 'name_ar' => 'أوامر العمل', 'name_en' => 'Work Orders', 'icon' => 'ti-clipboard-list', 'route' => '/service/tickets'],
             ['key' => 'service_technicians', 'parent_key' => 'service', 'engine' => 'service', 'name_ar' => 'الفنيون', 'name_en' => 'Technicians', 'icon' => 'ti-user-cog', 'route' => '/service/technicians'],
-            ['key' => 'service_parts', 'parent_key' => 'service', 'engine' => 'service', 'name_ar' => 'قطع الغيار', 'name_en' => 'Parts', 'icon' => 'ti-engine', 'route' => '/service/parts'],
+            ['key' => 'service_parts', 'parent_key' => 'service', 'engine' => 'service', 'name_ar' => 'قائمة الأسعار', 'name_en' => 'Price List', 'icon' => 'ti-list-details', 'route' => '/service/parts'],
 
             // ---- Engine: Projects / Cases ----
             ['key' => 'projects', 'engine' => 'projects', 'name_ar' => 'المشاريع والقضايا', 'name_en' => 'Projects', 'icon' => 'ti-briefcase', 'route' => '/projects'],

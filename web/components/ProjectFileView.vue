@@ -12,6 +12,7 @@ const dialog = ref<{ mode: 'edit' | 'complete'; task?: any; kind?: 'task' | 'hea
 const hours = reactive({ date: f.today(), hours: 1, description: '', billable: true, rate: '' as any })
 const bill = reactive({ include_hours: true, fixed_amount: 0, fixed_label: '' })
 const canManage = computed(() => auth.can('projects.manage'))
+usePageTitle(() => p.value?.title)
 
 async function load() {
   p.value = await api.get(`/app/projects/items/${id}`)

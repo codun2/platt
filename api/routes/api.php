@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\Pos;
 use App\Http\Controllers\Api\Projects;
 use App\Http\Controllers\Api\PublicController;
 use App\Http\Controllers\Api\Rental;
+use App\Http\Controllers\Api\Service;
 use App\Http\Controllers\Api\Super;
 use Illuminate\Support\Facades\Route;
 
@@ -248,6 +249,24 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant'])->prefix('app')->gro
             Route::post('{kind}', [Bookings\CatalogController::class, 'store'])->where('kind', 'units|services');
             Route::match(['put', 'patch'], '{kind}/{id}', [Bookings\CatalogController::class, 'update'])->where('kind', 'units|services')->whereNumber('id');
             Route::delete('{kind}/{id}', [Bookings\CatalogController::class, 'destroy'])->where('kind', 'units|services')->whereNumber('id');
+        });
+    });
+
+    /* ---- Engine: Service (garages / laundries / maintenance / tailoring) ---- */
+    Route::prefix('service')->middleware('perm:service.view')->group(function () {
+        Route::get('summary', [Service\OrderController::class, 'summary']);
+        Route::get('orders', [Service\OrderController::class, 'index']);
+        Route::get('orders/{id}', [Service\OrderController::class, 'show'])->whereNumber('id');
+        Route::post('orders', [Service\OrderController::class, 'store']);
+        Route::match(['put', 'patch'], 'orders/{id}', [Service\OrderController::class, 'update'])->whereNumber('id');
+        Route::post('orders/{id}/status', [Service\OrderController::class, 'status'])->whereNumber('id');
+        Route::post('orders/{id}/deliver', [Service\OrderController::class, 'deliver'])->whereNumber('id');
+        Route::get('{kind}', [Service\CatalogController::class, 'index'])->where('kind', 'technicians|catalog');
+        Route::middleware('perm:service.manage')->group(function () {
+            Route::delete('orders/{id}', [Service\OrderController::class, 'destroy'])->whereNumber('id');
+            Route::post('{kind}', [Service\CatalogController::class, 'store'])->where('kind', 'technicians|catalog');
+            Route::match(['put', 'patch'], '{kind}/{id}', [Service\CatalogController::class, 'update'])->where('kind', 'technicians|catalog')->whereNumber('id');
+            Route::delete('{kind}/{id}', [Service\CatalogController::class, 'destroy'])->where('kind', 'technicians|catalog')->whereNumber('id');
         });
     });
 

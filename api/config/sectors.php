@@ -105,12 +105,13 @@ return [
             'service' => ['طلبات التفصيل', 'Tailoring Orders', 'ti-needle-thread'],
             'service_tickets' => ['طلبات الخياطة', 'Orders'],
             'service_technicians' => ['الخيّاطون', 'Tailors', 'ti-scissors'],
+            'service_parts' => ['قائمة أسعار التفصيل', 'Tailoring Prices'],
             'pos' => ['المبيعات والكاشير', 'Sales & Checkout'],
             'pos_screen' => ['الكاشير', 'Checkout'],
             'inventory' => ['الأقمشة والمخزون', 'Fabrics & Stock', 'ti-shirt'],
             'inventory_items' => ['الأقمشة والإكسسوارات', 'Fabrics & Trims'],
         ],
-        'hide' => [...$shop, 'service_parts'],
+        'hide' => $shop,
     ],
 
     // ---------------------------------------------------------- hospitality
@@ -207,9 +208,9 @@ return [
             'inventory_items' => ['قطع الغيار', 'Parts'],
             'crm_customers' => ['أصحاب السيارات', 'Car Owners'],
             'crm_quotes' => ['تقديرات الإصلاح', 'Repair Estimates'],
+            // Parts are stocked in the inventory module; this list holds labor rates.
+            'service_parts' => ['أجور الخدمات', 'Labor Rates', 'ti-tool'],
         ],
-        // Parts are stocked through the inventory module here.
-        'hide' => ['service_parts'],
     ],
 
     'laundry' => [
@@ -219,10 +220,11 @@ return [
             'service' => ['طلبات الغسيل', 'Laundry Orders', 'ti-wash-machine'],
             'service_tickets' => ['الطلبات', 'Orders'],
             'service_technicians' => ['العمّال', 'Staff'],
+            'service_parts' => ['قائمة أسعار الغسيل', 'Laundry Prices'],
             'pos' => ['الاستلام والكاشير', 'Counter & Checkout'],
             'pos_screen' => ['الكاشير', 'Checkout'],
         ],
-        'hide' => [...$shop, 'service_parts'],
+        'hide' => $shop,
     ],
 
     'maintenance' => [
