@@ -130,6 +130,7 @@ return [
         'due_at' => 'الموعد', 'next_at' => 'موعد الجلسة القادمة', 'assigned_to' => 'المسؤول', 'lead_id' => 'المسؤول عن الملف', 'project_id' => 'الملف',
         'task_id' => 'المهمة', 'outcome' => 'النتيجة', 'fixed_amount' => 'المبلغ الثابت', 'billable' => 'قابل للفوترة',
         'class_id' => 'الصف', 'class_ids' => 'الصفوف', 'guardian_id' => 'ولي الأمر', 'new_guardian.name' => 'اسم ولي الأمر', 'new_guardian.phone' => 'جوال ولي الأمر', 'student_no' => 'رقم الطالب', 'discount_pct' => 'نسبة الخصم', 'annual_fee' => 'الرسوم السنوية', 'installments' => 'الأقساط', 'installments.*.due_date' => 'تاريخ استحقاق القسط', 'installments.*.label' => 'اسم القسط', 'rows' => 'الطلاب', 'teacher_id' => 'رائد الصف', 'capacity' => 'السعة',
+        'bom_id' => 'الوصفة', 'output_qty' => 'كمية الإنتاج للدفعة', 'extra_cost' => 'التكاليف الإضافية', 'planned_qty' => 'الكمية المخططة', 'actual_qty' => 'الكمية المنتجة فعلياً', 'lines.*.waste_pct' => 'نسبة الهدر', 'planned_date' => 'تاريخ الإنتاج',
         'new_customer.name' => 'اسم المستأجر', 'new_customer.phone' => 'هاتف المستأجر', 'new_customer.id_number' => 'هوية المستأجر',
         'lines.*.qty' => 'الكمية', 'lines.*.unit_price' => 'سعر الوحدة', 'lines.*.price' => 'السعر', 'lines.*.item_id' => 'الصنف', 'lines.*.account_id' => 'الحساب',
         'lines.*.debit' => 'المدين', 'lines.*.credit' => 'الدائن', 'lines.*.description' => 'الوصف', 'lines.*.discount' => 'الخصم', 'items.*.qty' => 'الكمية', 'items.*.unit_cost' => 'تكلفة الوحدة',

@@ -14,7 +14,7 @@ const typeLabel = movementLabel
     <div class="card">
       <div class="row" style="margin-bottom:14px">
         <select v-model="filt.warehouse_id" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">{{ tt('كل المستودعات','All warehouses') }}</option><option v-for="w in meta.warehouses" :key="w.id" :value="w.id">{{ w.name }}</option></select>
-        <select v-model="filt.type" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">{{ tt('كل الأنواع','All types') }}</option><option v-for="t in ['purchase','sale','sale_cancel','purchase_cancel','adjustment','transfer_in','transfer_out','opening']" :key="t" :value="t">{{ typeLabel(t) }}</option></select>
+        <select v-model="filt.type" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="load"><option value="">{{ tt('كل الأنواع','All types') }}</option><option v-for="t in ['purchase','sale','sale_cancel','purchase_cancel','adjustment','transfer_in','transfer_out','opening','production_in','production_out','service']" :key="t" :value="t">{{ typeLabel(t) }}</option></select>
         <input v-model="filt.from" type="date" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load" />
         <input v-model="filt.to" type="date" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load" />
       </div>

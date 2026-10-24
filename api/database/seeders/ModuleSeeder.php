@@ -108,6 +108,7 @@ class ModuleSeeder extends Seeder
 
             // ---- Engine: Manufacturing ----
             ['key' => 'manufacturing', 'engine' => 'manufacturing', 'name_ar' => 'التصنيع', 'name_en' => 'Manufacturing', 'icon' => 'ti-building-factory-2', 'route' => '/manufacturing'],
+            ['key' => 'manufacturing_overview', 'parent_key' => 'manufacturing', 'engine' => 'manufacturing', 'name_ar' => 'نظرة عامة', 'name_en' => 'Overview', 'icon' => 'ti-layout-dashboard', 'route' => '/manufacturing'],
             ['key' => 'manufacturing_bom', 'parent_key' => 'manufacturing', 'engine' => 'manufacturing', 'name_ar' => 'الوصفات (BOM)', 'name_en' => 'BOM', 'icon' => 'ti-list-details', 'route' => '/manufacturing/bom'],
             ['key' => 'manufacturing_orders', 'parent_key' => 'manufacturing', 'engine' => 'manufacturing', 'name_ar' => 'أوامر الإنتاج', 'name_en' => 'Production Orders', 'icon' => 'ti-settings-automation', 'route' => '/manufacturing/orders'],
         ];

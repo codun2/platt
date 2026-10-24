@@ -10,7 +10,7 @@ onMounted(async () => { meta.value = await api.get('/app/inventory/items/meta');
 
 async function save(stay = false) {
   err.value = ''; saving.value = true
-  try { const i = await api.post('/app/inventory/items', itemPayload(form)); if (stay) Object.assign(form, blankItem()); else navigateTo(`/inventory/items/${i.id}`) }
+  try { const i = await api.post('/app/inventory/items', itemPayload(form)); if (stay) Object.assign(form, blankItem()); else if (!returnAfterCreate(i.id)) navigateTo(`/inventory/items/${i.id}`) }
   catch (e: any) { err.value = e.message; window.scrollTo({ top: 0, behavior: 'smooth' }) } finally { saving.value = false }
 }
 </script>
@@ -24,7 +24,7 @@ async function save(stay = false) {
       <div class="row" style="gap:10px;margin-top:18px;border-top:1px solid var(--line);padding-top:16px">
         <button class="btn" :disabled="saving" @click="save(false)"><i class="ti ti-check" /> {{ tt('حفظ','Save') }}</button>
         <button class="btn ghost" :disabled="saving" @click="save(true)"><i class="ti ti-plus" /> {{ tt('حفظ وإضافة آخر','Save & add another') }}</button>
-        <NuxtLink class="btn ghost" to="/inventory/items">{{ tt('إلغاء','Cancel') }}</NuxtLink>
+        <NuxtLink class="btn ghost" :to="cancelLink('/inventory/items')">{{ tt('إلغاء','Cancel') }}</NuxtLink>
       </div>
     </div>
   </div>

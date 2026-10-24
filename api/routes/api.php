@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Bookings;
 use App\Http\Controllers\Api\Education;
 use App\Http\Controllers\Api\Hr;
 use App\Http\Controllers\Api\Inventory;
+use App\Http\Controllers\Api\Manufacturing;
 use App\Http\Controllers\Api\Travel;
 use App\Http\Controllers\Api\Pos;
 use App\Http\Controllers\Api\Projects;
@@ -250,6 +251,24 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant'])->prefix('app')->gro
             Route::post('{kind}', [Bookings\CatalogController::class, 'store'])->where('kind', 'units|services');
             Route::match(['put', 'patch'], '{kind}/{id}', [Bookings\CatalogController::class, 'update'])->where('kind', 'units|services')->whereNumber('id');
             Route::delete('{kind}/{id}', [Bookings\CatalogController::class, 'destroy'])->where('kind', 'units|services')->whereNumber('id');
+        });
+    });
+
+    /* ---- Engine: Manufacturing (recipes / production) ---- */
+    Route::prefix('manufacturing')->middleware('perm:manufacturing.view')->group(function () {
+        Route::get('summary', [Manufacturing\OrderController::class, 'summary']);
+        Route::get('bom', [Manufacturing\BomController::class, 'index']);
+        Route::get('bom/{id}', [Manufacturing\BomController::class, 'show'])->whereNumber('id');
+        Route::get('orders', [Manufacturing\OrderController::class, 'index']);
+        Route::get('orders/{id}', [Manufacturing\OrderController::class, 'show'])->whereNumber('id');
+        Route::post('orders', [Manufacturing\OrderController::class, 'store']);
+        Route::post('orders/{id}/start', [Manufacturing\OrderController::class, 'start'])->whereNumber('id');
+        Route::post('orders/{id}/complete', [Manufacturing\OrderController::class, 'complete'])->whereNumber('id');
+        Route::post('orders/{id}/cancel', [Manufacturing\OrderController::class, 'cancel'])->whereNumber('id');
+        Route::middleware('perm:manufacturing.manage')->group(function () {
+            Route::post('bom', [Manufacturing\BomController::class, 'store']);
+            Route::match(['put', 'patch'], 'bom/{id}', [Manufacturing\BomController::class, 'update'])->whereNumber('id');
+            Route::delete('bom/{id}', [Manufacturing\BomController::class, 'destroy'])->whereNumber('id');
         });
     });
 
