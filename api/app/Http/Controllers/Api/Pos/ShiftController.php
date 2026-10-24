@@ -20,7 +20,9 @@ class ShiftController extends Controller
     {
         $shift = Shift::with('warehouse:id,name')->where('user_id', $request->user()->id)->where('status', 'open')->first();
 
-        return response()->json($shift ? $this->summary($shift) : null);
+        // No open shift → a real JSON `null` (response()->json(null) would send `{}`,
+        // which the SPA reads as an open shift without an id).
+        return $shift ? response()->json($this->summary($shift)) : (new JsonResponse)->setJson('null');
     }
 
     public function open(Request $request, InventoryService $inv): JsonResponse

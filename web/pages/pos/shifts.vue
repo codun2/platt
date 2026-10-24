@@ -3,10 +3,10 @@ definePageMeta({ title: 'الورديات', titleEn: 'Shifts' })
 const api = useApi(); const f = useFmt(); const { tt } = useI18n()
 const page = ref<any>(null); const current = ref<any>(null); const view = ref<any>(null)
 const openCash = ref(0); const closing = ref(0); const note = ref('')
-async function load() { page.value = await api.get('/app/pos/shifts'); current.value = await api.get('/app/pos/shifts/current'); if (current.value) closing.value = Number(current.value.expected_cash) }
+async function load() { page.value = await api.get('/app/pos/shifts'); const cur = await api.get('/app/pos/shifts/current'); current.value = cur?.id ? cur : null; if (current.value) closing.value = Number(current.value.expected_cash) }
 onMounted(load)
 async function open() { try { await api.post('/app/pos/shifts/open', { opening_cash: openCash.value }); await load() } catch (e: any) { uiAlert(e.message) } }
-async function close() { if (!await uiConfirm(tt('إغلاق الوردية؟','Close shift?'))) return; try { await api.post(`/app/pos/shifts/${current.value.id}/close`, { closing_cash: closing.value, note: note.value }); await load() } catch (e: any) { uiAlert(e.message) } }
+async function close() { if (!current.value?.id) return; if (!await uiConfirm(tt('إغلاق الوردية؟','Close shift?'))) return; try { await api.post(`/app/pos/shifts/${current.value.id}/close`, { closing_cash: closing.value, note: note.value }); await load() } catch (e: any) { uiAlert(e.message) } }
 async function show(s: any) { view.value = await api.get(`/app/pos/shifts/${s.id}`) }
 </script>
 

@@ -50,9 +50,19 @@ export function useApi() {
       const errors = data?.errors || {}
       const first = Object.values(errors)[0] as string[] | undefined
       // Never show a raw "Server Error": explain it in the user's language.
-      const msg = res.status >= 500
+      let msg = res.status >= 500
         ? tt('تعذّر حفظ البيانات بسبب خطأ في الخادم. راجع القيم المدخلة وحاول مرة أخرى.', 'The server could not process this request. Check the values and try again.')
         : (first?.[0] || data?.message || tt('حدث خطأ غير متوقع', 'An unexpected error occurred'))
+      // Framework messages ("The route … could not be found", "This action is
+      // unauthorized") are English: in Arabic, explain by status instead.
+      if (currentLocale() === 'ar' && !/[؀-ۿ]/.test(msg)) {
+        msg = ({
+          403: 'ليست لديك صلاحية لتنفيذ هذا الإجراء.',
+          404: 'العنصر المطلوب غير موجود أو تم حذفه. حدّث الصفحة وحاول مرة أخرى.',
+          419: 'انتهت الجلسة، حدّث الصفحة وحاول مرة أخرى.',
+          429: 'محاولات كثيرة متتالية، انتظر قليلاً ثم حاول مرة أخرى.',
+        } as Record<number, string>)[res.status] || 'حدث خطأ غير متوقع، حاول مرة أخرى.'
+      }
       throw new ApiError(res.status, msg, errors)
     }
     return data as T

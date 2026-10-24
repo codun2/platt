@@ -19,7 +19,7 @@ async function onEnter() {
 }
 onMounted(async () => {
   meta.value = await api.get('/app/inventory/items/meta')
-  shift.value = await api.get('/app/pos/shifts/current')
+  const cur = await api.get('/app/pos/shifts/current'); shift.value = cur?.id ? cur : null
   customers.value = await api.get('/app/customers', { all: 1, active_only: 1 })
   await loadItems()
 })
