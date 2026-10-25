@@ -12,6 +12,7 @@ use App\Models\Shift;
 use App\Services\InventoryService;
 use App\Services\LedgerService;
 use App\Services\LoyaltyService;
+use App\Services\PromotionService;
 use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -70,6 +71,8 @@ class SaleController extends Controller
             'payment_method' => ['required', Rule::in(['cash', 'card', 'transfer', 'credit', 'wallet'])],
             // Loyalty add-on: points redeemed as a discount on this bill.
             'redeem_points' => ['nullable', 'numeric', 'min:0'],
+            // Promotions add-on: coupon typed at the till.
+            'coupon_code' => ['nullable', 'string', 'max:40'],
             'paid' => ['nullable', 'numeric', 'min:0'],
             'note' => ['nullable', 'string'],
             // Offline sales (uploaded later by the device's outbox)
@@ -101,15 +104,27 @@ class SaleController extends Controller
             $short = false;
 
             $taxRate = (float) ($data['tax_rate'] ?? $tenant->tax_rate ?? 0);
+
+            // Promotions add-on: automatic offers + coupon. Not for offline sales — the
+            // customer already paid the price shown on the device's receipt.
+            $promo = null;
+            if (PromotionService::enabled() && ! $offline) {
+                $promo = app(PromotionService::class)->evaluate($data['lines'], $data['coupon_code'] ?? null, $soldAt);
+                if (! empty($data['coupon_code']) && $promo['coupon_error']) {
+                    throw \Illuminate\Validation\ValidationException::withMessages(['coupon_code' => $promo['coupon_error']]);
+                }
+            }
+
             $subtotal = 0;
             $lines = [];
-            foreach ($data['lines'] as $l) {
+            foreach (array_values($data['lines']) as $i => $l) {
                 $item = Item::findOrFail($l['item_id']);
-                $lineTotal = round((float) $l['qty'] * (float) $l['unit_price'] - (float) ($l['discount'] ?? 0), 3);
+                $l['discount'] = max((float) ($l['discount'] ?? 0), (float) ($promo['lines'][$i] ?? 0));
+                $lineTotal = round((float) $l['qty'] * (float) $l['unit_price'] - (float) $l['discount'], 3);
                 $subtotal += $lineTotal;
                 $lines[] = [$item, $l, $lineTotal];
             }
-            $discount = (float) ($data['discount'] ?? 0);
+            $discount = (float) ($data['discount'] ?? 0) + (float) ($promo['bill'] ?? 0);
 
             // Loyalty add-on: redeemed points become extra discount; wallet pays from the balance.
             $loyalty = LoyaltyService::enabled() ? app(LoyaltyService::class) : null;
@@ -146,7 +161,12 @@ class SaleController extends Controller
                 'paid' => $paid, 'payment_method' => $method,
                 'note' => $data['note'] ?? null,
                 'created_by' => $request->user()->id,
+                'promo_discount' => (float) ($promo['total'] ?? 0), 'coupon_code' => $promo['coupon']['code'] ?? null,
+                'promotions' => $promo && $promo['applied'] ? $promo['applied'] : null,
             ]);
+            if ($promo && $promo['applied']) {
+                app(PromotionService::class)->recordUse($promo['applied']);
+            }
 
             foreach ($lines as [$item, $l, $lineTotal]) {
                 SaleItem::create([
@@ -226,6 +246,9 @@ class SaleController extends Controller
             }
             $sale->update(['status' => 'cancelled', 'cancelled_at' => now()]);
             app(LoyaltyService::class)->reverseFor('sale', $sale->id);   // points / wallet back
+            foreach ($sale->promotions ?? [] as $a) {   // the offer's use is given back
+                \App\Models\Promotion::whereKey($a['id'])->where('used_count', '>', 0)->decrement('used_count', 1, ['discount_given' => DB::raw('greatest(0, discount_given - '.(float) $a['amount'].')')]);
+            }
             $ledger = app(LedgerService::class);
             $ledger->reverse('sale', $sale->id, 'إلغاء فاتورة '.$sale->number);
             foreach ($sale->payments as $p) {

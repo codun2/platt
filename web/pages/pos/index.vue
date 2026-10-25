@@ -25,9 +25,24 @@ const walletOk = computed(() => !!member.value?.settings.wallet_enabled && !loca
 const methods = computed(() => ['cash', 'card', 'transfer', 'credit', ...(walletOk.value ? ['wallet'] : [])])
 function redeemAll() {
   const m = member.value; if (!m) return
-  const cap = (subtotal.value - Number(discount.value || 0)) * +m.settings.max_redeem_percent / 100
+  const cap = (subtotal.value - Number(discount.value || 0) - billPromo.value) * +m.settings.max_redeem_percent / 100
   redeem.value = Math.floor(Math.min(+m.customer.points, cap / +m.settings.point_value))
 }
+
+// ---- Add-on «العروض والكوبونات»: offers worked out by the server as the cart changes ----
+const promoOn = computed(() => auth.hasModule('promotions'))
+const coupon = ref(''); const promo = ref<any>(null); let promoTimer: any = null
+function refreshPromo() {
+  clearTimeout(promoTimer)
+  if (!promoOn.value || localMode.value || !cart.value.length) { promo.value = null; return }
+  promoTimer = setTimeout(async () => {
+    try { promo.value = await api.post('/app/promotions/evaluate', { lines: cart.value.map(l => ({ item_id: l.item_id, qty: +l.qty || 0.001, unit_price: l.unit_price })), coupon_code: coupon.value || null }) }
+    catch { promo.value = null }
+  }, 250)
+}
+watch(() => cart.value.map(l => `${l.item_id}:${l.qty}:${l.unit_price}`).join('|'), refreshPromo)
+watch(coupon, refreshPromo)
+const lineDisc = (i: number) => Math.max(+cart.value[i]?.discount || 0, +(promo.value?.lines?.[i] || 0))
 
 // ---- Offline: the full catalog lives on the device (refreshed while online) ----
 const off = useOffline()
@@ -86,12 +101,13 @@ off.onSynced(op => {
   if ((op.kind === 'pos_sale' || op.kind === 'pos_shift') && off.state.online) refreshPack()
 })
 function add(i: any) { const ex = cart.value.find(l => l.item_id === i.id); ex ? ex.qty++ : cart.value.push({ item_id: i.id, name: i.name, qty: 1, unit_price: Number(i.sale_price), discount: 0, stock: i.stock, track: i.track_stock }) }
-const subtotal = computed(() => cart.value.reduce((s, l) => s + l.qty * l.unit_price - l.discount, 0))
-const taxable = computed(() => Math.max(0, subtotal.value - Number(discount.value || 0) - pointsDiscount.value))
+const subtotal = computed(() => cart.value.reduce((s, l, i) => s + l.qty * l.unit_price - lineDisc(i), 0))
+const billPromo = computed(() => +(promo.value?.bill || 0))
+const taxable = computed(() => Math.max(0, subtotal.value - Number(discount.value || 0) - billPromo.value - pointsDiscount.value))
 const tax = computed(() => +(taxable.value * taxRate.value / 100).toFixed(3))
 const total = computed(() => +(taxable.value + tax.value).toFixed(3))
 const change = computed(() => paid.value !== null && paid.value > total.value ? +(paid.value - total.value).toFixed(3) : 0)
-function clear() { cart.value = []; discount.value = 0; paid.value = null; method.value = 'cash'; customerId.value = ''; err.value = ''; redeem.value = null }
+function clear() { cart.value = []; discount.value = 0; paid.value = null; method.value = 'cash'; customerId.value = ''; err.value = ''; redeem.value = null; coupon.value = ''; promo.value = null }
 
 async function checkout() {
   err.value = ''
@@ -105,6 +121,7 @@ async function checkout() {
     customer_id: customerId.value || null, warehouse_id: warehouseId.value || null, discount: discount.value, payment_method: method.value,
     paid: method.value === 'credit' ? (paid.value || 0) : total.value, client_ref: ref_,
     ...(+redeem.value! > 0 ? { redeem_points: +redeem.value! } : {}),
+    ...(promo.value?.coupon ? { coupon_code: coupon.value } : {}),
     lines: cart.value.map(l => ({ item_id: l.item_id, qty: l.qty, unit_price: l.unit_price, discount: l.discount })),
   }
   const receipt = { lines: cart.value.map(l => ({ ...l })), subtotal: subtotal.value, discount: +discount.value || 0, tax: tax.value, total: total.value, method: method.value, customer: customers.value.find((c: any) => String(c.id) === String(customerId.value))?.name }
@@ -178,7 +195,7 @@ function printLast() {
       <div class="cart">
         <div v-for="(l, i) in cart" :key="l.item_id" class="cart-line">
           <div style="flex:1"><b>{{ l.name }}</b><br /><small class="muted">{{ f.money(l.unit_price) }} × </small><input v-model.number="l.qty" type="number" min="0.001" step="1" dir="ltr" style="width:60px;padding:3px 6px;border:1px solid var(--line);border-radius:6px" /></div>
-          <div class="num" style="min-width:80px;text-align:left"><b>{{ f.money(l.qty * l.unit_price - l.discount) }}</b></div>
+          <div class="num" style="min-width:80px;text-align:left"><b>{{ f.money(l.qty * l.unit_price - lineDisc(i)) }}</b><small v-if="+(promo?.lines?.[i] || 0) > 0" style="display:block;color:var(--ok)"><i class="ti ti-discount-2" /> -{{ f.money(promo.lines[i]) }}</small></div>
           <button class="btn ghost sm icon" style="color:var(--primary)" @click="cart.splice(i, 1)"><i class="ti ti-x" /></button>
         </div>
         <p v-if="!cart.length" class="empty">{{ tt('السلة فارغة','Cart is empty') }}</p>
@@ -187,6 +204,11 @@ function printLast() {
       <div class="totals">
         <div class="row between"><span>{{ tt('المجموع','Subtotal') }}</span><b>{{ f.money(subtotal) }}</b></div>
         <div class="row between"><span>{{ tt('خصم','Discount') }}</span><input v-model.number="discount" type="number" step="0.001" dir="ltr" style="width:100px;padding:4px 8px;border:1px solid var(--line);border-radius:6px" /></div>
+        <div v-if="promoOn && !localMode && cart.length" class="promo-box">
+          <div v-for="a in promo?.applied || []" :key="a.id" class="row between" style="color:var(--ok)"><span><i :class="`ti ${a.coupon ? 'ti-ticket' : 'ti-discount-2'}`" /> {{ a.name }}</span><b>- {{ f.money(a.amount) }}</b></div>
+          <div class="row between" style="margin-top:4px"><span><i class="ti ti-ticket" /> {{ tt('كوبون', 'Coupon') }}</span><input v-model.trim="coupon" dir="ltr" :placeholder="tt('الرمز', 'Code')" style="width:120px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;text-transform:uppercase" /></div>
+          <small v-if="coupon && promo?.coupon_error" style="color:var(--primary)">{{ promo.coupon_error }}</small>
+        </div>
         <div v-if="member" class="loyalty-box">
           <div class="row between"><span><i class="ti ti-award" /> {{ tt('نقاط العميل', 'Points') }}: <b>{{ f.qty(member.customer.points) }}</b> <small class="muted">(= {{ f.money(member.points_value) }})</small></span>
             <span v-if="member.settings.wallet_enabled"><i class="ti ti-wallet" /> {{ tt('المحفظة', 'Wallet') }}: <b>{{ f.money(member.customer.wallet_balance) }}</b></span></div>
@@ -229,6 +251,7 @@ function printLast() {
 </template>
 
 <style scoped>
+.promo-box { background: #f0fdf4; border: 1px dashed var(--ok); border-radius: 10px; padding: 8px 10px; margin: 6px 0; font-size: 13px; }
 .loyalty-box { background: var(--primary-50, #fff1f2); border: 1px dashed var(--primary); border-radius: 10px; padding: 8px 10px; margin: 6px 0; font-size: 13px; }
 .offline-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 14px; border-radius: 12px; margin-bottom: 12px; background: #e0f2fe; color: #075985; }
 .offline-bar.warn { background: #fef3c7; color: #92400e; }

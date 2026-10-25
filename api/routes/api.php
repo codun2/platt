@@ -295,6 +295,18 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant', 'idem'])->prefix('ap
         Route::post('{id}/cancel', [Addons\OrderController::class, 'cancel'])->whereNumber('id')->middleware('perm:orders.manage');
     });
 
+    /* ---- Add-on: promotions & coupons ---- */
+    Route::prefix('promotions')->middleware('perm:promotions.view')->group(function () {
+        Route::get('/', [Addons\PromotionController::class, 'index']);
+        Route::get('{id}', [Addons\PromotionController::class, 'show'])->whereNumber('id');
+        Route::post('evaluate', [Addons\PromotionController::class, 'evaluate']);
+        Route::middleware('perm:promotions.manage')->group(function () {
+            Route::post('/', [Addons\PromotionController::class, 'store']);
+            Route::match(['put', 'patch'], '{id}', [Addons\PromotionController::class, 'update'])->whereNumber('id');
+            Route::delete('{id}', [Addons\PromotionController::class, 'destroy'])->whereNumber('id');
+        });
+    });
+
     /* ---- Engine: Manufacturing (recipes / production) ---- */
     Route::prefix('manufacturing')->middleware('perm:manufacturing.view')->group(function () {
         Route::get('summary', [Manufacturing\OrderController::class, 'summary']);
