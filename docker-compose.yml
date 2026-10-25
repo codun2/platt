@@ -1,5 +1,5 @@
 # ركائز (Rakeez) — Laravel API + Nuxt SPA (static) + MySQL.
-# Host nginx (:8100 public) reverse-proxies → 127.0.0.1:8014 (platt-web).
+# Host nginx: https://rekaz.smartunita.com (Cloudflare, 80/443) and :8100 (IP) reverse-proxy → 127.0.0.1:8014 (platt-web).
 name: platt
 
 services:
@@ -30,7 +30,7 @@ services:
     environment:
       APP_ENV: production
       APP_DEBUG: "false"
-      APP_URL: http://109.199.98.171:8100
+      APP_URL: https://rekaz.smartunita.com
       DB_CONNECTION: mysql
       DB_HOST: platt-db
       DB_PORT: "3306"

@@ -38,4 +38,4 @@ docker compose up -d --build        # http://localhost:8014
 - `/app/bookings` الحجوزات · `/app/bookings/calendar` التقويم · `/app/travel` الرحلات والمسافرون
 
 ## النشر
-Contabo VPS، `/opt/platt`، منفذ داخلي `127.0.0.1:8014` خلف nginx (:8100)، auto-deploy (edit→push→live) عبر `deploy.sh` (cron كل دقيقة).
+Contabo VPS، `/opt/platt`، منفذ داخلي `127.0.0.1:8014` خلف nginx (الدومين https://rekaz.smartunita.com عبر Cloudflare، و:8100 بالـIP)، auto-deploy (edit→push→live) عبر `deploy.sh` (cron كل دقيقة).
