@@ -9,7 +9,7 @@ const form = reactive<any>(blankDoc('quote', +(auth.state.value.tenant?.tax_rate
 useDraft('quote-new', form)   // kept if the user jumps to an add page from a dropdown
 if (route.query.customer_id) form.customer_id = String(route.query.customer_id)
 // Default validity: 15 days.
-{ const d = new Date(); d.setDate(d.getDate() + 15); form.valid_until = d.toISOString().slice(0, 10) }
+{ const d = new Date(); d.setDate(d.getDate() + 15); form.valid_until = ymd(d) }
 onMounted(async () => { customers.value = await api.get('/app/customers', { all: 1, active_only: 1 }) })
 
 async function save(status: 'draft' | 'sent') {

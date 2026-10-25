@@ -1,13 +1,13 @@
 <script setup lang="ts">
 definePageMeta({ title: 'تقارير المبيعات', titleEn: 'Sales Reports' })
 const api = useApi(); const f = useFmt(); const { tt } = useI18n()
-const from = ref(new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10)); const to = ref(f.today())
+const from = ref(ymd(new Date(new Date().getFullYear(), new Date().getMonth(), 1))); const to = ref(f.today())
 const r = ref<any>(null)
 async function load() { r.value = await api.get('/app/pos/reports/summary', { from: from.value, to: to.value }) }
 onMounted(load)
 const maxDay = computed(() => Math.max(1, ...(r.value?.by_day || []).map((d: any) => Number(d.total))))
 function preset(p: 'today' | 'week' | 'month' | 'year') {
-  const n = new Date(); const d = (x: Date) => x.toISOString().slice(0, 10)
+  const n = new Date(); const d = (x: Date) => ymd(x)
   if (p === 'today') { from.value = d(n); to.value = d(n) }
   if (p === 'week') { const s = new Date(n); s.setDate(n.getDate() - 6); from.value = d(s); to.value = d(n) }
   if (p === 'month') { from.value = d(new Date(n.getFullYear(), n.getMonth(), 1)); to.value = d(n) }

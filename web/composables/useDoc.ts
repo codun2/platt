@@ -17,7 +17,7 @@ export const blankLine = () => ({
 
 export const blankDoc = (kind: DocKind, taxRate = 0) => {
   return {
-    customer_id: '', student_id: '', link_id: '', date: new Date().toISOString().slice(0, 10), status: 'draft',
+    customer_id: '', student_id: '', link_id: '', date: ymd(), status: 'draft',
     due_date: '', payment_terms_days: '', valid_until: '',
     subject: '', reference: '',
     discount_type: 'amount', discount_value: 0, tax_rate: taxRate,

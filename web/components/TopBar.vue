@@ -7,7 +7,7 @@ let tm: any
 onMounted(() => { tm = setInterval(() => (now.value = new Date()), 1000) })
 onUnmounted(() => clearInterval(tm))
 const time = computed(() => now.value.toLocaleTimeString('en-GB'))
-const date = computed(() => now.value.toISOString().slice(0, 10))
+const date = computed(() => ymd(now.value))
 const off = useOffline()
 const pwa = usePwaInstall()
 const initials = computed(() => (auth.state.value.user?.name || '?').slice(0, 1))

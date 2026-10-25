@@ -3,7 +3,7 @@ definePageMeta({ title: 'ساعات العمل', titleEn: 'Timesheets' })
 const api = useApi(); const f = useFmt(); const auth = useAuth()
 const kind = useProjectKind(); const T = computed(() => projectTerms(kind.value))
 const d = ref<any>(null); const people = ref<any[]>([]); const projects = ref<any[]>([])
-const filt = reactive({ from: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10), to: f.today(), project_id: '', user_id: '', billing: '', page: 1 })
+const filt = reactive({ from: ymd(new Date(new Date().getFullYear(), new Date().getMonth(), 1)), to: f.today(), project_id: '', user_id: '', billing: '', page: 1 })
 const entry = reactive<any>({ project_id: '', date: f.today(), hours: 1, description: '', billable: true })
 const err = ref(''); const msg = ref('')
 async function load(p: any = 1) { const n = typeof p === 'number' ? p : 1; d.value = await api.get('/app/projects/timesheets', { ...filt, page: n }) }

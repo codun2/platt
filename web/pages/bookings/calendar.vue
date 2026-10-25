@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({ title: 'تقويم الحجوزات', titleEn: 'Bookings Calendar' })
-const api = useApi(); const f = useFmt(); const { tt } = useI18n()
+const api = useApi(); const f = useFmt(); const { tt, isEn } = useI18n()
 const cur = ref(new Date()); const events = ref<any[]>([]); const units = ref<any[]>([]); const unitId = ref('')
 const stLabel: any = { pending: tt('معلّق','Pending'), confirmed: tt('مؤكد','Confirmed'), completed: tt('مكتمل','Completed') }
 const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -25,7 +25,7 @@ const todayStr = ymd(new Date())
     <div class="breadcrumb"><NuxtLink to="/bookings">{{ tt('الحجوزات','Bookings') }}</NuxtLink> › <b>{{ tt('التقويم','Calendar') }}</b></div>
     <div class="card">
       <div class="row between" style="margin-bottom:12px">
-        <div class="row"><button class="btn ghost sm" @click="move(1)"><i class="ti ti-chevron-right" /></button><b style="font-size:16px;min-width:140px;text-align:center">{{ title }}</b><button class="btn ghost sm" @click="move(-1)"><i class="ti ti-chevron-left" /></button><button class="btn ghost sm" @click="cur = new Date(); load()">{{ tt('اليوم','Today') }}</button></div>
+        <div class="row"><button class="btn ghost sm" :title="tt('الشهر السابق', 'Previous month')" @click="move(-1)"><i :class="`ti ${isEn ? 'ti-chevron-left' : 'ti-chevron-right'}`" /></button><b style="font-size:16px;min-width:140px;text-align:center">{{ title }}</b><button class="btn ghost sm" :title="tt('الشهر التالي', 'Next month')" @click="move(1)"><i :class="`ti ${isEn ? 'ti-chevron-right' : 'ti-chevron-left'}`" /></button><button class="btn ghost sm" @click="cur = new Date(); load()">{{ tt('اليوم','Today') }}</button></div>
         <div class="row"><UiSelect v-model="unitId" style="min-width:150px" @change="load"><option value="">{{ tt('كل الوحدات','All units') }}</option><option v-for="u in units" :key="u.id" :value="u.id">{{ u.name }}</option></UiSelect><NuxtLink to="/bookings/new" class="btn sm"><i class="ti ti-plus" /> {{ tt('حجز جديد','New booking') }}</NuxtLink></div>
       </div>
       <div class="cal-head"><span v-for="d in (tt('ar','en')==='en' ? ['Sat','Sun','Mon','Tue','Wed','Thu','Fri'] : ['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'])" :key="d">{{ d }}</span></div>

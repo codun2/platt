@@ -24,7 +24,7 @@ function add(i: any) {
 // Supplier payment terms → due date when empty.
 watch(() => [props.form.supplier_id, props.form.date], () => {
   if (props.form.due_date || !supplier.value?.payment_terms_days || !props.form.date) return
-  const d = new Date(props.form.date + 'T00:00:00'); d.setDate(d.getDate() + +supplier.value.payment_terms_days); props.form.due_date = d.toISOString().slice(0, 10)
+  const d = new Date(props.form.date + 'T00:00:00'); d.setDate(d.getDate() + +supplier.value.payment_terms_days); props.form.due_date = ymd(d)
 })
 </script>
 

@@ -5,7 +5,7 @@ export const purchaseStatus: Record<string, { label: string; cls: string }> = {
 export const purchasePayMethods: Record<string, any> = { cash: L('نقدي', 'Cash'), card: L('بطاقة', 'Card'), transfer: L('تحويل بنكي', 'Bank transfer'), cheque: L('شيك', 'Cheque'), credit: L('آجل', 'Credit') }
 
 export const blankPurchase = (warehouseId: any = '') => ({
-  supplier_id: '', warehouse_id: warehouseId, date: new Date().toISOString().slice(0, 10), due_date: '',
+  supplier_id: '', warehouse_id: warehouseId, date: ymd(), due_date: '',
   supplier_invoice: '', reference: '', payment_method: 'cash',
   discount: 0, tax: 0, paid: 0, note: '', receive: true,
   lines: [] as any[],

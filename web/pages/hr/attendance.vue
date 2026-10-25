@@ -1,18 +1,20 @@
 <script setup lang="ts">
 definePageMeta({ title: 'الحضور والإجازات', titleEn: 'Attendance & Leaves' })
-const api = useApi(); const auth = useAuth(); const f = useFmt(); const { tt } = useI18n(); const route = useRoute()
+const api = useApi(); const auth = useAuth(); const f = useFmt(); const { tt, isEn } = useI18n(); const route = useRoute()
 const tab = ref<'day' | 'month' | 'leaves'>(route.query.tab === 'leaves' ? 'leaves' : 'day')
 const canManage = computed(() => auth.can('hr.manage'))
 // Daily sheet
-const date = ref(new Date().toISOString().slice(0, 10)); const sheet = ref<any>(null); const rows = ref<any[]>([]); const saving = ref(false); const msg = ref(''); const err = ref('')
+const date = ref(ymd()); const sheet = ref<any>(null); const rows = ref<any[]>([]); const saving = ref(false); const msg = ref(''); const err = ref('')
 async function loadDay() { sheet.value = await api.get('/app/hr/attendance/day', { date: date.value }); rows.value = sheet.value.rows.map((r: any) => ({ employee: r.employee, status: r.attendance?.status || '', check_in: r.attendance?.check_in?.slice(0, 5) || '', check_out: r.attendance?.check_out?.slice(0, 5) || '', late_minutes: r.attendance?.late_minutes || 0, overtime_minutes: r.attendance?.overtime_minutes || 0, note: r.attendance?.note || '' })) }
 function markAll(status: string) { rows.value.forEach(r => { if (!r.status || status === 'present') r.status = status }) }
 async function saveDay() {
   err.value = ''; msg.value = ''; saving.value = true
   const payload = rows.value.filter(r => r.status).map(r => ({ employee_id: r.employee.id, status: r.status, check_in: r.check_in || null, check_out: r.check_out || null, late_minutes: +r.late_minutes || 0, overtime_minutes: +r.overtime_minutes || 0, note: r.note || null }))
-  try { const r = await api.post('/app/hr/attendance/bulk', { date: date.value, rows: payload }); msg.value = tt(`تم حفظ حضور ${r.count} موظف`,`Saved attendance for ${r.count} employees`); await loadDay() } catch (x: any) { err.value = x.message } finally { saving.value = false }
+  try { const r = await api.post('/app/hr/attendance/bulk', { date: date.value, rows: payload }); msg.value = tt(`تم حفظ حضور ${r.count} موظف`,`Saved attendance for ${r.count} employees`); await Promise.all([loadDay(), loadMonth()]) } catch (x: any) { err.value = x.message } finally { saving.value = false }
 }
-function shift(n: number) { const d = new Date(date.value + 'T00:00:00'); d.setDate(d.getDate() + n); date.value = d.toISOString().slice(0, 10); loadDay() }
+function shift(n: number) { const d = new Date(date.value + 'T00:00:00'); d.setDate(d.getDate() + n); date.value = ymd(d); loadDay() }
+// Minutes late on a «present» row means the employee came late (and back when cleared).
+function onLate(r: any) { if (+r.late_minutes > 0 && (r.status === 'present' || !r.status)) r.status = 'late'; else if (!(+r.late_minutes > 0) && r.status === 'late') r.status = 'present' }
 // Monthly
 const month = ref(thisMonth()); const summary = ref<any>(null)
 async function loadMonth() { summary.value = await api.get('/app/hr/attendance/summary', { month: month.value }) }
@@ -20,6 +22,8 @@ async function loadMonth() { summary.value = await api.get('/app/hr/attendance/s
 const leaves = ref<any>(null); const lf = reactive({ status: '', type: '' })
 async function loadLeaves(p: any = 1) { const n = typeof p === 'number' ? p : 1; leaves.value = await api.get('/app/hr/leaves', { ...lf, page: n }) }
 onMounted(() => { loadDay(); loadMonth(); loadLeaves() })
+// The monthly summary always shows the latest saved days.
+watch(tab, t => { if (t === 'month') loadMonth() })
 </script>
 
 <template>
@@ -43,7 +47,7 @@ onMounted(() => { loadDay(); loadMonth(); loadLeaves() })
 
       <div v-if="tab === 'day'">
         <div class="row between" style="margin-bottom:12px">
-          <div class="row"><button class="btn ghost sm" @click="shift(1)"><i class="ti ti-chevron-right" /></button><input v-model="date" type="date" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="loadDay" /><button class="btn ghost sm" @click="shift(-1)"><i class="ti ti-chevron-left" /></button><button class="btn ghost sm" @click="date = new Date().toISOString().slice(0, 10); loadDay()">{{ tt('اليوم','Today') }}</button></div>
+          <div class="row"><button class="btn ghost sm" :title="tt('اليوم السابق', 'Previous day')" @click="shift(-1)"><i :class="`ti ${isEn ? 'ti-chevron-left' : 'ti-chevron-right'}`" /></button><input v-model="date" type="date" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="loadDay" /><button class="btn ghost sm" :title="tt('اليوم التالي', 'Next day')" @click="shift(1)"><i :class="`ti ${isEn ? 'ti-chevron-right' : 'ti-chevron-left'}`" /></button><button class="btn ghost sm" @click="date = ymd(); loadDay()">{{ tt('اليوم','Today') }}</button></div>
           <div v-if="canManage" class="row"><button class="btn ghost sm" @click="markAll('present')"><i class="ti ti-checks" /> {{ tt('الكل حاضر','All present') }}</button><button class="btn ghost sm" @click="markAll('weekend')">{{ tt('غير المسجَّل: نهاية أسبوع','Unmarked: weekend') }}</button><button class="btn" :disabled="saving" @click="saveDay"><i class="ti ti-device-floppy" /> {{ tt('حفظ الحضور','Save attendance') }}</button></div>
         </div>
         <table class="table lines-editor">
@@ -55,7 +59,7 @@ onMounted(() => { loadDay(); loadMonth(); loadLeaves() })
               <td><UiSelect v-model="r.status" placeholder="—"><option value="">—</option><option v-for="(s, k) in attendanceStatus" :key="k" :value="k">{{ s.label }}</option></UiSelect></td>
               <td><input v-model="r.check_in" type="time" dir="ltr" :disabled="!canManage" /></td>
               <td><input v-model="r.check_out" type="time" dir="ltr" :disabled="!canManage" /></td>
-              <td><input v-model.number="r.late_minutes" type="number" min="0" dir="ltr" :disabled="!canManage" /></td>
+              <td><input v-model.number="r.late_minutes" type="number" min="0" dir="ltr" :disabled="!canManage" @input="onLate(r)" /></td>
               <td><input v-model.number="r.overtime_minutes" type="number" min="0" dir="ltr" :disabled="!canManage" /></td>
               <td><input v-model="r.note" :disabled="!canManage" /></td>
             </tr>

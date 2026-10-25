@@ -11,7 +11,7 @@ export const payrollStatus: Record<string, { label: string; cls: string }> = { d
 export const maritalStatus: Record<string, any> = { single: L('أعزب', 'Single'), married: L('متزوج', 'Married'), divorced: L('مطلّق', 'Divorced'), widowed: L('أرمل', 'Widowed') }
 
 export const blankEmployee = () => ({
-  code: '', name: '', name_en: '', job_title: '', department: '', employment_type: 'full_time', hire_date: new Date().toISOString().slice(0, 10), end_date: '', status: 'active',
+  code: '', name: '', name_en: '', job_title: '', department: '', employment_type: 'full_time', hire_date: ymd(), end_date: '', status: 'active',
   phone: '', email: '', national_id: '', nationality: '', birth_date: '', gender: '', marital_status: '', address: '', bank_name: '', iban: '',
   basic_salary: 0, housing_allowance: 0, transport_allowance: 0, other_allowance: 0, fixed_deductions: 0, annual_leave_days: 30,
   user_id: '', emergency_name: '', emergency_phone: '', notes: '',
@@ -26,7 +26,7 @@ export const employeeToForm = (e: any) => {
 export const employeePayload = (f: any) => ({ ...f, user_id: f.user_id || null, end_date: f.end_date || null, hire_date: f.hire_date || null, birth_date: f.birth_date || null, gender: f.gender || null, marital_status: f.marital_status || null, employment_type: f.employment_type || null })
 export const grossOf = (f: any) => Math.round(((+f.basic_salary || 0) + (+f.housing_allowance || 0) + (+f.transport_allowance || 0) + (+f.other_allowance || 0)) * 1000) / 1000
 
-export const blankLeave = (employeeId: any = '') => ({ employee_id: employeeId, type: 'annual', from: new Date().toISOString().slice(0, 10), to: new Date().toISOString().slice(0, 10), reason: '', note: '' })
+export const blankLeave = (employeeId: any = '') => ({ employee_id: employeeId, type: 'annual', from: ymd(), to: ymd(), reason: '', note: '' })
 export const leaveDays = (from: string, to: string) => { if (!from || !to) return 0; const d = Math.round((new Date(to + 'T00:00:00').getTime() - new Date(from + 'T00:00:00').getTime()) / 86400000) + 1; return d > 0 ? d : 0 }
 export const monthLabel = (ym: string) => { const [y, m] = ym.split('-'); const ar = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']; const en = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']; return `${tt(ar[+m - 1], en[+m - 1])} ${y}` }
-export const thisMonth = () => new Date().toISOString().slice(0, 7)
+export const thisMonth = () => ymd().slice(0, 7)

@@ -66,7 +66,7 @@ class AttendanceController extends Controller
             'rows' => $emps->map(function ($e) use ($rows) {
                 $a = $rows[$e->id] ?? collect();
 
-                return ['employee' => $e, 'present' => $a->whereIn('status', ['present', 'late'])->count(), 'half_day' => $a->where('status', 'half_day')->count(), 'absent' => $a->where('status', 'absent')->count(), 'late' => $a->where('status', 'late')->count(), 'leave' => $a->where('status', 'leave')->count(), 'late_minutes' => (int) $a->sum('late_minutes'), 'overtime_minutes' => (int) $a->sum('overtime_minutes'), 'days_marked' => $a->count()];
+                return ['employee' => $e, 'present' => $a->whereIn('status', ['present', 'late'])->count(), 'half_day' => $a->where('status', 'half_day')->count(), 'absent' => $a->where('status', 'absent')->count(), 'late' => $a->filter(fn ($x) => $x->status === 'late' || ($x->status === 'present' && $x->late_minutes > 0))->count(), 'leave' => $a->where('status', 'leave')->count(), 'late_minutes' => (int) $a->sum('late_minutes'), 'overtime_minutes' => (int) $a->sum('overtime_minutes'), 'days_marked' => $a->count()];
             }),
         ]);
     }

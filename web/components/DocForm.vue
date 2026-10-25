@@ -27,7 +27,7 @@ watch(() => props.form.link_id, id => {
 watch(() => [props.form.payment_terms_days, props.form.date], () => {
   if (!isInvoice.value || props.form.payment_terms_days === '' || !props.form.date) return
   const d = new Date(props.form.date + 'T00:00:00'); d.setDate(d.getDate() + (+props.form.payment_terms_days || 0))
-  props.form.due_date = d.toISOString().slice(0, 10)
+  props.form.due_date = ymd(d)
 })
 </script>
 

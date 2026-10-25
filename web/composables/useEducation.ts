@@ -9,7 +9,7 @@ export const guardianRelations: Record<string, any> = { father: L('الأب', 'F
 export const currentAcademicYear = () => { const d = new Date(); const y = d.getMonth() >= 7 ? d.getFullYear() : d.getFullYear() - 1; return `${y}/${y + 1}` }
 export const blankStudent = () => ({
   student_no: '', name: '', name_en: '', gender: '', birth_date: '', national_id: '', nationality: '', class_id: '', guardian_id: '', guardian_relation: 'father',
-  new_guardian: { name: '', phone: '', id_number: '' }, emergency_phone: '', enrolled_at: new Date().toISOString().slice(0, 10), status: 'active',
+  new_guardian: { name: '', phone: '', id_number: '' }, emergency_phone: '', enrolled_at: ymd(), status: 'active',
   discount_pct: 0, transport: '', medical_notes: '', notes: '',
 })
 export const studentToForm = (s: any) => { const f: any = blankStudent(); for (const k of Object.keys(f)) if (k !== 'new_guardian') f[k] = s[k] ?? ''; f.discount_pct = +s.discount_pct || 0; return f }

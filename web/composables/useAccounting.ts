@@ -19,7 +19,7 @@ export const sourceLink = (type: string | null, id: number | null, contractId?: 
 export const expenseMethods: Record<string, any> = { cash: L('نقدي', 'Cash'), card: L('بطاقة', 'Card'), transfer: L('تحويل بنكي', 'Bank transfer'), cheque: L('شيك', 'Cheque') }
 
 export const monthStart = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01` }
-export const todayStr = () => new Date().toISOString().slice(0, 10)
+export const todayStr = () => ymd()
 
 /* ---- expenses ---- */
 export const blankExpense = () => ({

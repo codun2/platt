@@ -5,7 +5,7 @@ export function blankTrip() {
     transport: '', airline: '', flight_no: '', boarding_point: '',
     hotel_makkah: '', nights_makkah: '', hotel_madinah: '', nights_madinah: '',
     supervisor: '', supervisor_phone: '',
-    departure_date: new Date().toISOString().slice(0, 10), return_date: '',
+    departure_date: ymd(), return_date: '',
     capacity: 40, price: 0, package_id: '', status: 'scheduled', note: '',
   }
 }

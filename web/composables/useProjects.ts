@@ -44,7 +44,7 @@ export function useProjectKind() {
 }
 
 export const blankProject = (kind: 'case' | 'project') => ({
-  kind, title: '', customer_id: '', status: 'open', priority: 'normal', lead_id: '', start_date: new Date().toISOString().slice(0, 10), due_date: '',
+  kind, title: '', customer_id: '', status: 'open', priority: 'normal', lead_id: '', start_date: ymd(), due_date: '',
   case_type: kind === 'case' ? 'commercial' : '', court: '', court_case_no: '', client_role: kind === 'case' ? 'plaintiff' : '', opponent: '', opponent_lawyer: '',
   stage: kind === 'case' ? 'first_instance' : '', location: '', contract_value: 0, progress: 0,
   fee_type: kind === 'case' ? 'hourly' : 'fixed', fee_amount: 0, hourly_rate: 0, description: '', notes: '',

@@ -44,7 +44,7 @@ export const dueLabel = (iso: string) => {
   const d = new Date(iso.replace(' ', 'T')); const t = d.toLocaleTimeString(currentLocale() === 'ar' ? 'ar' : 'en-GB', { hour: 'numeric', minute: '2-digit' })
   const day = new Date(d); day.setHours(0, 0, 0, 0); const today = new Date(); today.setHours(0, 0, 0, 0)
   const diff = Math.round((day.getTime() - today.getTime()) / 86400000)
-  const name = diff === 0 ? tt('اليوم', 'Today') : diff === 1 ? tt('غداً', 'Tomorrow') : diff === -1 ? tt('أمس', 'Yesterday') : d.toISOString().slice(0, 10)
+  const name = diff === 0 ? tt('اليوم', 'Today') : diff === 1 ? tt('غداً', 'Tomorrow') : diff === -1 ? tt('أمس', 'Yesterday') : ymd(d)
   return `${name} ${t}`
 }
 export const isLate = (o: any) => !['delivered', 'cancelled'].includes(o.status) && new Date((o.due_at || '').replace(' ', 'T')).getTime() < Date.now()
