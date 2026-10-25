@@ -322,12 +322,19 @@ class LedgerService
      * Net movement per account between dates (inclusive), signed by the account's natural side
      * (debit-normal accounts: debit − credit; credit-normal: credit − debit).
      */
+    /**
+     * Per-account figures for a period: debit / credit = movements inside [$from, $to];
+     * balance = the balance at the END of the period (opening balance + everything up
+     * to $to) when $includeOpening, or the period's net movement alone when not
+     * (income statement). So a period that starts next year still shows today's balances.
+     */
     public function balances(?string $from, ?string $to, bool $includeOpening = true): array
     {
         $this->ensureChart();
-        $q = JournalLine::query()
+        $base = fn () => JournalLine::query()
             ->join('journal_entries as je', 'je.id', '=', 'journal_lines.journal_entry_id')
             ->where('je.tenant_id', app('currentTenantId'))->where('je.status', 'posted');
+        $q = $base();
         if ($from) {
             $q->whereDate('je.date', '>=', $from);
         }
@@ -337,14 +344,19 @@ class LedgerService
         $sums = $q->groupBy('journal_lines.account_id')
             ->selectRaw('journal_lines.account_id, sum(debit) as dr, sum(credit) as cr')
             ->get()->keyBy('account_id');
+        // Movements before the period: carried into the balance (not into the period columns).
+        $pre = $includeOpening && $from
+            ? $base()->whereDate('je.date', '<', $from)->groupBy('journal_lines.account_id')->selectRaw('journal_lines.account_id, sum(debit) as dr, sum(credit) as cr')->get()->keyBy('account_id')
+            : collect();
 
         $out = [];
         foreach (Account::orderBy('code')->get() as $a) {
+            $sign = $a->isDebitNormal() ? 1 : -1;
             $dr = (float) ($sums[$a->id]->dr ?? 0);
             $cr = (float) ($sums[$a->id]->cr ?? 0);
-            $opening = $includeOpening && ! $from ? (float) $a->opening_balance : ($includeOpening && $from ? (float) $a->opening_balance : 0);
-            $out[$a->id] = ['account' => $a, 'debit' => $dr, 'credit' => $cr, 'opening' => $opening,
-                'balance' => round(($a->isDebitNormal() ? $dr - $cr : $cr - $dr) + $opening, 3)];
+            $opening = $includeOpening ? (float) $a->opening_balance + $sign * ((float) ($pre[$a->id]->dr ?? 0) - (float) ($pre[$a->id]->cr ?? 0)) : 0;
+            $out[$a->id] = ['account' => $a, 'debit' => $dr, 'credit' => $cr, 'opening' => round($opening, 3),
+                'balance' => round($sign * ($dr - $cr) + $opening, 3)];
         }
 
         return $out;

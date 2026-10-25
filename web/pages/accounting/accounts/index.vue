@@ -6,8 +6,17 @@ const modal = ref(false); const editing = ref<any>(null); const err = ref('')
 const form = reactive<any>({ code: '', name: '', type: 'expense', parent_id: '', is_group: false, opening_balance: 0, is_active: true, description: '' })
 const canManage = computed(() => auth.can('accounting.manage'))
 
-async function load() { rows.value = await api.get('/app/accounting/accounts', { from: from.value, to: to.value }) }
+const onlyActive = ref(false); const swapped = ref(false)
+async function load() {
+  // A start date after the end date: swap them instead of querying an empty range.
+  swapped.value = false
+  if (from.value && to.value && from.value > to.value) { [from.value, to.value] = [to.value, from.value]; swapped.value = true }
+  rows.value = await api.get('/app/accounting/accounts', { from: from.value, to: to.value })
+}
 onMounted(load)
+const hasPeriod = computed(() => !!(from.value || to.value))
+function clearPeriod() { from.value = ''; to.value = ''; onlyActive.value = false; load() }
+const periodMoves = computed(() => rows.value.filter(a => !a.is_group).reduce((n, a) => n + (+a.debit || 0) + (+a.credit || 0), 0))
 // Tree order with depth for indentation.
 const tree = computed(() => {
   const byParent: Record<string, any[]> = {}
@@ -15,7 +24,16 @@ const tree = computed(() => {
   const out: any[] = []
   const walk = (pid: any, depth: number) => (byParent[pid] || []).sort((a, b) => a.code.localeCompare(b.code)).forEach(a => { out.push({ ...a, depth }); walk(a.id, depth + 1) })
   walk(0, 0)
-  return q.value ? out.filter(a => a.code.includes(q.value) || a.name.includes(q.value)) : out
+  let list = q.value ? out.filter(a => a.code.includes(q.value) || a.name.includes(q.value)) : out
+  // «حركة في الفترة فقط»: hide accounts (and groups) that had nothing in the period.
+  if (onlyActive.value && hasPeriod.value) {
+    const moved = new Set(out.filter(a => !a.is_group && ((+a.debit || 0) || (+a.credit || 0))).map(a => a.id))
+    const keep = new Set<any>()
+    const byId: Record<string, any> = {}; out.forEach(a => { byId[a.id] = a })
+    moved.forEach(id => { let a = byId[id]; while (a) { keep.add(a.id); a = byId[a.parent_id] } })
+    list = list.filter(a => keep.has(a.id))
+  }
+  return list
 })
 const groups = computed(() => rows.value.filter(a => a.is_group))
 function openNew(parent?: any) { editing.value = null; err.value = ''; Object.assign(form, { code: '', name: '', type: parent?.type || 'expense', parent_id: parent?.id || '', is_group: false, opening_balance: 0, is_active: true, description: '' }); modal.value = true }
@@ -52,12 +70,16 @@ const { rows: pRows, pager: pInfo, go: pGo } = usePaged(() => tree.value || [], 
       <div class="row between" style="margin-bottom:14px">
         <div class="row">
           <input v-model="q" :placeholder="tt('بحث بالرمز أو الاسم','Search by code or name')" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px;min-width:200px" />
-          <input v-model="from" type="date" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load" /><span class="muted">{{ tt('إلى','to') }}</span><input v-model="to" type="date" dir="ltr" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load" />
+          <input v-model="from" type="date" dir="ltr" :title="tt('من تاريخ', 'From')" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load" /><span class="muted">{{ tt('إلى','to') }}</span><input v-model="to" type="date" dir="ltr" :title="tt('إلى تاريخ', 'To')" style="padding:7px 10px;border:1px solid var(--line);border-radius:10px" @change="load" />
+          <button v-if="hasPeriod" class="btn ghost sm" @click="clearPeriod"><i class="ti ti-x" /> {{ tt('مسح الفترة', 'Clear period') }}</button>
+          <label v-if="hasPeriod" class="row" style="gap:6px;font-size:13px;cursor:pointer"><input v-model="onlyActive" type="checkbox" /> {{ tt('حركة في الفترة فقط', 'Only accounts with movement') }}</label>
         </div>
         <button v-if="canManage" class="btn" @click="openNew()"><i class="ti ti-plus" /> {{ tt('حساب جديد','New account') }}</button>
       </div>
+      <div v-if="swapped" class="alert warn">{{ tt('تاريخ البداية كان بعد تاريخ النهاية، فتم تبديلهما.', 'The start date was after the end date, so they were swapped.') }}</div>
+      <div v-if="hasPeriod && rows.length && !periodMoves" class="alert info"><i class="ti ti-info-circle" /> {{ tt('لا توجد أي حركة في هذه الفترة. القائمة تعرض كل الحسابات دائماً؛ عمودا مدين/دائن يخصّان الفترة، والرصيد هو رصيد الحساب حتى نهايتها.', 'No movement at all in this period. The list always shows every account; debit/credit are the period movements and the balance is the account balance at the end of it.') }}</div>
       <table class="table">
-        <thead><tr><th>{{ tt('الرمز','Code') }}</th><th>{{ tt('الحساب','Account') }}</th><th>{{ tt('النوع','Type') }}</th><th>{{ tt('مدين (الفترة)','Debit (period)') }}</th><th>{{ tt('دائن (الفترة)','Credit (period)') }}</th><th>{{ tt('الرصيد','Balance') }}</th><th>{{ tt('الحالة','Status') }}</th><th></th></tr></thead>
+        <thead><tr><th>{{ tt('الرمز','Code') }}</th><th>{{ tt('الحساب','Account') }}</th><th>{{ tt('النوع','Type') }}</th><th>{{ tt('مدين (الفترة)','Debit (period)') }}</th><th>{{ tt('دائن (الفترة)','Credit (period)') }}</th><th>{{ to ? tt('الرصيد حتى', 'Balance at') + ' ' + to : tt('الرصيد','Balance') }}</th><th>{{ tt('الحالة','Status') }}</th><th></th></tr></thead>
         <tbody>
           <tr v-for="a in pRows" :key="a.id" :style="a.is_group ? 'background:#f8fafc' : ''">
             <td dir="ltr" style="text-align:right"><b>{{ a.code }}</b></td>
