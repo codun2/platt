@@ -30,7 +30,14 @@ self.addEventListener('install', (e) => {
 
 self.addEventListener('activate', (e) => {
   e.waitUntil((async () => {
-    for (const k of await caches.keys()) if (!KEEP.includes(k)) await caches.delete(k);
+    // Keep the previous build's app files too: a page still open on it can finish
+    // loading its screens (and reload onto the new build) even when offline.
+    const meta = await caches.open('rk-meta');
+    const prev = await (await meta.match('versions'))?.json().catch(() => []) || [];
+    const versions = [VERSION, ...prev.filter((v) => v !== VERSION)].slice(0, 2);
+    await meta.put('versions', new Response(JSON.stringify(versions)));
+    const keep = [...KEEP, 'rk-meta', ...versions.slice(1).map((v) => `${v}-assets`)];
+    for (const k of await caches.keys()) if (!keep.includes(k)) await caches.delete(k);
     await self.clients.claim();
   })());
 });
@@ -63,7 +70,7 @@ self.addEventListener('fetch', (e) => {
 
 async function cacheFirst(req, name) {
   const c = await caches.open(name);
-  const hit = await c.match(req);
+  const hit = (await c.match(req)) || (await caches.match(req));   // also the previous build's files
   if (hit) return hit;
   const res = await fetch(req);
   if (res.ok) c.put(req, res.clone()).catch(() => {});
