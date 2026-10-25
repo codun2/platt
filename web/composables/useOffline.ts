@@ -159,6 +159,7 @@ export function useOffline() {
 const QUEUE: [RegExp, string[], string][] = [
   [/^\/app\/customers(\/[\w-]+)?$/, ['POST', 'PATCH'], 'عميل'],
   [/^\/app\/inventory\/items(\/[\w-]+)?$/, ['POST', 'PATCH'], 'صنف'],
+  [/^\/app\/inventory\/(warehouses|suppliers|categories|units)(\/[\w-]+)?$/, ['POST', 'PATCH'], 'مستودع / مورد / تصنيف / وحدة'],
   [/^\/app\/hr\/attendance\/bulk$/, ['POST'], 'حضور الموظفين'],
   [/^\/app\/education\/attendance$/, ['POST'], 'حضور الطلاب'],
   [/^\/app\/education\/students(\/[\w-]+)?$/, ['POST', 'PATCH'], 'طالب'],
@@ -171,7 +172,7 @@ const QUEUE: [RegExp, string[], string][] = [
   [/^\/app\/whatsapp\/log$/, ['POST'], 'سجل واتساب'],
 ]
 /** POST to these collections creates a record that should appear in its list right away. */
-const CREATES = ['/app/customers', '/app/inventory/items', '/app/education/students', '/app/service/orders', '/app/projects/tasks', '/app/projects/timesheets', '/app/rental/owners', '/app/rental/assets']
+const CREATES = ['/app/customers', '/app/inventory/items', '/app/inventory/warehouses', '/app/inventory/suppliers', '/app/inventory/categories', '/app/inventory/units', '/app/education/students', '/app/service/orders', '/app/projects/tasks', '/app/projects/timesheets', '/app/rental/owners', '/app/rental/assets']
 export function queueRule(path: string, method: string) {
   return QUEUE.find(([re, methods]) => re.test(path) && methods.includes(method)) || null
 }

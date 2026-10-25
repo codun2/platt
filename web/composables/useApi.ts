@@ -51,7 +51,9 @@ export function useApi() {
       const method = (opts.method || 'GET') as any
       // Safe writes are kept on the device and uploaded when the connection returns.
       if (method !== 'GET' && !opts.headers?.['Idempotency-Key'] && queueRule(path, method)) return await queueWrite(path, method, opts.body) as T
-      throw new ApiError(0, tt('لا يوجد اتصال بالإنترنت.', 'No internet connection.'), {}, true)
+      throw new ApiError(0, method === 'GET'
+        ? tt('لا يوجد اتصال بالإنترنت.', 'No internet connection.')
+        : tt('لا يوجد اتصال بالإنترنت. هذه العملية (مالية أو مستند مرقّم) تحتاج اتصالاً ولا تُحفظ على الجهاز — أعد المحاولة عند عودة الإنترنت.', 'No internet connection. This operation (money / numbered document) needs a connection and is not saved offline — try again when back online.'), {}, true)
     }
     // The service worker answered from the device's copy (or had none).
     const cache = res.headers.get('X-Rk-Cache')

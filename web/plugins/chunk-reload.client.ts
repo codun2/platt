@@ -7,7 +7,11 @@
 export default defineNuxtPlugin((nuxtApp) => {
   const KEY = 'rakeez_chunk_reload'
   const reload = (to?: string) => {
-    if (!navigator.onLine) return
+    // Offline: this screen's files are not on the device (the app updated meanwhile). Say so instead of doing nothing.
+    if (!navigator.onLine || !useOffline().state.online) {
+      uiAlert(tt('هذه الشاشة غير محفوظة على الجهاز بعد لأن التطبيق تحدّث. اتصل بالإنترنت مرة واحدة ثم أعد فتح التطبيق، وبعدها تعمل كل الشاشات دون اتصال.', 'This screen is not saved on the device yet because the app was updated. Connect once and reopen the app; then every screen works offline.'), { tone: 'warn' })
+      return
+    }
     let last = 0
     try { last = +(sessionStorage.getItem(KEY) || 0) } catch { /* storage blocked */ }
     if (Date.now() - last < 15000) return
