@@ -116,6 +116,7 @@ class ModuleSeeder extends Seeder
             //      admin turns them on for any tenant that asks (config/addons.php). ----
             ['key' => 'orders', 'engine' => 'addons', 'name_ar' => 'الطلبات المسبقة والتوصيل', 'name_en' => 'Pre-orders & Delivery', 'icon' => 'ti-truck-delivery', 'route' => '/orders'],
             ['key' => 'promotions', 'engine' => 'addons', 'name_ar' => 'العروض والكوبونات', 'name_en' => 'Promotions & Coupons', 'icon' => 'ti-discount-2', 'route' => '/promotions'],
+            ['key' => 'storefront', 'engine' => 'addons', 'name_ar' => 'صفحة الطلب أونلاين', 'name_en' => 'Online Order Page', 'icon' => 'ti-world-www', 'route' => '/storefront'],
             ['key' => 'loyalty', 'engine' => 'addons', 'name_ar' => 'الولاء والمحفظة', 'name_en' => 'Loyalty & Wallet', 'icon' => 'ti-award', 'route' => '/loyalty'],
         ];
     }

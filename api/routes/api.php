@@ -29,6 +29,9 @@ Route::middleware('throttle:20,1')->group(function () {
     Route::post('auth/register', [AuthController::class, 'register']);
 });
 Route::get('public/sectors', [PublicController::class, 'sectors']);
+// Add-on «صفحة الطلب أونلاين» — public, no login.
+Route::get('public/store/{handle}', [Addons\StorePublicController::class, 'show'])->middleware('throttle:store-view');
+Route::post('public/store/{handle}/order', [Addons\StorePublicController::class, 'order'])->middleware('throttle:store-order');
 Route::get('public/plans', [PublicController::class, 'plans']);
 
 /*
@@ -304,6 +307,16 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant', 'idem'])->prefix('ap
             Route::post('/', [Addons\PromotionController::class, 'store']);
             Route::match(['put', 'patch'], '{id}', [Addons\PromotionController::class, 'update'])->whereNumber('id');
             Route::delete('{id}', [Addons\PromotionController::class, 'destroy'])->whereNumber('id');
+        });
+    });
+
+    /* ---- Add-on: online order page ---- */
+    Route::prefix('storefront')->middleware('perm:storefront.view')->group(function () {
+        Route::get('/', [Addons\StorefrontController::class, 'show']);
+        Route::get('items', [Addons\StorefrontController::class, 'items']);
+        Route::middleware('perm:storefront.manage')->group(function () {
+            Route::put('/', [Addons\StorefrontController::class, 'update']);
+            Route::post('items', [Addons\StorefrontController::class, 'toggleItems']);
         });
     });
 

@@ -119,7 +119,8 @@ class OrderController extends Controller
         ];
     }
 
-    private function fill(Order $o, array $d): void
+    /** Also used by the public order page (StorePublicController). */
+    public function fill(Order $o, array $d): void
     {
         if (empty($d['customer_id']) && empty($d['customer_name'])) {
             throw ValidationException::withMessages(['customer_name' => 'اختر العميل أو اكتب اسم صاحب الطلب.']);

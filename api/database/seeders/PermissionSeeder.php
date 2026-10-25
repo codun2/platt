@@ -33,6 +33,7 @@ class PermissionSeeder extends Seeder
             ['key' => 'rental.manage', 'name_ar' => 'إدارة الأصول والعقود والملّاك', 'group_key' => 'rental'],
             ['key' => 'orders.manage', 'name_ar' => 'إلغاء الطلبات المسبقة ورد العربون', 'group_key' => 'orders'],
             ['key' => 'promotions.manage', 'name_ar' => 'إنشاء وتعديل العروض والكوبونات', 'group_key' => 'promotions'],
+            ['key' => 'storefront.manage', 'name_ar' => 'إعداد صفحة الطلب أونلاين والأصناف الظاهرة فيها', 'group_key' => 'storefront'],
             ['key' => 'loyalty.manage', 'name_ar' => 'شحن واسترداد المحافظ وتعديل النقاط وإعدادات الولاء', 'group_key' => 'loyalty'],
             ['key' => 'travel.manage', 'name_ar' => 'إدارة الرحلات والباقات والمصروفات', 'group_key' => 'travel'],
         ];

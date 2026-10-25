@@ -1,9 +1,13 @@
 // Route guard: public pages (login/register) vs tenant app vs super-admin area,
 // plus module gating: engine routes whose module is not enabled for the tenant
 // (i.e. absent from the dynamic sidebar) land on /locked instead of 403s.
-const ENGINE_PREFIXES = ['inventory', 'pos', 'vehicles', 'bookings', 'travel', 'rental', 'service', 'projects', 'education', 'manufacturing', 'accounting', 'crm', 'hr', 'whatsapp']
+const ENGINE_PREFIXES = ['inventory', 'pos', 'vehicles', 'bookings', 'travel', 'rental', 'service', 'projects', 'education', 'manufacturing', 'accounting', 'crm', 'hr', 'whatsapp',
+  // advanced add-ons
+  'loyalty', 'orders', 'promotions', 'storefront']
 
 export default defineNuxtRouteMiddleware(async (to) => {
+  // The online order page (add-on) is for the shop's customers: no account needed.
+  if (to.path.startsWith('/store/')) return
   const auth = useAuth()
   const publicPages = ['/login', '/register']
 

@@ -16,6 +16,12 @@ return [
         'en' => 'Offers applied automatically at the till: % or amount off items or categories, buy X get Y free, bill discount above a minimum — limited by dates, weekdays and hours (happy hour, weekend deals), plus coupon codes with usage limits and a report of what each offer gave.',
         'fits' => ['محلات', 'حلويات', 'مطاعم ومقاهي', 'سوبرماركت', 'ملابس'],
     ],
+    'storefront' => [
+        'ar' => 'رابط خاص للمحل (يُرسل على واتساب وإنستغرام) يعرض الأصناف والأسعار، يطلب منه العميل بدون حساب ويختار استلاماً أو توصيلاً وموعداً — ويصل الطلب مباشرة إلى لوحة الطلبات المسبقة. تتحكم بالأصناف الظاهرة ورسوم التوصيل والحد الأدنى ووقت التجهيز.',
+        'en' => 'A shop link (share on WhatsApp / Instagram) listing items and prices; customers order without an account, choose pickup or delivery and a time — the order lands on the pre-orders board. Control shown items, delivery fee, minimum order and lead time.',
+        'fits' => ['حلويات', 'مخابز', 'مطاعم', 'محلات', 'ورود وهدايا'],
+        'requires' => ['orders'],
+    ],
     'loyalty' => [
         'ar' => 'نقاط ولاء على كل عملية شراء تُستبدل خصماً عند الكاشير، ومحفظة رصيد مسبق للعميل (شحن، دفع من الرصيد، استرداد) مع كشف حركات لكل عميل.',
         'en' => 'Loyalty points on every purchase, redeemed as a discount at the till, plus a prepaid customer wallet (top-up, pay from balance, refund) with a per-customer statement.',

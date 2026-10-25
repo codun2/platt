@@ -103,6 +103,13 @@ class TenantController extends Controller
             ['tenant_id' => $tenant->id, 'module_id' => $data['module_id']],
             ['enabled' => $data['enabled']],
         );
+        // An add-on that builds on another (e.g. online page → pre-orders) switches it on too.
+        $key = Module::whereKey($data['module_id'])->value('key');
+        if ($data['enabled'] && ($needs = config("addons.$key.requires"))) {
+            foreach (Module::whereIn('key', $needs)->pluck('id') as $mid) {
+                TenantModule::updateOrCreate(['tenant_id' => $tenant->id, 'module_id' => $mid], ['enabled' => true]);
+            }
+        }
 
         return response()->json(['ok' => true, 'enabled_keys' => $tenant->enabledModuleKeys()]);
     }
