@@ -5,7 +5,28 @@ const from = ref(ymd(new Date(new Date().getFullYear(), new Date().getMonth(), 1
 const r = ref<any>(null)
 async function load() { r.value = await api.get('/app/pos/reports/summary', { from: from.value, to: to.value }) }
 onMounted(load)
-const maxDay = computed(() => Math.max(1, ...(r.value?.by_day || []).map((d: any) => Number(d.total))))
+// Every day of the range (no sales = 0), or every month when the range is long.
+const series = computed(() => {
+  if (!r.value) return []
+  const byDay: Record<string, number> = {}
+  for (const d of r.value.by_day || []) byDay[d.date] = (byDay[d.date] || 0) + Number(d.total)
+  const start = new Date(from.value + 'T00:00:00'); const end = new Date(to.value + 'T00:00:00')
+  const days = Math.round((end.getTime() - start.getTime()) / 86400000) + 1
+  const out: { key: string; label: string; total: number }[] = []
+  if (days <= 62) {
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) { const k = ymd(d); out.push({ key: k, label: k.slice(8), total: byDay[k] || 0 }) }
+  } else {
+    for (let d = new Date(start.getFullYear(), start.getMonth(), 1); d <= end; d.setMonth(d.getMonth() + 1)) {
+      const m = ymd(d).slice(0, 7)
+      out.push({ key: m, label: m.slice(5) + '/' + m.slice(2, 4), total: Object.entries(byDay).filter(([k]) => k.startsWith(m)).reduce((n, [, v]) => n + v, 0) })
+    }
+  }
+  return out
+})
+const byMonth = computed(() => series.value[0]?.key.length === 7)
+const maxDay = computed(() => Math.max(1, ...series.value.map(d => d.total)))
+// Thin out the labels when there are many bars.
+const labelEvery = computed(() => series.value.length > 31 ? 7 : series.value.length > 16 ? 3 : 1)
 function preset(p: 'today' | 'week' | 'month' | 'year') {
   const n = new Date(); const d = (x: Date) => ymd(x)
   if (p === 'today') { from.value = d(n); to.value = d(n) }
@@ -34,8 +55,16 @@ function preset(p: 'today' | 'week' | 'month' | 'year') {
     </div>
     <div v-if="r" class="grid grid-2 mt">
       <div class="card">
-        <div class="card-title"><i class="ti ti-chart-bar" /> {{ tt('المبيعات اليومية','Daily sales') }}</div>
-        <div class="bars"><div v-for="d in r.by_day" :key="d.date" class="bar" :title="`${d.date}: ${f.money(d.total)}`"><div class="fill" :style="{ height: (Number(d.total) / maxDay * 100) + '%' }" /><small>{{ d.date.slice(5) }}</small></div></div>
+        <div class="card-title"><i class="ti ti-chart-bar" /> {{ byMonth ? tt('المبيعات الشهرية','Monthly sales') : tt('المبيعات اليومية','Daily sales') }}</div>
+        <div v-if="r.by_day.length" class="bars" dir="ltr">
+          <div v-for="(d, i) in series" :key="d.key" class="bar" :title="`${d.key}: ${f.money(d.total)}`">
+            <div class="col">
+              <span v-if="d.total && series.length <= 16" class="val">{{ f.qty(d.total) }}</span>
+              <div class="fill" :class="{ zero: !d.total }" :style="{ height: (d.total / maxDay * 100) + '%' }" />
+            </div>
+            <small :style="{ visibility: i % labelEvery === 0 || i === series.length - 1 ? 'visible' : 'hidden' }">{{ d.label }}</small>
+          </div>
+        </div>
         <p v-if="!r.by_day.length" class="empty">{{ tt('لا مبيعات في الفترة.','No sales in period.') }}</p>
         <div class="card-title mt"><i class="ti ti-credit-card" /> {{ tt('حسب طريقة الدفع','By payment method') }}</div>
         <table class="table"><tbody><tr v-for="m in r.by_method" :key="m.payment_method"><td>{{ f.methodLabel(m.payment_method) }}</td><td>{{ m.invoices }}</td><td class="num">{{ f.money(m.total) }}</td><td class="num muted">{{ tt('مدفوع','paid') }} {{ f.money(m.paid) }}</td></tr></tbody></table>
@@ -52,8 +81,12 @@ function preset(p: 'today' | 'week' | 'month' | 'year') {
 </template>
 
 <style scoped>
-.bars { display: flex; align-items: flex-end; gap: 4px; height: 160px; }
-.bar { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 14px; }
-.bar .fill { width: 100%; background: var(--primary); border-radius: 4px 4px 0 0; min-height: 2px; }
-.bar small { font-size: 9px; color: var(--muted); margin-top: 4px; }
+.bars { display: flex; align-items: stretch; justify-content: center; gap: 3px; height: 200px; }
+.bar { flex: 1 1 0; max-width: 34px; min-width: 5px; display: flex; flex-direction: column; }
+.bar .col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; border-bottom: 1px solid var(--line); padding-top: 16px; }
+.bar .fill { width: 100%; background: var(--primary); border-radius: 4px 4px 0 0; min-height: 2px; transition: opacity .15s; }
+.bar .fill.zero { background: var(--line); }
+.bar:hover .fill { opacity: .8; }
+.bar .val { font-size: 9px; color: var(--muted); margin-bottom: 2px; white-space: nowrap; }
+.bar small { font-size: 9px; color: var(--muted); text-align: center; height: 16px; line-height: 16px; white-space: nowrap; }
 </style>
