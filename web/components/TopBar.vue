@@ -9,6 +9,7 @@ onUnmounted(() => clearInterval(tm))
 const time = computed(() => now.value.toLocaleTimeString('en-GB'))
 const date = computed(() => now.value.toISOString().slice(0, 10))
 const off = useOffline()
+const pwa = usePwaInstall()
 const initials = computed(() => (auth.state.value.user?.name || '?').slice(0, 1))
 </script>
 
@@ -25,6 +26,9 @@ const initials = computed(() => (auth.state.value.user?.name || '?').slice(0, 1)
       <span v-if="off.state.pending">{{ off.state.pending }} {{ isEn ? 'to upload' : 'بانتظار الرفع' }}</span>
       <span v-if="off.state.failed">{{ off.state.failed }} {{ isEn ? 'failed' : 'فشل رفعها' }}</span>
     </NuxtLink>
+    <button v-if="pwa.canInstall.value" class="btn ghost sm" :title="isEn ? 'Install the app on this device' : 'تثبيت التطبيق على هذا الجهاز'" @click="pwa.install()">
+      <i class="ti ti-download" /> {{ isEn ? 'Install app' : 'تثبيت التطبيق' }}
+    </button>
     <div class="clock">{{ time }}<br />{{ date }}</div>
     <button class="btn ghost sm lang-btn" :title="t('locale.switchTo')" @click="toggle">
       <i class="ti ti-language" /> {{ isEn ? 'ع' : 'EN' }}

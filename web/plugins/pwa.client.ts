@@ -4,6 +4,9 @@
  * offline while open (IndexedDB outbox); only opening it from scratch needs the SW.
  */
 export default defineNuxtPlugin(() => {
+  // "Install app" button (TopBar): keep the browser's prompt for later.
+  window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); setInstallPrompt(e) })
+  window.addEventListener('appinstalled', () => markInstalled())
   if (!('serviceWorker' in navigator) || !window.isSecureContext || import.meta.dev) return
   const build = (useRuntimeConfig().app as any).buildId || 'dev'
   const register = () => navigator.serviceWorker.register(`/app/sw.js?v=${build}`, { scope: '/app/' }).catch(() => { /* unsupported / blocked */ })
