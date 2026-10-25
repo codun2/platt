@@ -43,8 +43,14 @@ export function useApi() {
         body: opts.body ? JSON.stringify(opts.body) : undefined,
       })
     } catch {
-      // Network failure: no internet or the server is unreachable.
+      res = new Response(null, { status: 599 })
+    }
+    // Network failure (no internet) or the proxy says the server is unreachable.
+    if (res.status >= 502 && res.status <= 504 && !res.headers.get('X-Rk-Cache') || res.status === 599) {
       markOnline(false)
+      const method = (opts.method || 'GET') as any
+      // Safe writes are kept on the device and uploaded when the connection returns.
+      if (method !== 'GET' && !opts.headers?.['Idempotency-Key'] && queueRule(path, method)) return await queueWrite(path, method, opts.body) as T
       throw new ApiError(0, tt('لا يوجد اتصال بالإنترنت.', 'No internet connection.'), {}, true)
     }
     // The service worker answered from the device's copy (or had none).
@@ -80,6 +86,14 @@ export function useApi() {
         } as Record<number, string>)[res.status] || 'حدث خطأ غير متوقع، حاول مرة أخرى.'
       }
       throw new ApiError(res.status, msg, errors)
+    }
+    // Records added offline and not uploaded yet stay visible at the top of their list.
+    if ((opts.method || 'GET') === 'GET' && !opts.query?.q && !(+opts.query?.page > 1)) {
+      const extra = await pendingRowsFor(path)
+      if (extra.length) {
+        if (Array.isArray(data)) data = [...extra, ...data]
+        else if (Array.isArray(data?.data)) data = { ...data, data: [...extra, ...data.data], total: (data.total || 0) + extra.length }
+      }
     }
     return data as T
   }

@@ -74,8 +74,15 @@ export async function syncNow(): Promise<void> {
     for (const op of await outbox.all()) {
       if (op.status !== 'pending') continue
       try {
-        const res = await api.raw(op.path, { method: op.method, body: op.body, headers: { 'Idempotency-Key': op.id } })
+        // Ops referring to records created offline get their real ids now.
+        const idmap: Record<string, any> = (await localKV.get('idmap')) || {}
+        const swap = (v: string) => v.replace(TMP, t => (idmap[t] !== undefined ? String(idmap[t]) : t))
+        const path = swap(op.path)
+        const body = op.body ? JSON.parse(swap(JSON.stringify(op.body))) : op.body
+        if (/tmp_[a-z0-9]+/.test(path)) continue   // its parent record failed to upload: keep waiting
+        const res: any = await api.raw(path, { method: op.method, body, headers: { 'Idempotency-Key': op.id } })
         op.result = res
+        if ((op as any).tmp_id && res?.id) { idmap[(op as any).tmp_id] = res.id; await localKV.set('idmap', idmap) }
         await outbox.remove(op.id)
         onSynced.forEach(f => { try { f(op) } catch { /* listener errors never stop the sync */ } })
       } catch (e: any) {
@@ -112,8 +119,93 @@ export async function startOffline(tenantId: string | number) {
   syncNow()
 }
 
+/** Main list endpoints per module, fetched once per session so they are readable offline. */
+const WARM: Record<string, string[]> = {
+  crm: ['/app/customers', '/app/invoices', '/app/quotes'],
+  inventory: ['/app/inventory/items', '/app/inventory/items/meta', '/app/inventory/suppliers', '/app/inventory/purchases', '/app/inventory/warehouses'],
+  pos: ['/app/pos/sales', '/app/pos/shifts'],
+  bookings: ['/app/bookings/list', '/app/bookings/units', '/app/bookings/services'],
+  travel: ['/app/travel/trips', '/app/travel/travelers', '/app/travel/packages'],
+  accounting: ['/app/accounting/accounts', '/app/accounting/journal', '/app/accounting/expenses'],
+  hr: ['/app/hr/employees', '/app/hr/leaves', '/app/hr/payroll'],
+  rental: ['/app/rental/summary', '/app/rental/assets', '/app/rental/contracts', '/app/rental/installments', '/app/rental/owners'],
+  service: ['/app/service/summary', '/app/service/orders', '/app/service/technicians', '/app/service/catalog'],
+  projects: ['/app/projects/summary', '/app/projects/items', '/app/projects/tasks', '/app/projects/timesheets', '/app/projects/people'],
+  education: ['/app/education/summary', '/app/education/students', '/app/education/classes', '/app/education/fees', '/app/education/teachers'],
+  manufacturing: ['/app/manufacturing/summary', '/app/manufacturing/bom', '/app/manufacturing/orders'],
+  whatsapp: ['/app/whatsapp/audiences', '/app/whatsapp/templates'],
+}
+let warmed = ''
+export async function warmUp(modules: string[]) {
+  if (!navigator.serviceWorker?.controller || warmed === state.tenant || !state.online) return
+  warmed = state.tenant
+  const api = useApi()
+  for (const m of ['crm', ...modules]) for (const p of WARM[m] || []) {
+    try { await api.get(p) } catch { /* not allowed / offline: skip */ }
+    await new Promise(r => setTimeout(r, 120))   // stay light on the server
+  }
+}
+
 export function useOffline() {
   return { state, syncNow, outbox, localKV, onSynced: (f: (op: OutboxOp) => void) => onSynced.push(f) }
+}
+
+/**
+ * Writes that may be queued while offline (path relative to /api, method).
+ * Money movements and numbered financial documents are deliberately NOT here:
+ * they need the server (sequence numbers, ledger) — except POS sales, which
+ * have their own offline flow with a temporary receipt number.
+ */
+const QUEUE: [RegExp, string[], string][] = [
+  [/^\/app\/customers(\/[\w-]+)?$/, ['POST', 'PATCH'], 'عميل'],
+  [/^\/app\/inventory\/items(\/[\w-]+)?$/, ['POST', 'PATCH'], 'صنف'],
+  [/^\/app\/hr\/attendance\/bulk$/, ['POST'], 'حضور الموظفين'],
+  [/^\/app\/education\/attendance$/, ['POST'], 'حضور الطلاب'],
+  [/^\/app\/education\/students(\/[\w-]+)?$/, ['POST', 'PATCH'], 'طالب'],
+  [/^\/app\/service\/orders(\/[\w-]+)?$/, ['POST', 'PATCH'], 'أمر عمل'],
+  [/^\/app\/service\/orders\/[\w-]+\/status$/, ['POST'], 'حالة أمر عمل'],
+  [/^\/app\/projects\/tasks(\/[\w-]+)?$/, ['POST', 'PATCH'], 'مهمة / جلسة'],
+  [/^\/app\/projects\/tasks\/[\w-]+\/complete$/, ['POST'], 'نتيجة جلسة / مهمة'],
+  [/^\/app\/projects\/timesheets$/, ['POST'], 'ساعات عمل'],
+  [/^\/app\/rental\/(owners|assets)(\/[\w-]+)?$/, ['POST', 'PATCH'], 'سجل عقاري'],
+  [/^\/app\/whatsapp\/log$/, ['POST'], 'سجل واتساب'],
+]
+/** POST to these collections creates a record that should appear in its list right away. */
+const CREATES = ['/app/customers', '/app/inventory/items', '/app/education/students', '/app/service/orders', '/app/projects/tasks', '/app/projects/timesheets', '/app/rental/owners', '/app/rental/assets']
+export function queueRule(path: string, method: string) {
+  return QUEUE.find(([re, methods]) => re.test(path) && methods.includes(method)) || null
+}
+const TMP = /tmp_[a-z0-9]+/g
+const lastSeg = (path: string) => path.split('/').pop() || ''
+
+/**
+ * Save an offline write. Returns what the page receives instead of the server reply:
+ * creates get a temporary id (tmp_…) so they show up in lists right away; an edit of
+ * something created offline is folded into its pending create.
+ */
+export async function queueWrite(path: string, method: 'POST' | 'PATCH', body: any): Promise<any> {
+  const rule = queueRule(path, method)!
+  const id = lastSeg(path)
+  if (method === 'PATCH' && id.startsWith('tmp_')) {
+    const ops = await outbox.all()
+    const create = ops.find(o => o.status === 'pending' && (o as any).tmp_id === id)
+    if (create) {
+      create.body = { ...create.body, ...body }; (create as any).optimistic = { ...(create as any).optimistic, ...body }
+      await outbox.put(create)
+      return (create as any).optimistic
+    }
+  }
+  const isCreate = method === 'POST' && CREATES.includes(path)
+  const tmp = isCreate ? `tmp_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}` : null
+  const optimistic = { ...(body || {}), ...(tmp ? { id: tmp } : { id }), _pending: true }
+  await outbox.add({ kind: 'write', method, path, body, label: `${rule[2]} — ${body?.name || body?.title || body?.description || (tmp ? tt('جديد', 'new') : tt('تعديل', 'edit'))}`, ...(tmp ? { tmp_id: tmp, optimistic } : {}) } as any)
+  return optimistic
+}
+
+/** Pending creates for a list endpoint (shown at the top of lists until uploaded). */
+export async function pendingRowsFor(path: string): Promise<any[]> {
+  if (!CREATES.includes(path) || !state.pending) return []
+  return (await outbox.all()).filter(o => o.status === 'pending' && o.method === 'POST' && o.path === path && (o as any).optimistic).map(o => (o as any).optimistic)
 }
 
 /** Device-unique temporary number for documents made offline (e.g. OFF-251025-7K3Q). */

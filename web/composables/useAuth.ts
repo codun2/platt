@@ -27,7 +27,11 @@ export function useAuth() {
     if (import.meta.client) {
       // Last session kept on the device so the app still opens without internet.
       try { localStorage.setItem('rakeez_me', JSON.stringify(payload)) } catch { /* storage full / private mode */ }
-      if (payload.tenant?.id) startOffline(payload.tenant.id)
+      if (payload.tenant?.id) {
+        startOffline(payload.tenant.id)
+        // Save the main lists on the device so they open without internet too.
+        setTimeout(() => warmUp((payload.sidebar || []).map((i: any) => i.key)), 4000)
+      }
     }
   }
 

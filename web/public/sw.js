@@ -73,11 +73,13 @@ async function cacheFirst(req, name) {
 async function networkFirst(req, name, fallbackPath) {
   try {
     const res = await fetch(req);
+    // Gateway errors (the server behind the proxy is down) count as offline.
+    if (res && res.status >= 502 && res.status <= 504) throw new Error('gateway');
     if (res && res.ok && !(name === API && Date.now() < apiPausedUntil)) (await caches.open(name)).put(req, res.clone()).catch(() => {});
     return res;
   } catch (err) {
     const c = await caches.open(name);
-    const hit = (await c.match(req, { ignoreVary: true })) || (fallbackPath ? await c.match(fallbackPath) : null);
+    const hit = (await c.match(req, { ignoreVary: true })) || (name === API ? await nearest(c, req) : null) || (fallbackPath ? await c.match(fallbackPath) : null);
     if (hit) {
       if (name !== API) return hit;
       const h = new Headers(hit.headers); h.set('X-Rk-Cache', 'fallback');
@@ -88,6 +90,14 @@ async function networkFirst(req, name, fallbackPath) {
     }
     throw err;
   }
+}
+
+// No copy of this exact URL (other page / filter): use the closest saved copy of the
+// same list, preferring the one with the fewest query parameters.
+async function nearest(c, req) {
+  const all = await c.matchAll(req, { ignoreSearch: true, ignoreVary: true });
+  if (!all.length) return null;
+  return all.sort((a, b) => (a.url || '').length - (b.url || '').length)[0];
 }
 
 async function staleWhileRevalidate(req, name) {
