@@ -9,15 +9,22 @@
  * Requires a secure context (HTTPS or localhost).
  */
 // Registered as sw.js?v=<buildId>: each deploy installs a fresh worker and cache set.
-const VERSION = 'rk-' + (new URL(self.location.href).searchParams.get('v') || 'dev');
+const BUILD = new URL(self.location.href).searchParams.get('v') || 'dev';
+const VERSION = 'rk-' + BUILD;
 const SHELL = `${VERSION}-shell`, ASSETS = `${VERSION}-assets`, API = `${VERSION}-api`, FONTS = `${VERSION}-fonts`;
 const KEEP = [SHELL, ASSETS, API, FONTS];
 const BASE = '/app/';
 
 self.addEventListener('install', (e) => {
   e.waitUntil((async () => {
+    // The app page is saved ONCE, here, from the same deploy as this worker's file
+    // list — so the offline page and its screen files always belong together.
     const shell = await caches.open(SHELL);
-    await shell.add(BASE).catch(() => {});
+    try {
+      const page = await fetch(BASE, { cache: 'no-store' });
+      const html = await page.clone().text();
+      if (page.ok && html.includes(BUILD)) await shell.put(BASE, page);
+    } catch { /* offline during install: the next online visit installs again */ }
     try {
       const list = await (await fetch(`${BASE}precache.json`, { cache: 'no-store' })).json();
       // The app's "ready offline" indicator compares the device copy against this list.
@@ -49,6 +56,9 @@ let apiPausedUntil = 0;
 self.addEventListener('message', (e) => {
   // Logout: never leak one account's data to the next one on the same device.
   if (e.data === 'CLEAR_API') { apiPausedUntil = Date.now() + 5000; e.waitUntil(caches.delete(API)); }
+  // Online app start: fetch any screen file of this version that is still missing
+  // (an interrupted install, a file that failed) so the device copy is complete.
+  if (e.data === 'FILL') e.waitUntil(fill());
 });
 
 self.addEventListener('fetch', (e) => {
@@ -67,9 +77,23 @@ self.addEventListener('fetch', (e) => {
   }
   if (!url.pathname.startsWith(BASE)) return;
   if (url.pathname.startsWith(`${BASE}_nuxt/`)) { e.respondWith(cacheFirst(req, ASSETS)); return; }
-  if (req.mode === 'navigate') { e.respondWith(networkFirst(req, SHELL, BASE)); return; }
+  if (req.mode === 'navigate') { e.respondWith(navigate(req)); return; }
   e.respondWith(networkFirst(req, SHELL));
 });
+
+// Pages: the live one when online (never stored: a newer deploy's page would not
+// match this worker's saved files), else this worker's own saved app page.
+async function navigate(req) {
+  try {
+    const res = await fetch(req);
+    if (res.status >= 502 && res.status <= 504) throw new Error('gateway');
+    return res;
+  } catch (err) {
+    const hit = await (await caches.open(SHELL)).match(BASE);
+    if (hit) return hit;
+    throw err;
+  }
+}
 
 async function cacheFirst(req, name) {
   const c = await caches.open(name);
@@ -115,4 +139,18 @@ async function staleWhileRevalidate(req, name) {
   const cached = await c.match(req);
   const net = fetch(req).then((r) => { if (r && (r.ok || r.type === 'opaque')) c.put(req, r.clone()).catch(() => {}); return r; }).catch(() => null);
   return cached || (await net) || Response.error();
+}
+
+async function fill() {
+  const meta = await caches.open('rk-meta');
+  let list = await (await meta.match(`precache-${VERSION}`))?.json().catch(() => null);
+  if (!list) {
+    try { list = await (await fetch(`${BASE}precache.json`, { cache: 'no-store' })).json(); await meta.put(`precache-${VERSION}`, new Response(JSON.stringify(list))); } catch { return; }
+  }
+  const assets = await caches.open(ASSETS);
+  for (const u of list) if (!(await assets.match(u))) await assets.add(u).catch(() => {});
+  const shell = await caches.open(SHELL);
+  if (!(await shell.match(BASE))) {
+    try { const page = await fetch(BASE, { cache: 'no-store' }); if (page.ok && (await page.clone().text()).includes(BUILD)) await shell.put(BASE, page); } catch { /* offline */ }
+  }
 }

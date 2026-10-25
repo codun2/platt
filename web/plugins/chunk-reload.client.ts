@@ -9,6 +9,9 @@ export default defineNuxtPlugin((nuxtApp) => {
   const reload = (to?: string) => {
     // Offline: this screen's files are not on the device (the app updated meanwhile). Say so instead of doing nothing.
     if (!navigator.onLine || !useOffline().state.online) {
+      // Offline: open the screen as a full page from the device's saved copy first.
+      const saved = new URL(navigator.serviceWorker?.controller?.scriptURL || location.href).searchParams.get('v')
+      if (to && saved && saved !== ((useRuntimeConfig().app as any).buildId || 'dev')) { window.location.href = to; return }
       uiAlert(tt('هذه الشاشة غير محفوظة على الجهاز بعد لأن التطبيق تحدّث. اتصل بالإنترنت مرة واحدة ثم أعد فتح التطبيق، وبعدها تعمل كل الشاشات دون اتصال.', 'This screen is not saved on the device yet because the app was updated. Connect once and reopen the app; then every screen works offline.'), { tone: 'warn' })
       return
     }
