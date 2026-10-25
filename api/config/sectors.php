@@ -13,6 +13,8 @@
 |             dashboard). Unlisted enabled modules follow; settings is last.
 |   labels  — module_key => [ar, en] or [ar, en, icon] contextual naming
 |   hide    — module keys (top-level or child) left out of this sector's menu
+|   org     — what the business is called (المحل، المزرعة، المدرسة…), used for
+|             "بيانات المحل" in settings and the profile page labels
 |
 | Only presentation lives here: enabled modules and permissions are still
 | decided by tenant_modules + roles.
@@ -23,6 +25,7 @@ $shop = ['crm_quotes'];
 return [
     'default' => [
         'accent' => '#e11d48',
+        'org' => ['الشركة', 'Company'],
         'order' => ['crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [],
         'hide' => [],
@@ -30,11 +33,13 @@ return [
 
     'general' => [
         'accent' => '#e11d48',
+        'org' => ['الشركة', 'Company'],
         'order' => ['crm', 'accounting', 'hr', 'whatsapp'],
     ],
 
     'accounting_firm' => [
         'accent' => '#0f766e',
+        'org' => ['المكتب', 'Firm'],
         'order' => ['accounting', 'crm', 'hr', 'whatsapp'],
         'labels' => [
             'crm' => ['العملاء والخدمات', 'Clients & Billing'],
@@ -47,6 +52,7 @@ return [
     // ---------------------------------------------------------- retail & trade
     'retail' => [
         'accent' => '#e11d48',
+        'org' => ['المتجر', 'Store'],
         'order' => ['pos', 'inventory', 'crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'pos' => ['المبيعات والكاشير', 'Sales & Checkout', 'ti-cash-register'],
@@ -58,6 +64,7 @@ return [
 
     'wholesale' => [
         'accent' => '#4f46e5',
+        'org' => ['المؤسسة', 'Business'],
         'order' => ['inventory', 'crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'inventory' => ['المخازن والبضائع', 'Warehouses & Goods', 'ti-building-warehouse'],
@@ -70,6 +77,7 @@ return [
 
     'car_showroom' => [
         'accent' => '#1d4ed8',
+        'org' => ['المعرض', 'Showroom'],
         'order' => ['rental', 'crm', 'inventory', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'rental' => ['السيارات والتقسيط', 'Cars & Installments', 'ti-car'],
@@ -88,6 +96,7 @@ return [
 
     'sweets_shop' => [
         'accent' => '#db2777',
+        'org' => ['المحل', 'Shop'],
         'order' => ['pos', 'inventory', 'crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'pos' => ['المبيعات والكاشير', 'Sales & Checkout', 'ti-cash-register'],
@@ -100,6 +109,7 @@ return [
 
     'tailoring' => [
         'accent' => '#9333ea',
+        'org' => ['المشغل', 'Workshop'],
         'order' => ['service', 'pos', 'inventory', 'crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'service' => ['طلبات التفصيل', 'Tailoring Orders', 'ti-needle-thread'],
@@ -117,6 +127,7 @@ return [
     // ---------------------------------------------------------- hospitality
     'hotel' => [
         'accent' => '#0369a1',
+        'org' => ['الفندق', 'Hotel'],
         'order' => ['bookings', 'crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'bookings' => ['الإقامات والحجوزات', 'Stays & Reservations', 'ti-bed'],
@@ -132,6 +143,7 @@ return [
 
     'chalets' => [
         'accent' => '#0891b2',
+        'org' => ['المنتجع', 'Resort'],
         'order' => ['bookings', 'crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'bookings' => ['حجوزات الشاليهات', 'Chalet Bookings', 'ti-beach'],
@@ -143,6 +155,7 @@ return [
 
     'halls' => [
         'accent' => '#be185d',
+        'org' => ['القاعة', 'Venue'],
         'order' => ['bookings', 'crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'bookings' => ['المناسبات والحجوزات', 'Events & Bookings', 'ti-confetti'],
@@ -156,6 +169,7 @@ return [
 
     'travel' => [
         'accent' => '#047857',
+        'org' => ['الوكالة', 'Agency'],
         'order' => ['travel', 'crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'travel' => ['الرحلات والمعتمرون', 'Trips & Pilgrims', 'ti-plane'],
@@ -170,6 +184,7 @@ return [
     // ---------------------------------------------------------- rental
     'car_rental' => [
         'accent' => '#2563eb',
+        'org' => ['المكتب', 'Office'],
         'order' => ['rental', 'crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'rental' => ['الأسطول والعقود', 'Fleet & Contracts', 'ti-steering-wheel'],
@@ -184,6 +199,7 @@ return [
 
     'real_estate' => [
         'accent' => '#b45309',
+        'org' => ['المكتب العقاري', 'Agency'],
         'order' => ['rental', 'crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'rental' => ['العقارات والإيجارات', 'Properties & Leases', 'ti-building-community'],
@@ -200,6 +216,7 @@ return [
     // ---------------------------------------------------------- services
     'auto_garage' => [
         'accent' => '#ea580c',
+        'org' => ['الورشة', 'Garage'],
         'order' => ['service', 'inventory', 'crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'service' => ['الورشة', 'Workshop', 'ti-car-garage'],
@@ -215,6 +232,7 @@ return [
 
     'laundry' => [
         'accent' => '#0284c7',
+        'org' => ['المغسلة', 'Laundry'],
         'order' => ['service', 'pos', 'crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'service' => ['طلبات الغسيل', 'Laundry Orders', 'ti-wash-machine'],
@@ -229,6 +247,7 @@ return [
 
     'maintenance' => [
         'accent' => '#a16207',
+        'org' => ['الشركة', 'Company'],
         'order' => ['service', 'crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'service' => ['الصيانة والبلاغات', 'Maintenance & Tickets', 'ti-hammer'],
@@ -241,6 +260,7 @@ return [
     // ---------------------------------------------------------- professional
     'law_firm' => [
         'accent' => '#1e3a8a',
+        'org' => ['المكتب', 'Firm'],
         'order' => ['projects', 'crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'projects' => ['القضايا والجلسات', 'Cases & Hearings', 'ti-scale'],
@@ -256,6 +276,7 @@ return [
 
     'engineering' => [
         'accent' => '#0e7490',
+        'org' => ['المكتب', 'Firm'],
         'order' => ['projects', 'crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'projects' => ['المشاريع الهندسية', 'Engineering Projects', 'ti-ruler-2'],
@@ -266,6 +287,7 @@ return [
 
     'school' => [
         'accent' => '#7c3aed',
+        'org' => ['المدرسة', 'School'],
         'order' => ['education', 'crm', 'hr', 'accounting', 'whatsapp'],
         'labels' => [
             'education' => ['شؤون الطلاب', 'Student Affairs', 'ti-school'],
@@ -283,6 +305,7 @@ return [
     // ---------------------------------------------------------- production
     'sweets_factory' => [
         'accent' => '#c026d3',
+        'org' => ['المصنع', 'Factory'],
         'order' => ['manufacturing', 'inventory', 'crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'manufacturing' => ['الإنتاج', 'Production', 'ti-cake'],
@@ -296,6 +319,7 @@ return [
 
     'manufacturing' => [
         'accent' => '#475569',
+        'org' => ['المصنع', 'Factory'],
         'order' => ['manufacturing', 'inventory', 'crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'manufacturing' => ['الإنتاج', 'Production'],
@@ -306,6 +330,7 @@ return [
 
     'farm' => [
         'accent' => '#15803d',
+        'org' => ['المزرعة', 'Farm'],
         'order' => ['inventory', 'pos', 'crm', 'accounting', 'hr', 'whatsapp'],
         'labels' => [
             'inventory' => ['المزرعة والمحاصيل', 'Farm & Crops', 'ti-plant-2'],

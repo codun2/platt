@@ -50,10 +50,7 @@ onMounted(async () => { await load(); customers.value = await api.get('/app/cust
         </tbody>
       </table>
       <p v-if="page && !page.data.length" class="empty">{{ tt('لا توجد فواتير.','No invoices.') }}</p>
-      <div v-if="page && page.last_page > 1" class="row between mt">
-        <span class="muted" style="font-size:12px">{{ tt('صفحة','Page') }} {{ page.current_page }} {{ tt('من','of') }} {{ page.last_page }} · {{ page.total }}</span>
-        <div class="row"><button class="btn ghost sm" :disabled="pg <= 1" @click="load(pg - 1)">{{ tt('السابق','Prev') }}</button><button class="btn ghost sm" :disabled="pg >= page.last_page" @click="load(pg + 1)">{{ tt('التالي','Next') }}</button></div>
-      </div>
+      <UiPager :p="page" @go="load" />
     </div>
   </div>
 </template>

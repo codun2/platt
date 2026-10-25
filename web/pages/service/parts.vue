@@ -10,6 +10,8 @@ const list = computed(() => rows.value.filter((r: any) => !q.value || r.name.inc
 function open(r?: any) { editing.value = r || null; Object.assign(form, r ? { name: r.name, kind: r.kind, price: +r.price, cost: +r.cost, unit: r.unit || '', is_active: !!r.is_active } : { name: '', kind: 'labor', price: 0, cost: 0, unit: '', is_active: true }); err.value = ''; modal.value = true }
 async function save() { err.value = ''; try { editing.value ? await api.patch(`/app/service/catalog/${editing.value.id}`, form) : await api.post('/app/service/catalog', form); modal.value = false; await load() } catch (e: any) { err.value = e.message } }
 async function remove(r: any) { if (!(await uiConfirm(tt(`حذف ${r.name}؟`, `Delete ${r.name}?`)))) return; try { await api.del(`/app/service/catalog/${r.id}`); await load() } catch (e: any) { uiAlert(e.message) } }
+// Long lists are shown 25 per page.
+const { rows: pRows, pager: pInfo, go: pGo } = usePaged(() => list.value || [], 25)
 </script>
 
 <template>
@@ -24,7 +26,7 @@ async function remove(r: any) { if (!(await uiConfirm(tt(`حذف ${r.name}؟`, `
       <table class="table">
         <thead><tr><th>{{ tt('البند', 'Item') }}</th><th>{{ tt('النوع', 'Type') }}</th><th>{{ tt('السعر', 'Price') }}</th><th>{{ tt('التكلفة', 'Cost') }}</th><th>{{ tt('الوحدة', 'Unit') }}</th><th>{{ tt('الحالة', 'Status') }}</th><th></th></tr></thead>
         <tbody>
-          <tr v-for="r in list" :key="r.id">
+          <tr v-for="r in pRows" :key="r.id">
             <td><b>{{ r.name }}</b></td><td><span class="badge" :class="r.kind === 'part' ? 'info' : 'muted'">{{ r.kind === 'part' ? tt('قطعة / مادة', 'Part') : tt('خدمة / أجرة', 'Labor') }}</span></td>
             <td class="num">{{ f.money(r.price) }}</td><td class="num muted">{{ f.money(r.cost) }}</td><td>{{ r.unit || '—' }}</td>
             <td><span class="badge" :class="r.is_active ? 'ok' : 'muted'">{{ r.is_active ? tt('نشط', 'Active') : tt('موقوف', 'Inactive') }}</span></td>
@@ -32,6 +34,7 @@ async function remove(r: any) { if (!(await uiConfirm(tt(`حذف ${r.name}؟`, `
           </tr>
         </tbody>
       </table>
+      <UiPager :p="pInfo" @go="pGo" />
       <p v-if="!list.length" class="empty">{{ tt('أضف خدماتك وأسعارها (مثلاً: غسيل ثوب، تغيير زيت، كشف عطل).', 'Add your services and prices.') }}</p>
     </div>
     <UiModal v-if="modal" :title="editing ? tt('تعديل بند', 'Edit item') : tt('بند جديد', 'New item')" @close="modal = false">

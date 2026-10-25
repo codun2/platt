@@ -47,7 +47,7 @@ const sum = computed(() => (d.value?.data || []).reduce((n: number, i: any) => n
       <p v-if="d && !d.data.length" class="empty">{{ filt.scope === 'overdue' ? tt('لا توجد متأخرات 🎉', 'Nothing overdue 🎉') : tt('لا توجد دفعات.', 'No payments.') }}</p>
       <div v-if="d?.data.length" class="row between mt">
         <small class="muted">{{ tt('إجمالي هذه الصفحة', 'Page total') }}: <b>{{ f.money(sum, true) }}</b> · {{ d.total }} {{ tt('دفعة', 'payments') }}</small>
-        <div v-if="d.last_page > 1" class="row"><button class="btn ghost sm" :disabled="filt.page <= 1" @click="filt.page--; load()">‹</button><span class="muted">{{ d.current_page }} / {{ d.last_page }}</span><button class="btn ghost sm" :disabled="filt.page >= d.last_page" @click="filt.page++; load()">›</button></div>
+        <UiPager :p="d" @go="(n: number) => { filt.page = n; load() }" />
       </div>
     </div>
 

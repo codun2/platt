@@ -3,7 +3,7 @@ definePageMeta({ title: 'الرواتب', titleEn: 'Payroll' })
 const api = useApi(); const auth = useAuth(); const f = useFmt(); const { tt } = useI18n()
 const d = ref<any>(null); const period = ref(thisMonth()); const err = ref(''); const generating = ref(false)
 const canManage = computed(() => auth.can('hr.manage'))
-async function load() { d.value = await api.get('/app/hr/payroll') }
+async function load(p: any = 1) { const n = typeof p === 'number' ? p : 1; d.value = await api.get('/app/hr/payroll', { page: n }) }
 // Period picker: 12 months back → 2 ahead; months that already have a run are marked.
 const periods = computed(() => {
   const now = new Date(); const out: string[] = []
@@ -16,6 +16,8 @@ async function generate() {
   err.value = ''; generating.value = true
   try { const p = await api.post('/app/hr/payroll/generate', { period: period.value }); navigateTo(`/hr/payroll/${p.id}`) } catch (x: any) { err.value = x.message } finally { generating.value = false }
 }
+// Long lists are shown 25 per page.
+const { rows: pRows, pager: pInfo, go: pGo } = usePaged(() => d.value?.data || [], 25)
 </script>
 
 <template>
@@ -37,7 +39,7 @@ async function generate() {
       <table class="table">
         <thead><tr><th>{{ tt('الرقم','No.') }}</th><th>{{ tt('الشهر','Month') }}</th><th>{{ tt('الموظفون','Employees') }}</th><th>{{ tt('الأساسي','Basic') }}</th><th>{{ tt('البدلات','Allow.') }}</th><th>{{ tt('إضافات','Additions') }}</th><th>{{ tt('خصومات','Deductions') }}</th><th>{{ tt('الصافي','Net') }}</th><th>{{ tt('الحالة','Status') }}</th><th></th></tr></thead>
         <tbody>
-          <tr v-for="p in d?.data" :key="p.id">
+          <tr v-for="p in pRows" :key="p.id">
             <td><NuxtLink :to="`/hr/payroll/${p.id}`" style="color:var(--info);font-weight:700" dir="ltr">{{ p.number }}</NuxtLink></td><td><b>{{ monthLabel(p.period) }}</b></td><td>{{ p.items_count }}</td>
             <td class="num">{{ f.money(p.total_basic) }}</td><td class="num">{{ f.money(p.total_allowances) }}</td><td class="num" style="color:var(--ok)">{{ f.money(p.total_additions) }}</td><td class="num" style="color:var(--primary)">{{ f.money(p.total_deductions) }}</td><td class="num"><b>{{ f.money(p.total_net) }}</b></td>
             <td><span class="badge" :class="payrollStatus[p.status]?.cls">{{ payrollStatus[p.status]?.label }}</span></td>
@@ -45,6 +47,7 @@ async function generate() {
           </tr>
         </tbody>
       </table>
+      <UiPager :p="pInfo" @go="pGo" />
       <p v-if="d && !d.data.length" class="empty">{{ tt('لم يُنشأ أي كشف بعد.','No payroll created yet.') }}</p>
     </div>
   </div>

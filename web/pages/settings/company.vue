@@ -2,7 +2,9 @@
 definePageMeta({ title: 'بيانات الشركة', titleEn: 'Company Settings' })
 const api = useApi()
 const auth = useAuth()
-const { tt } = useI18n()
+const { tt, isEn } = useI18n()
+// What this business is called in its sector: المحل، المزرعة، المدرسة…
+const org = computed(() => { const o = auth.state.value.identity?.org || ['الشركة', 'Company']; return isEn.value ? o[1] : o[0] })
 const data = ref<any>(null)
 const form = reactive<any>({ name: '', phone: '', email: '', currency: 'SAR', tax_rate: 0, settings: { address: '', tax_number: '', cr_number: '', bank_details: '', invoice_terms: '', invoice_footer: '' } })
 const msg = ref(''); const err = ref('')
@@ -34,14 +36,14 @@ async function save() {
 
 <template>
   <div>
-    <div class="breadcrumb">{{ tt('الإعدادات العامة','General settings') }} › <b>{{ tt('بيانات الشركة','Company settings') }}</b></div>
+    <div class="breadcrumb">{{ tt('الإعدادات العامة','General settings') }} › <b>{{ tt('بيانات', '') }} {{ org }}{{ isEn ? ' profile' : '' }}</b></div>
     <div v-if="msg" class="alert ok">{{ msg }}</div>
     <div v-if="err" class="alert bad">{{ err }}</div>
     <div class="grid grid-2" style="align-items:start">
       <div>
         <div class="card">
-          <div class="card-title"><i class="ti ti-building" /> {{ tt('الشركة','Company') }}</div>
-          <div class="field"><label>{{ tt('اسم الشركة','Company name') }}</label><input v-model="form.name" /></div>
+          <div class="card-title"><i class="ti ti-building" /> {{ org }}</div>
+          <div class="field"><label>{{ tt('اسم', '') }} {{ org }}{{ isEn ? ' name' : '' }}</label><input v-model="form.name" /></div>
           <div class="grid grid-2">
             <div class="field"><label>{{ tt('الهاتف','Phone') }}</label><input v-model="form.phone" dir="ltr" /></div>
             <div class="field"><label>{{ tt('البريد','Email') }}</label><input v-model="form.email" dir="ltr" /></div>

@@ -41,7 +41,7 @@ const bal = (s: any) => +(s.billed || 0) - +(s.paid || 0)
         </tbody>
       </table>
       <p v-if="d && !d.page.data.length" class="empty">{{ tt('لا يوجد طلاب مطابقون.', 'No matching students.') }}</p>
-      <div v-if="d && d.page.last_page > 1" class="row mt" style="justify-content:center"><button class="btn ghost sm" :disabled="filt.page <= 1" @click="filt.page--; load()">‹</button><span class="muted">{{ d.page.current_page }} / {{ d.page.last_page }}</span><button class="btn ghost sm" :disabled="filt.page >= d.page.last_page" @click="filt.page++; load()">›</button></div>
+      <UiPager :p="d?.page" @go="(n: number) => { filt.page = n; load() }" />
     </div>
   </div>
 </template>

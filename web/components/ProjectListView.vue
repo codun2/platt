@@ -46,7 +46,7 @@ onMounted(async () => { await load(); people.value = await api.get('/app/project
         </tbody>
       </table>
       <p v-if="d && !d.page.data.length" class="empty">{{ T.isCase ? tt('لا توجد قضايا مطابقة.', 'No matching cases.') : tt('لا توجد مشاريع مطابقة.', 'No matching projects.') }}</p>
-      <div v-if="d && d.page.last_page > 1" class="row mt" style="justify-content:center"><button class="btn ghost sm" :disabled="filt.page <= 1" @click="filt.page--; load()">‹</button><span class="muted">{{ d.page.current_page }} / {{ d.page.last_page }}</span><button class="btn ghost sm" :disabled="filt.page >= d.page.last_page" @click="filt.page++; load()">›</button></div>
+      <UiPager :p="d?.page" @go="(n: number) => { filt.page = n; load() }" />
     </div>
   </div>
 </template>

@@ -27,6 +27,8 @@ async function save() {
 }
 async function remove(a: any) { if (!await uiConfirm(tt(`حذف الحساب ${a.name}؟`,`Delete account ${a.name}?`))) return; try { const r = await api.del(`/app/accounting/accounts/${a.id}`); if (r.deactivated) uiAlert(r.message); await load() } catch (e: any) { uiAlert(e.message) } }
 const typeTotal = (t: string) => rows.value.filter(a => a.type === t && !a.parent_id).reduce((s, a) => s + (+a.balance || 0), 0)
+// Long lists are shown 25 per page.
+const { rows: pRows, pager: pInfo, go: pGo } = usePaged(() => tree.value || [], 25)
 </script>
 
 <template>
@@ -49,7 +51,7 @@ const typeTotal = (t: string) => rows.value.filter(a => a.type === t && !a.paren
       <table class="table">
         <thead><tr><th>{{ tt('الرمز','Code') }}</th><th>{{ tt('الحساب','Account') }}</th><th>{{ tt('النوع','Type') }}</th><th>{{ tt('مدين (الفترة)','Debit (period)') }}</th><th>{{ tt('دائن (الفترة)','Credit (period)') }}</th><th>{{ tt('الرصيد','Balance') }}</th><th>{{ tt('الحالة','Status') }}</th><th></th></tr></thead>
         <tbody>
-          <tr v-for="a in tree" :key="a.id" :style="a.is_group ? 'background:#f8fafc' : ''">
+          <tr v-for="a in pRows" :key="a.id" :style="a.is_group ? 'background:#f8fafc' : ''">
             <td dir="ltr" style="text-align:right"><b>{{ a.code }}</b></td>
             <td :style="`padding-right:${12 + a.depth * 22}px`"><NuxtLink v-if="!a.is_group" :to="`/accounting/accounts/${a.id}`" style="color:var(--info);font-weight:700">{{ a.name }}</NuxtLink><b v-else>{{ a.name }}</b><small v-if="a.system_key" class="muted"> · {{ tt('نظامي','system') }}</small></td>
             <td><span class="badge" :class="accountTypes[a.type]?.cls">{{ accountTypes[a.type]?.label }}</span></td>
@@ -61,6 +63,7 @@ const typeTotal = (t: string) => rows.value.filter(a => a.type === t && !a.paren
           </tr>
         </tbody>
       </table>
+      <UiPager :p="pInfo" @go="pGo" />
     </div>
 
     <UiModal v-if="modal" :title="editing ? tt('تعديل حساب','Edit account') : tt('حساب جديد','New account')" @close="modal = false">

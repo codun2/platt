@@ -6,7 +6,7 @@ const d = ref<any>(null); const people = ref<any[]>([]); const projects = ref<an
 const filt = reactive({ from: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10), to: f.today(), project_id: '', user_id: '', billing: '', page: 1 })
 const entry = reactive<any>({ project_id: '', date: f.today(), hours: 1, description: '', billable: true })
 const err = ref(''); const msg = ref('')
-async function load() { d.value = await api.get('/app/projects/timesheets', filt) }
+async function load(p: any = 1) { const n = typeof p === 'number' ? p : 1; d.value = await api.get('/app/projects/timesheets', { ...filt, page: n }) }
 onMounted(async () => { await load(); people.value = await api.get('/app/projects/people'); projects.value = (await api.get('/app/projects/items', { kind: kind.value })).page.data })
 async function add() {
   err.value = ''; msg.value = ''
@@ -55,6 +55,7 @@ async function del(t: any) { if (!(await uiConfirm(tt('حذف هذا القيد�
           </tr>
         </tbody>
       </table>
+      <UiPager :p="d?.page" @go="load" />
       <p v-if="d && !d.page.data.length" class="empty">{{ tt('لا توجد ساعات في هذه الفترة.', 'No hours in this period.') }}</p>
     </div>
   </div>

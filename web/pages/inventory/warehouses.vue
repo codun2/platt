@@ -26,6 +26,8 @@ async function save() {
 async function remove(r: any) { if (!await uiConfirm(tt(`حذف ${r.name}؟`,`Delete ${r.name}?`))) return; try { await api.del(`/app/inventory/warehouses/${r.id}`); await load() } catch (e: any) { uiAlert(e.message) } }
 async function doAdjust() { msg.value = ''; try { await api.post('/app/inventory/stock/adjust', adj); msg.value = tt('تم تحديث الرصيد','Balance updated'); adj.qty = 0 } catch (e: any) { uiAlert(e.message) } }
 async function doTransfer() { msg.value = ''; try { await api.post('/app/inventory/stock/transfer', trf); msg.value = tt('تم التحويل','Transferred'); trf.qty = 0 } catch (e: any) { uiAlert(e.message) } }
+// Long lists are shown 25 per page.
+const { rows: pRows, pager: pInfo, go: pGo } = usePaged(() => warehouses.value || [], 25)
 </script>
 
 <template>
@@ -40,8 +42,9 @@ async function doTransfer() { msg.value = ''; try { await api.post('/app/invento
 
       <div v-if="tab === 'wh'">
         <table class="table"><thead><tr><th>{{ tt('الاسم','Name') }}</th><th>{{ tt('الموقع','Location') }}</th><th>{{ tt('أصناف','Items') }}</th><th>{{ tt('افتراضي','Default') }}</th><th>{{ tt('الحالة','Status') }}</th><th></th></tr></thead>
-          <tbody><tr v-for="w in warehouses" :key="w.id"><td><b>{{ w.name }}</b></td><td>{{ w.location || '—' }}</td><td>{{ w.stock_levels_count }}</td><td><span v-if="w.is_default" class="badge info">{{ tt('افتراضي','Default') }}</span></td><td><span class="badge" :class="w.is_active ? 'ok' : 'muted'">{{ w.is_active ? tt('نشط','Active') : tt('موقوف','Suspended') }}</span></td>
+          <tbody><tr v-for="w in pRows" :key="w.id"><td><b>{{ w.name }}</b></td><td>{{ w.location || '—' }}</td><td>{{ w.stock_levels_count }}</td><td><span v-if="w.is_default" class="badge info">{{ tt('افتراضي','Default') }}</span></td><td><span class="badge" :class="w.is_active ? 'ok' : 'muted'">{{ w.is_active ? tt('نشط','Active') : tt('موقوف','Suspended') }}</span></td>
             <td v-if="canManage" class="row" style="gap:6px"><button class="btn ghost sm icon" @click="open(w)"><i class="ti ti-pencil" /></button><button v-if="!w.is_default" class="btn ghost sm icon" style="color:var(--primary)" @click="remove(w)"><i class="ti ti-trash" /></button></td></tr></tbody></table>
+      <UiPager :p="pInfo" @go="pGo" />
         <p v-if="!warehouses.length" class="empty">{{ tt('لا توجد مستودعات.','No warehouses.') }}</p>
       </div>
 

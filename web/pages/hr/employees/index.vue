@@ -41,6 +41,7 @@ async function remove(e: any) { if (!await uiConfirm(tt(`حذف الموظف ${e
           </tr>
         </tbody>
       </table>
+      <UiPager :p="page" @go="load" />
       <p v-if="page && !page.data.length" class="empty">{{ tt('لا يوجد موظفون.','No employees.') }}</p>
     </div>
   </div>

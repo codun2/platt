@@ -7,6 +7,8 @@ async function load() { rows.value = await api.get('/app/inventory/suppliers') }
 onMounted(load)
 const list = computed(() => rows.value.filter((s: any) => (!activeOnly.value || s.is_active) && (!q.value || [s.name, s.phone, s.email, s.city, s.contact_person].some(v => String(v || '').includes(q.value)))))
 async function remove(s: any) { if (!await uiConfirm(tt(`حذف المورد ${s.name}؟`,`Delete supplier ${s.name}?`))) return; try { const r = await api.del(`/app/inventory/suppliers/${s.id}`); if (r.deactivated) uiAlert(tt('المورد له فواتير، تم تعطيله بدل حذفه.','Supplier has invoices; deactivated instead.')); await load() } catch (e: any) { uiAlert(e.message) } }
+// Long lists are shown 25 per page.
+const { rows: pRows, pager: pInfo, go: pGo } = usePaged(() => list.value || [], 25)
 </script>
 
 <template>
@@ -28,7 +30,7 @@ async function remove(s: any) { if (!await uiConfirm(tt(`حذف المورد ${s
       <table class="table">
         <thead><tr><th>#</th><th>{{ tt('المورد','Supplier') }}</th><th>{{ tt('النوع','Type') }}</th><th>{{ tt('المسؤول','Contact') }}</th><th>{{ tt('الهاتف','Phone') }}</th><th>{{ tt('المدينة','City') }}</th><th>{{ tt('شروط السداد','Terms') }}</th><th>{{ tt('الفواتير','Invoices') }}</th><th>{{ tt('الحالة','Status') }}</th><th></th></tr></thead>
         <tbody>
-          <tr v-for="(s, i) in list" :key="s.id">
+          <tr v-for="(s, i) in pRows" :key="s.id">
             <td class="muted">{{ i + 1 }}</td>
             <td><NuxtLink :to="`/inventory/suppliers/${s.id}`" style="color:var(--info);font-weight:700">{{ s.name }}</NuxtLink><small v-if="s.code" class="muted" dir="ltr"> {{ s.code }}</small></td>
             <td><span class="badge" :class="s.supplier_type === 'company' ? 'info' : 'muted'">{{ s.supplier_type === 'company' ? tt('شركة','Company') : tt('فرد','Individual') }}</span></td>
@@ -42,6 +44,7 @@ async function remove(s: any) { if (!await uiConfirm(tt(`حذف المورد ${s
           </tr>
         </tbody>
       </table>
+      <UiPager :p="pInfo" @go="pGo" />
       <p v-if="!list.length" class="empty">{{ tt('لا يوجد موردون.','No suppliers.') }}</p>
     </div>
   </div>

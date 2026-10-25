@@ -7,7 +7,7 @@ const view = ref<any>(null); const company = ref<any>(null)
 const pay = reactive({ amount: 0, method: 'cash', note: '' })
 const printing = ref(false)
 
-async function load() { page.value = await api.get('/app/pos/sales', { ...filt, unpaid: filt.unpaid ? 1 : '' }) }
+async function load(p: any = 1) { const n = typeof p === 'number' ? p : 1; page.value = await api.get('/app/pos/sales', { ...filt, unpaid: filt.unpaid ? 1 : '', page: n }) }
 async function show(id: number) { const r = await api.get(`/app/pos/sales/${id}`); view.value = r.sale; company.value = r.company; pay.amount = Math.max(0, Number(r.sale.total) - Number(r.sale.paid)) }
 onMounted(async () => {
   await load()
@@ -43,6 +43,7 @@ function print() { printing.value = true; nextTick(() => { window.print(); setTi
           </tr>
         </tbody>
       </table>
+      <UiPager :p="page" @go="load" />
       <p v-if="page && !page.data.length" class="empty">{{ tt('لا توجد فواتير.','No invoices.') }}</p>
       <p class="muted mt" style="font-size:12px">{{ tt('الإجمالي','Total') }}: {{ page?.total ?? 0 }}</p>
     </div>

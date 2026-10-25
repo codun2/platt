@@ -3,7 +3,7 @@ definePageMeta({ title: 'حركات المخزون', titleEn: 'Stock Movements' 
 const api = useApi(); const f = useFmt(); const { tt } = useI18n()
 const page = ref<any>(null); const meta = ref<any>({ warehouses: [] })
 const filt = reactive({ warehouse_id: '', type: '', from: '', to: '' })
-async function load() { page.value = await api.get('/app/inventory/movements', filt) }
+async function load(p: any = 1) { const n = typeof p === 'number' ? p : 1; page.value = await api.get('/app/inventory/movements', { ...filt, page: n }) }
 onMounted(async () => { meta.value = await api.get('/app/inventory/items/meta'); await load() })
 const typeLabel = movementLabel
 </script>
@@ -28,6 +28,7 @@ const typeLabel = movementLabel
           </tr>
         </tbody>
       </table>
+      <UiPager :p="page" @go="load" />
       <p v-if="page && !page.data.length" class="empty">{{ tt('لا توجد حركات.','No movements.') }}</p>
     </div>
   </div>

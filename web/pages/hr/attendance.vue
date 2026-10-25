@@ -18,7 +18,7 @@ const month = ref(thisMonth()); const summary = ref<any>(null)
 async function loadMonth() { summary.value = await api.get('/app/hr/attendance/summary', { month: month.value }) }
 // Leaves
 const leaves = ref<any>(null); const lf = reactive({ status: '', type: '' })
-async function loadLeaves() { leaves.value = await api.get('/app/hr/leaves', lf) }
+async function loadLeaves(p: any = 1) { const n = typeof p === 'number' ? p : 1; leaves.value = await api.get('/app/hr/leaves', { ...lf, page: n }) }
 onMounted(() => { loadDay(); loadMonth(); loadLeaves() })
 </script>
 
@@ -81,6 +81,7 @@ onMounted(() => { loadDay(); loadMonth(); loadLeaves() })
           <thead><tr><th>{{ tt('الموظف','Employee') }}</th><th>{{ tt('النوع','Type') }}</th><th>{{ tt('من','From') }}</th><th>{{ tt('إلى','To') }}</th><th>{{ tt('أيام','Days') }}</th><th>{{ tt('السبب','Reason') }}</th><th>{{ tt('الحالة','Status') }}</th><th>{{ tt('اعتمدها','Approved by') }}</th><th></th></tr></thead>
           <tbody><tr v-for="l in leaves?.data" :key="l.id"><td><NuxtLink :to="`/hr/employees/${l.employee?.id}`" style="color:var(--info)">{{ l.employee?.name }}</NuxtLink></td><td>{{ leaveTypes[l.type] }}</td><td>{{ f.d(l.from) }}</td><td>{{ f.d(l.to) }}</td><td>{{ l.days }}</td><td class="muted">{{ l.reason || '' }}</td><td><span class="badge" :class="leaveStatus[l.status]?.cls">{{ leaveStatus[l.status]?.label }}</span></td><td>{{ l.approver?.name || '—' }}</td><td><NuxtLink class="btn ghost sm icon" :to="`/hr/leaves/${l.id}`"><i class="ti ti-eye" /></NuxtLink></td></tr></tbody>
         </table>
+      <UiPager :p="leaves" @go="loadLeaves" />
         <p v-if="leaves && !leaves.data.length" class="empty">{{ tt('لا توجد إجازات.','No leaves.') }}</p>
       </div>
     </div>

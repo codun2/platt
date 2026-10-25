@@ -24,6 +24,8 @@ class SidebarBuilder
 
         $identity = SectorIdentity::forTenant($tenant);
         $hidden = array_flip($identity['hide']);
+        // "بيانات الشركة" follows what the business is (بيانات المحل، بيانات المزرعة…).
+        $identity['labels']['settings_company'] ??= ['بيانات '.$identity['org'][0], $identity['org'][1].' profile'];
 
         $visible = $modules->filter(function (Module $m) use ($enabledKeys, $permissions, $allPerms, $hidden) {
             $root = $m->parent_key ?: $m->key;

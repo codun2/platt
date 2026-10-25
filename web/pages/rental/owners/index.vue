@@ -6,6 +6,8 @@ const canManage = computed(() => auth.can('rental.manage'))
 async function load() { rows.value = await api.get('/app/rental/owners', { q: q.value, type: type.value }) }
 onMounted(load)
 async function remove(o: any) { if (!await uiConfirm(tt(`حذف ${o.name}؟`, `Delete ${o.name}?`))) return; try { await api.del(`/app/rental/owners/${o.id}`); await load() } catch (e: any) { uiAlert(e.message) } }
+// Long lists are shown 25 per page.
+const { rows: pRows, pager: pInfo, go: pGo } = usePaged(() => rows.value || [], 25)
 </script>
 
 <template>
@@ -23,7 +25,7 @@ async function remove(o: any) { if (!await uiConfirm(tt(`حذف ${o.name}؟`, `D
       <table class="table">
         <thead><tr><th>{{ tt('الاسم', 'Name') }}</th><th>{{ tt('الصفة', 'Role') }}</th><th>{{ tt('الهاتف', 'Phone') }}</th><th>{{ tt('الأصول', 'Assets') }}</th><th>{{ tt('العمولة', 'Commission') }}</th><th>{{ tt('الحالة', 'Status') }}</th><th></th></tr></thead>
         <tbody>
-          <tr v-for="o in rows" :key="o.id">
+          <tr v-for="o in pRows" :key="o.id">
             <td><NuxtLink :to="`/rental/owners/${o.id}`" style="color:var(--info);font-weight:700">{{ o.name }}</NuxtLink></td>
             <td><span class="badge" :class="o.type === 'owner' ? 'info' : 'muted'">{{ o.type === 'owner' ? tt('مالك', 'Owner') : tt('وسيط', 'Broker') }}</span></td>
             <td dir="ltr" style="text-align:right">{{ o.phone || '—' }}</td>
@@ -33,6 +35,7 @@ async function remove(o: any) { if (!await uiConfirm(tt(`حذف ${o.name}؟`, `D
           </tr>
         </tbody>
       </table>
+      <UiPager :p="pInfo" @go="pGo" />
       <p v-if="!rows.length" class="empty">{{ tt('لا يوجد ملّاك. أضف ملّاك العقارات التي تديرها لعرض كشوف حساباتهم.', 'No owners yet. Add the owners of properties you manage to see their statements.') }}</p>
     </div>
   </div>

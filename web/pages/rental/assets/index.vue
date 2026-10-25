@@ -15,6 +15,8 @@ const rows = computed(() => {
   return out
 })
 async function remove(a: any) { if (!await uiConfirm(tt(`حذف ${a.name}؟`, `Delete ${a.name}?`))) return; try { await api.del(`/app/rental/assets/${a.id}`); await load() } catch (e: any) { uiAlert(e.message) } }
+// Long lists are shown 25 per page.
+const { rows: pRows, pager: pInfo, go: pGo } = usePaged(() => rows.value || [], 25)
 </script>
 
 <template>
@@ -40,7 +42,7 @@ async function remove(a: any) { if (!await uiConfirm(tt(`حذف ${a.name}؟`, `D
       <table class="table">
         <thead><tr><th>{{ terms.asset }}</th><th>{{ tt('النوع', 'Type') }}</th><th>{{ terms.isVehicle ? tt('اللوحة', 'Plate') : tt('الموقع', 'Location') }}</th><th>{{ tt('المالك', 'Owner') }}</th><th>{{ terms.renter }}</th><th>{{ terms.rent }}</th><th>{{ tt('الحالة', 'Status') }}</th><th></th></tr></thead>
         <tbody>
-          <tr v-for="a in rows" :key="a.id">
+          <tr v-for="a in pRows" :key="a.id">
             <td :style="a.depth ? 'padding-right:34px' : ''">
               <i :class="`ti ${a.depth ? 'ti-corner-down-left' : assetTypeIcon[a.type]}`" class="muted" />
               <NuxtLink :to="`/rental/assets/${a.id}`" style="color:var(--info);font-weight:700"> {{ a.name }}</NuxtLink>
@@ -57,6 +59,7 @@ async function remove(a: any) { if (!await uiConfirm(tt(`حذف ${a.name}؟`, `D
           </tr>
         </tbody>
       </table>
+      <UiPager :p="pInfo" @go="pGo" />
       <p v-if="d && !rows.length" class="empty">{{ terms.isVehicle ? tt('أضف سياراتك لتبدأ التأجير.', 'Add your vehicles to start renting.') : tt('أضف بناياتك ووحداتك لتبدأ التأجير.', 'Add your buildings and units to start leasing.') }}</p>
     </div>
   </div>

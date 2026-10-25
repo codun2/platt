@@ -16,6 +16,8 @@ async function save() {
   catch (e: any) { err.value = e.message }
 }
 async function remove(p: any) { if (!await uiConfirm(tt(`حذف الخطة ${p.name_ar}؟`,`Delete plan ${p.name_ar}?`))) return; try { await api.del(`/super/plans/${p.id}`); await load() } catch (e: any) { uiAlert(e.message) } }
+// Long lists are shown 25 per page.
+const { rows: pRows, pager: pInfo, go: pGo } = usePaged(() => plans.value || [], 25)
 </script>
 
 <template>
@@ -24,7 +26,7 @@ async function remove(p: any) { if (!await uiConfirm(tt(`حذف الخطة ${p.n
     <table class="table">
       <thead><tr><th>{{ tt('الخطة','Plan') }}</th><th>{{ tt('السعر الشهري','Monthly price') }}</th><th>{{ tt('حد المستخدمين','User limit') }}</th><th>{{ tt('المشتركون','Tenants') }}</th><th>{{ tt('الحالة','Status') }}</th><th></th></tr></thead>
       <tbody>
-        <tr v-for="p in plans" :key="p.id">
+        <tr v-for="p in pRows" :key="p.id">
           <td><b>{{ tt(p.name_ar, p.name_en || p.name_ar) }}</b> <small class="muted" dir="ltr">({{ p.key }})</small><br /><small class="muted">{{ p.description_ar }}</small></td>
           <td class="num">{{ p.price_monthly }} {{ tt('ريال','SAR') }}</td><td>{{ p.max_users }}</td><td>{{ p.tenants_count }}</td>
           <td><span class="badge" :class="p.is_active ? 'ok' : 'muted'">{{ p.is_active ? tt('نشطة','Active') : tt('معطّلة','Disabled') }}</span></td>
@@ -32,6 +34,7 @@ async function remove(p: any) { if (!await uiConfirm(tt(`حذف الخطة ${p.n
         </tr>
       </tbody>
     </table>
+      <UiPager :p="pInfo" @go="pGo" />
 
     <UiModal v-if="modal" :title="editing ? tt('تعديل خطة','Edit plan') : tt('خطة جديدة','New plan')" @close="modal = false">
       <div v-if="err" class="alert bad">{{ err }}</div>

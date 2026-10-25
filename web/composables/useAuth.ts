@@ -6,7 +6,7 @@ export interface AuthState {
   tenant: any | null
   permissions: string[]
   sidebar: SidebarItem[]
-  identity?: { key: string; accent: string } | null
+  identity?: { key: string; accent: string; org?: [string, string] } | null
   loaded: boolean
 }
 

@@ -30,6 +30,7 @@ class SectorIdentity
             'order' => $own['order'] ?? $base['order'] ?? [],
             'labels' => $own['labels'] ?? [],
             'hide' => $own['hide'] ?? [],
+            'org' => $own['org'] ?? $base['org'] ?? ['الشركة', 'Company'],
         ];
     }
 
@@ -38,6 +39,6 @@ class SectorIdentity
     {
         $id = self::forTenant($tenant);
 
-        return ['key' => $id['key'], 'accent' => $id['accent']];
+        return ['key' => $id['key'], 'accent' => $id['accent'], 'org' => $id['org']];
     }
 }

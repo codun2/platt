@@ -3,7 +3,7 @@ definePageMeta({ title: 'العملاء', titleEn: 'Customers' })
 const api = useApi(); const auth = useAuth(); const f = useFmt(); const { tt } = useI18n()
 const page = ref<any>(null); const q = ref('')
 
-async function load() { page.value = await api.get('/app/customers', { q: q.value }) }
+async function load(p: any = 1) { const n = typeof p === 'number' ? p : 1; page.value = await api.get('/app/customers', { q: q.value, page: n }) }
 onMounted(load)
 async function remove(c: any) {
   if (!await uiConfirm(tt(`حذف العميل ${c.name}؟`, `Delete customer ${c.name}?`))) return
@@ -42,6 +42,7 @@ const typeLabel = (t: string) => (t === 'company' ? tt('شركة', 'Company') : 
           </tr>
         </tbody>
       </table>
+      <UiPager :p="page" @go="load" />
       <p v-if="page && !page.data.length" class="empty">{{ tt('لا يوجد عملاء.', 'No customers.') }}</p>
     </div>
   </div>

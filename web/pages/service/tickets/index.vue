@@ -59,7 +59,7 @@ const columns = computed(() => OPEN_ORDER.map(k => ({ key: k, ...orderStatus[k],
           </tbody>
         </table>
         <p v-if="d && !d.page.data.length" class="empty">{{ tt('لا توجد طلبات مطابقة.', 'No matching orders.') }}</p>
-        <div v-if="d && d.page.last_page > 1" class="row mt" style="justify-content:center"><button class="btn ghost sm" :disabled="filt.page <= 1" @click="filt.page--; load()">‹</button><span class="muted">{{ d.page.current_page }} / {{ d.page.last_page }}</span><button class="btn ghost sm" :disabled="filt.page >= d.page.last_page" @click="filt.page++; load()">›</button></div>
+        <UiPager :p="d?.page" @go="(n: number) => { filt.page = n; load() }" />
       </template>
     </div>
   </div>

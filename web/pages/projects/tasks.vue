@@ -49,7 +49,7 @@ const groups = computed(() => {
         </table>
       </div>
       <p v-if="d && !d.data.length" class="empty">{{ filt.scope === 'overdue' ? tt('لا شيء متأخر 🎉', 'Nothing overdue 🎉') : tt('لا توجد مواعيد.', 'Nothing here.') }}</p>
-      <div v-if="d && d.last_page > 1" class="row mt" style="justify-content:center"><button class="btn ghost sm" :disabled="filt.page <= 1" @click="filt.page--; load()">‹</button><span class="muted">{{ d.current_page }} / {{ d.last_page }}</span><button class="btn ghost sm" :disabled="filt.page >= d.last_page" @click="filt.page++; load()">›</button></div>
+      <UiPager :p="d" @go="(n: number) => { filt.page = n; load() }" />
     </div>
     <TaskDialog v-if="dialog" :mode="dialog.mode" :task="dialog.task" :projects="projects" :people="people" :default-kind="dialog.kind" @close="dialog = null" @saved="load" />
   </div>

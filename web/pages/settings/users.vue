@@ -31,6 +31,8 @@ async function remove(u: any) {
   if (!await uiConfirm(tt(`حذف المستخدم ${u.name}؟`,`Delete user ${u.name}?`))) return
   try { await api.del(`/app/users/${u.id}`); await load() } catch (e: any) { uiAlert(e.message) }
 }
+// Long lists are shown 25 per page.
+const { rows: pRows, pager: pInfo, go: pGo } = usePaged(() => users.value || [], 25)
 </script>
 
 <template>
@@ -44,7 +46,7 @@ async function remove(u: any) {
       <table class="table">
         <thead><tr><th>#</th><th>{{ tt('الاسم','Name') }}</th><th>{{ tt('البريد','Email') }}</th><th>{{ tt('الهاتف','Phone') }}</th><th>{{ tt('الأدوار','Roles') }}</th><th>{{ tt('الحالة','Status') }}</th><th>{{ tt('آخر دخول','Last login') }}</th><th>{{ tt('الإجراءات','Actions') }}</th></tr></thead>
         <tbody>
-          <tr v-for="(u, i) in users" :key="u.id">
+          <tr v-for="(u, i) in pRows" :key="u.id">
             <td>{{ i + 1 }}</td>
             <td><b>{{ u.name }}</b> <span v-if="u.is_owner" class="badge info">{{ tt('مالك','Owner') }}</span></td>
             <td dir="ltr" style="text-align:right">{{ u.email }}</td>
@@ -59,6 +61,7 @@ async function remove(u: any) {
           </tr>
         </tbody>
       </table>
+      <UiPager :p="pInfo" @go="pGo" />
       <p v-if="!users.length" class="empty">{{ tt('لا يوجد مستخدمون.','No users.') }}</p>
     </div>
 
