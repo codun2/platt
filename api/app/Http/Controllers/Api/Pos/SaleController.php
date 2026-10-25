@@ -11,6 +11,8 @@ use App\Models\Sequence;
 use App\Models\Shift;
 use App\Services\InventoryService;
 use App\Services\LedgerService;
+use App\Services\LoyaltyService;
+use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -65,7 +67,9 @@ class SaleController extends Controller
             'date' => ['nullable', 'date'],
             'discount' => ['nullable', 'numeric', 'min:0'],
             'tax_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
-            'payment_method' => ['required', Rule::in(['cash', 'card', 'transfer', 'credit'])],
+            'payment_method' => ['required', Rule::in(['cash', 'card', 'transfer', 'credit', 'wallet'])],
+            // Loyalty add-on: points redeemed as a discount on this bill.
+            'redeem_points' => ['nullable', 'numeric', 'min:0'],
             'paid' => ['nullable', 'numeric', 'min:0'],
             'note' => ['nullable', 'string'],
             // Offline sales (uploaded later by the device's outbox)
@@ -106,6 +110,23 @@ class SaleController extends Controller
                 $lines[] = [$item, $l, $lineTotal];
             }
             $discount = (float) ($data['discount'] ?? 0);
+
+            // Loyalty add-on: redeemed points become extra discount; wallet pays from the balance.
+            $loyalty = LoyaltyService::enabled() ? app(LoyaltyService::class) : null;
+            $customer = ! empty($data['customer_id']) ? Customer::find($data['customer_id']) : null;
+            $redeem = (float) ($data['redeem_points'] ?? 0);
+            $pointsDiscount = 0.0;
+            if ($redeem > 0) {
+                if (! $loyalty || ! $customer) {
+                    throw \Illuminate\Validation\ValidationException::withMessages(['redeem_points' => 'استبدال النقاط يتطلب اختيار عميل وتفعيل إضافة الولاء.']);
+                }
+                $pointsDiscount = $loyalty->redemptionValue($customer, $redeem, max(0, $subtotal - $discount));
+                $discount += $pointsDiscount;
+            }
+            if ($data['payment_method'] === 'wallet' && (! $loyalty || ! $customer || ! LoyaltyService::settings()['wallet_enabled'])) {
+                throw \Illuminate\Validation\ValidationException::withMessages(['payment_method' => 'الدفع من المحفظة يتطلب اختيار عميل وتفعيل المحفظة.']);
+            }
+
             $taxable = max(0, $subtotal - $discount);
             $tax = round($taxable * $taxRate / 100, 3);
             $total = round($taxable + $tax, 3);
@@ -143,6 +164,21 @@ class SaleController extends Controller
 
             if ($paid > 0) {
                 SalePayment::create(['sale_id' => $sale->id, 'amount' => $paid, 'method' => $method === 'credit' ? 'cash' : $method, 'date' => $sale->date, 'user_id' => $request->user()->id]);
+            }
+            if ($loyalty && $customer) {
+                $meta = ['ref_type' => 'sale', 'ref_id' => $sale->id, 'reference' => $sale->number];
+                if ($redeem > 0) {
+                    $loyalty->record($customer, 'redeem', -$redeem, 0, $meta + ['note' => 'خصم '.$pointsDiscount]);
+                }
+                if ($method === 'wallet') {
+                    $loyalty->record($customer, 'spend', 0, -$paid, $meta);
+                }
+                // Points are earned on what was actually paid (not on credit / wallet-free part).
+                $earned = $loyalty->pointsFor($method === 'credit' ? $paid : $total);
+                if ($earned > 0) {
+                    $loyalty->record($customer, 'earn', $earned, 0, $meta);
+                }
+                $sale->update(['points_redeemed' => $redeem, 'points_discount' => $pointsDiscount, 'points_earned' => $earned]);
             }
             if ($short) {
                 $sale->update(['stock_short' => true]);
@@ -189,6 +225,7 @@ class SaleController extends Controller
                 $inv->move(Item::findOrFail($line->item_id), $sale->warehouse_id, (float) $line->qty, 'sale_cancel', ['ref_type' => 'sale', 'ref_id' => $sale->id]);
             }
             $sale->update(['status' => 'cancelled', 'cancelled_at' => now()]);
+            app(LoyaltyService::class)->reverseFor('sale', $sale->id);   // points / wallet back
             $ledger = app(LedgerService::class);
             $ledger->reverse('sale', $sale->id, 'إلغاء فاتورة '.$sale->number);
             foreach ($sale->payments as $p) {

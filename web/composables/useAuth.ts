@@ -7,6 +7,8 @@ export interface AuthState {
   permissions: string[]
   sidebar: SidebarItem[]
   identity?: { key: string; accent: string; org?: [string, string] } | null
+  /** Enabled module keys, including advanced add-ons (loyalty, orders…). */
+  modules?: string[]
   loaded: boolean
 }
 
@@ -21,6 +23,7 @@ export function useAuth() {
       permissions: payload.permissions || [],
       sidebar: payload.sidebar || [],
       identity: payload.identity || null,
+      modules: payload.modules || [],
       loaded: true,
     }
     applyAccent(payload.identity?.accent)
@@ -97,5 +100,7 @@ export function useAuth() {
   const isSuper = computed(() => !!state.value.user?.is_super_admin)
   const isLoggedIn = computed(() => !!state.value.user)
 
-  return { state, login, register, fetchMe, logout, can, isSuper, isLoggedIn }
+  /** Is a module / add-on enabled for this tenant (e.g. hasModule('loyalty'))? */
+  const hasModule = (key: string) => (state.value.modules || []).includes(key)
+  return { state, login, register, fetchMe, logout, can, isSuper, isLoggedIn, hasModule }
 }

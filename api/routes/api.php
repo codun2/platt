@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Accounting;
+use App\Http\Controllers\Api\Addons;
 use App\Http\Controllers\Api\App;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Bookings;
@@ -266,6 +267,19 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant', 'idem'])->prefix('ap
         Route::post('templates', [Whatsapp\WhatsappController::class, 'storeTemplate']);
         Route::match(['put', 'patch'], 'templates/{id}', [Whatsapp\WhatsappController::class, 'updateTemplate'])->whereNumber('id');
         Route::delete('templates/{id}', [Whatsapp\WhatsappController::class, 'destroyTemplate'])->whereNumber('id');
+    });
+
+    /* ---- Add-on: loyalty points + customer wallet ---- */
+    Route::prefix('loyalty')->middleware('perm:loyalty.view')->group(function () {
+        Route::get('summary', [Addons\LoyaltyController::class, 'summary']);
+        Route::get('members', [Addons\LoyaltyController::class, 'members']);
+        Route::get('members/{id}', [Addons\LoyaltyController::class, 'member'])->whereNumber('id');
+        Route::get('transactions', [Addons\LoyaltyController::class, 'transactions']);
+        Route::middleware('perm:loyalty.manage')->group(function () {
+            Route::post('members/{id}/wallet', [Addons\LoyaltyController::class, 'wallet'])->whereNumber('id');
+            Route::post('members/{id}/adjust', [Addons\LoyaltyController::class, 'adjust'])->whereNumber('id');
+            Route::put('settings', [Addons\LoyaltyController::class, 'updateSettings']);
+        });
     });
 
     /* ---- Engine: Manufacturing (recipes / production) ---- */

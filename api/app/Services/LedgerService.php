@@ -44,6 +44,8 @@ class LedgerService
         ['2200', 'ضريبة القيمة المضافة المستحقة', 'liability', 'vat_out', '2000'],
         ['2300', 'رواتب مستحقة', 'liability', 'salaries_payable', '2000'],
         ['2400', 'تأمينات العملاء', 'liability', 'customer_deposits', '2000'],
+        ['2500', 'أرصدة محافظ العملاء', 'liability', 'customer_wallet', '2000'],
+        ['2600', 'عرابين ودفعات مقدمة على الطلبات', 'liability', 'customer_advances', '2000'],
         ['3000', 'حقوق الملكية', 'equity', null, null],
         ['3100', 'رأس المال', 'equity', 'capital', '3000'],
         ['3200', 'الأرباح المحتجزة', 'equity', 'retained', '3000'],
@@ -107,7 +109,12 @@ class LedgerService
     /** cash | card | transfer | cheque | credit → account system key. */
     public function accountForMethod(string $method): Account
     {
-        return $this->account($method === 'cash' ? 'cash' : ($method === 'credit' ? 'ar' : 'bank'));
+        return $this->account(match ($method) {
+            'cash' => 'cash', 'credit' => 'ar',
+            'wallet' => 'customer_wallet',      // paid from the customer's prepaid balance
+            'advance' => 'customer_advances',   // paid from a deposit taken on an order
+            default => 'bank',
+        });
     }
 
     /**

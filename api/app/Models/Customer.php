@@ -26,7 +26,15 @@ class Customer extends Model
             'credit_limit' => 'decimal:3',
             'opening_balance' => 'decimal:3',
             'payment_terms_days' => 'integer',
+            // Loyalty add-on: changed only through LoyaltyService (not fillable).
+            'points' => 'decimal:3',
+            'wallet_balance' => 'decimal:3',
         ];
+    }
+
+    public function loyaltyTransactions(): HasMany
+    {
+        return $this->hasMany(LoyaltyTransaction::class);
     }
 
     public function sales(): HasMany

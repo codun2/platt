@@ -41,8 +41,10 @@ class TenantController extends Controller
         $enabled = TenantModule::where('tenant_id', $id)->where('enabled', true)->pluck('module_id')->flip();
         $modules = Module::whereNull('parent_key')->where('is_active', true)->orderBy('sort')->get()
             ->map(fn (Module $m) => [
-                'id' => $m->id, 'key' => $m->key, 'name_ar' => $m->name_ar, 'icon' => $m->icon,
+                'id' => $m->id, 'key' => $m->key, 'name_ar' => $m->name_ar, 'name_en' => $m->name_en, 'icon' => $m->icon,
                 'engine' => $m->engine, 'is_core' => $m->is_core, 'enabled' => $m->is_core || isset($enabled[$m->id]),
+                // Advanced add-on: what it does (shown so the admin knows what is being switched on).
+                'addon' => $m->engine === 'addons' ? config('addons.'.$m->key) : null,
             ]);
 
         $owner = User::withoutGlobalScopes()->where('tenant_id', $id)->where('is_owner', true)->first(['id', 'name', 'email', 'phone', 'last_login_at']);

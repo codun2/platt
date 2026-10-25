@@ -31,6 +31,7 @@ class PermissionSeeder extends Seeder
             ['key' => 'service.manage', 'name_ar' => 'إدارة الفنيين وقائمة الأسعار وحذف أوامر العمل', 'group_key' => 'service'],
             ['key' => 'projects.manage', 'name_ar' => 'إدارة القضايا والمشاريع والفوترة', 'group_key' => 'projects'],
             ['key' => 'rental.manage', 'name_ar' => 'إدارة الأصول والعقود والملّاك', 'group_key' => 'rental'],
+            ['key' => 'loyalty.manage', 'name_ar' => 'شحن واسترداد المحافظ وتعديل النقاط وإعدادات الولاء', 'group_key' => 'loyalty'],
             ['key' => 'travel.manage', 'name_ar' => 'إدارة الرحلات والباقات والمصروفات', 'group_key' => 'travel'],
         ];
         foreach ($management as $p) {

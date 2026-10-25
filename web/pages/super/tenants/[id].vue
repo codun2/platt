@@ -82,7 +82,7 @@ const resetPass = () => act(() => api.post(`/super/tenants/${id}/reset-owner-pas
         <table class="table">
           <thead><tr><th>{{ tt('الوحدة','Module') }}</th><th>{{ tt('المحرّك','Engine') }}</th><th>{{ tt('الحالة','Status') }}</th><th></th></tr></thead>
           <tbody>
-            <tr v-for="m in d.modules" :key="m.id">
+            <tr v-for="m in d.modules.filter((x: any) => x.engine !== 'addons')" :key="m.id">
               <td><i :class="`ti ${m.icon}`" /> {{ tt(m.name_ar, m.name_en || m.name_ar) }}</td>
               <td class="muted">{{ m.engine }}</td>
               <td><span class="badge" :class="m.enabled ? 'ok' : 'muted'">{{ m.is_core ? tt('أساسية','Core') : (m.enabled ? tt('مفعّلة','Enabled') : tt('معطّلة','Disabled')) }}</span></td>
@@ -90,6 +90,22 @@ const resetPass = () => act(() => api.post(`/super/tenants/${id}/reset-owner-pas
             </tr>
           </tbody>
         </table>
+
+        <div class="card-title" style="margin-top:22px"><i class="ti ti-sparkles" /> {{ tt('الإضافات المتقدمة', 'Advanced add-ons') }}</div>
+        <p class="muted" style="margin-top:0">{{ tt('مميزات جاهزة لا تظهر لأي مشترك إلا إذا فعّلتها له — تعمل مع أي قطاع (محل، حلويات، مطعم…). تظهر فوراً في قائمته بعد التفعيل.', 'Ready features hidden from every tenant until you enable them — they work with any sector. They appear in the tenant’s menu right after enabling.') }}</p>
+        <div class="addons">
+          <div v-for="m in d.modules.filter((x: any) => x.engine === 'addons')" :key="m.id" class="addon" :class="{ on: m.enabled }">
+            <div class="row between" style="align-items:flex-start">
+              <div class="row" style="gap:10px;align-items:flex-start">
+                <div class="addon-ic"><i :class="`ti ${m.icon}`" /></div>
+                <div><b>{{ tt(m.name_ar, m.name_en || m.name_ar) }}</b><br /><span class="badge" :class="m.enabled ? 'ok' : 'muted'">{{ m.enabled ? tt('مفعّلة لهذا المشترك', 'Enabled') : tt('غير مفعّلة', 'Off') }}</span></div>
+              </div>
+              <label class="switch"><input type="checkbox" :checked="m.enabled" @change="toggleModule(m)" /><span /></label>
+            </div>
+            <p v-if="m.addon" style="margin:10px 0 6px;line-height:1.8">{{ tt(m.addon.ar, m.addon.en) }}</p>
+            <div v-if="m.addon?.fits" class="chips"><span v-for="x in m.addon.fits" :key="x" class="chip" style="cursor:default">{{ x }}</span></div>
+          </div>
+        </div>
       </div>
 
       <div v-if="tab === 'subs'" class="grid grid-2">
@@ -118,3 +134,10 @@ const resetPass = () => act(() => api.post(`/super/tenants/${id}/reset-owner-pas
     </div>
   </div>
 </template>
+
+<style scoped>
+.addons { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.addon { border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+.addon.on { border-color: var(--ok); background: #f0fdf4; }
+.addon-ic { width: 38px; height: 38px; border-radius: 10px; background: var(--primary-50, #fff1f2); color: var(--primary); display: grid; place-items: center; font-size: 20px; }
+</style>

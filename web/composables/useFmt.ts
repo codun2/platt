@@ -14,6 +14,6 @@ export function useFmt() {
   const dt = (v: any) => v ? String(v).slice(0, 16).replace('T', ' ') : '—'
   const d = (v: any) => v ? String(v).slice(0, 10) : '—'
   const today = () => new Date().toISOString().slice(0, 10)
-  const methodLabel = (m: string) => (tt(({ cash: 'نقدي', card: 'بطاقة', transfer: 'تحويل', credit: 'آجل' } as any)[m], ({ cash: 'Cash', card: 'Card', transfer: 'Transfer', credit: 'Credit' } as any)[m]) || m)
+  const methodLabel = (m: string) => (tt(({ cash: 'نقدي', card: 'بطاقة', transfer: 'تحويل', credit: 'آجل', wallet: 'من المحفظة', advance: 'من العربون' } as any)[m], ({ cash: 'Cash', card: 'Card', transfer: 'Transfer', credit: 'Credit', wallet: 'Wallet', advance: 'Deposit' } as any)[m]) || m)
   return { money, qty, dt, d, today, cur, methodLabel }
 }

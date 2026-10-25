@@ -102,6 +102,8 @@ class AuthController extends Controller
             'identity' => \App\Services\SectorIdentity::publicFor($tenant),
             'permissions' => $user->permissionKeys(),
             'sidebar' => $tenant ? app(SidebarBuilder::class)->forUser($user, $tenant) : [],
+            // Enabled module keys (incl. add-ons) so screens can show add-on features.
+            'modules' => $tenant ? $tenant->enabledModuleKeys() : [],
         ];
     }
 }

@@ -14,6 +14,7 @@ class Sale extends Model
     protected $fillable = [
         'tenant_id', 'number', 'client_ref', 'offline', 'sold_at', 'stock_short', 'customer_id', 'warehouse_id', 'shift_id', 'date', 'status',
         'subtotal', 'discount', 'tax_rate', 'tax', 'total', 'paid', 'payment_method', 'note', 'created_by', 'cancelled_at',
+        'points_redeemed', 'points_discount', 'points_earned',
     ];
 
     protected function casts(): array

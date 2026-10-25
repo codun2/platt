@@ -6,11 +6,28 @@ const meta = ref<any>({ categories: [], warehouses: [] })
 const items = ref<any[]>([]); const q = ref(''); const cat = ref('')
 const cart = ref<any[]>([])
 const customers = ref<any[]>([]); const customerId = ref('')
-const discount = ref(0); const method = ref<'cash' | 'card' | 'transfer' | 'credit'>('cash'); const paid = ref<number | null>(null)
+const discount = ref(0); const method = ref<'cash' | 'card' | 'transfer' | 'credit' | 'wallet'>('cash'); const paid = ref<number | null>(null)
 const shift = ref<any>(null); const openCash = ref(0)
 const last = ref<any>(null); const err = ref(''); const busy = ref(false)
 const taxRate = computed(() => Number(auth.state.value.tenant?.tax_rate ?? 0))
 const warehouseId = computed(() => shift.value?.warehouse_id || meta.value.warehouses.find((w: any) => w.is_default)?.id || pack.value?.warehouse_id || '')
+
+// ---- Add-on «الولاء والمحفظة»: points to redeem + pay from the customer's wallet ----
+const loyaltyOn = computed(() => auth.hasModule('loyalty'))
+const member = ref<any>(null); const redeem = ref<number | null>(null)
+watch(customerId, async (id) => {
+  member.value = null; redeem.value = null; if (method.value === 'wallet') method.value = 'cash'
+  if (!loyaltyOn.value || !id || !off.state.online) return
+  try { member.value = await api.get(`/app/loyalty/members/${id}`) } catch { /* not allowed / offline */ }
+})
+const pointsDiscount = computed(() => member.value && +redeem.value! > 0 ? +((+redeem.value! || 0) * +member.value.settings.point_value).toFixed(3) : 0)
+const walletOk = computed(() => !!member.value?.settings.wallet_enabled && !localMode.value)
+const methods = computed(() => ['cash', 'card', 'transfer', 'credit', ...(walletOk.value ? ['wallet'] : [])])
+function redeemAll() {
+  const m = member.value; if (!m) return
+  const cap = (subtotal.value - Number(discount.value || 0)) * +m.settings.max_redeem_percent / 100
+  redeem.value = Math.floor(Math.min(+m.customer.points, cap / +m.settings.point_value))
+}
 
 // ---- Offline: the full catalog lives on the device (refreshed while online) ----
 const off = useOffline()
@@ -70,11 +87,11 @@ off.onSynced(op => {
 })
 function add(i: any) { const ex = cart.value.find(l => l.item_id === i.id); ex ? ex.qty++ : cart.value.push({ item_id: i.id, name: i.name, qty: 1, unit_price: Number(i.sale_price), discount: 0, stock: i.stock, track: i.track_stock }) }
 const subtotal = computed(() => cart.value.reduce((s, l) => s + l.qty * l.unit_price - l.discount, 0))
-const taxable = computed(() => Math.max(0, subtotal.value - Number(discount.value || 0)))
+const taxable = computed(() => Math.max(0, subtotal.value - Number(discount.value || 0) - pointsDiscount.value))
 const tax = computed(() => +(taxable.value * taxRate.value / 100).toFixed(3))
 const total = computed(() => +(taxable.value + tax.value).toFixed(3))
 const change = computed(() => paid.value !== null && paid.value > total.value ? +(paid.value - total.value).toFixed(3) : 0)
-function clear() { cart.value = []; discount.value = 0; paid.value = null; method.value = 'cash'; customerId.value = ''; err.value = '' }
+function clear() { cart.value = []; discount.value = 0; paid.value = null; method.value = 'cash'; customerId.value = ''; err.value = ''; redeem.value = null }
 
 async function checkout() {
   err.value = ''
@@ -87,6 +104,7 @@ async function checkout() {
   const body = {
     customer_id: customerId.value || null, warehouse_id: warehouseId.value || null, discount: discount.value, payment_method: method.value,
     paid: method.value === 'credit' ? (paid.value || 0) : total.value, client_ref: ref_,
+    ...(+redeem.value! > 0 ? { redeem_points: +redeem.value! } : {}),
     lines: cart.value.map(l => ({ item_id: l.item_id, qty: l.qty, unit_price: l.unit_price, discount: l.discount })),
   }
   const receipt = { lines: cart.value.map(l => ({ ...l })), subtotal: subtotal.value, discount: +discount.value || 0, tax: tax.value, total: total.value, method: method.value, customer: customers.value.find((c: any) => String(c.id) === String(customerId.value))?.name }
@@ -96,6 +114,7 @@ async function checkout() {
     throw new ApiError(0, 'offline', {}, true)
   } catch (e: any) {
     if (!e?.offline) { err.value = e.message; return }
+    if (+redeem.value! > 0 || method.value === 'wallet') { err.value = tt('استبدال النقاط والدفع من المحفظة يحتاجان اتصالاً بالإنترنت. أزلهما لإتمام البيع دون اتصال.', 'Redeeming points and wallet payment need internet. Remove them to sell offline.'); return }
     // No connection: keep selling. Queue the sale, take the stock off locally, print a local receipt.
     await off.outbox.add({ id: ref_, kind: 'pos_sale', method: 'POST', path: '/app/pos/sales', body: { ...body, offline: true, sold_at: new Date().toISOString() }, label: tt(`فاتورة بيع ${ref_} — ${f.money(total.value)}`, `Sale ${ref_} — ${f.money(total.value)}`) })
     for (const l of cart.value) { const it = pack.value?.items.find((i: any) => i.id === l.item_id); if (it && it.track_stock) it.stock = (+it.stock || 0) - l.qty }
@@ -168,9 +187,18 @@ function printLast() {
       <div class="totals">
         <div class="row between"><span>{{ tt('المجموع','Subtotal') }}</span><b>{{ f.money(subtotal) }}</b></div>
         <div class="row between"><span>{{ tt('خصم','Discount') }}</span><input v-model.number="discount" type="number" step="0.001" dir="ltr" style="width:100px;padding:4px 8px;border:1px solid var(--line);border-radius:6px" /></div>
+        <div v-if="member" class="loyalty-box">
+          <div class="row between"><span><i class="ti ti-award" /> {{ tt('نقاط العميل', 'Points') }}: <b>{{ f.qty(member.customer.points) }}</b> <small class="muted">(= {{ f.money(member.points_value) }})</small></span>
+            <span v-if="member.settings.wallet_enabled"><i class="ti ti-wallet" /> {{ tt('المحفظة', 'Wallet') }}: <b>{{ f.money(member.customer.wallet_balance) }}</b></span></div>
+          <div v-if="+member.customer.points >= +member.settings.min_redeem" class="row between" style="margin-top:6px">
+            <span>{{ tt('استبدال نقاط', 'Redeem points') }} <button class="btn ghost sm" style="padding:2px 8px" @click="redeemAll">{{ tt('الحد الأقصى', 'Max') }}</button></span>
+            <input v-model.number="redeem" type="number" min="0" step="1" dir="ltr" placeholder="0" style="width:100px;padding:4px 8px;border:1px solid var(--line);border-radius:6px" />
+          </div>
+          <div v-if="pointsDiscount" class="row between" style="color:var(--ok)"><span>{{ tt('خصم النقاط', 'Points discount') }}</span><b>- {{ f.money(pointsDiscount) }}</b></div>
+        </div>
         <div class="row between"><span>{{ tt('ضريبة','Tax') }} {{ taxRate }}%</span><b>{{ f.money(tax) }}</b></div>
         <div class="row between total"><span>{{ tt('الإجمالي','Total') }}</span><b>{{ f.money(total, true) }}</b></div>
-        <div class="chips" style="margin:8px 0"><span v-for="m in ['cash','card','transfer','credit']" :key="m" class="chip" :class="{ on: method === m }" @click="method = m as any">{{ f.methodLabel(m) }}</span></div>
+        <div class="chips" style="margin:8px 0"><span v-for="m in methods" :key="m" class="chip" :class="{ on: method === m }" @click="method = m as any">{{ f.methodLabel(m) }}</span></div>
         <div class="row between"><span>{{ method === 'credit' ? tt('دفعة مقدمة','Down payment') : tt('المدفوع','Paid') }}</span><input v-model.number="paid" type="number" step="0.001" dir="ltr" :placeholder="f.money(total)" style="width:120px;padding:4px 8px;border:1px solid var(--line);border-radius:6px" /></div>
         <div v-if="change > 0" class="row between" style="color:var(--ok)"><span>{{ tt('الباقي للعميل','Change due') }}</span><b>{{ f.money(change) }}</b></div>
       </div>
@@ -179,7 +207,7 @@ function printLast() {
         <button class="btn ghost" @click="clear">{{ tt('إفراغ','Clear') }}</button>
         <button class="btn ok" style="flex:1;justify-content:center;font-size:16px;padding:12px" :disabled="!cart.length || busy" @click="checkout"><i class="ti ti-check" /> {{ tt('إتمام البيع','Complete sale') }}</button>
       </div>
-      <div v-if="last" class="alert mt row between" :class="last.offline ? 'warn' : 'ok'"><span>{{ tt('تمت الفاتورة','Invoice done') }} <b dir="ltr">{{ last.number }}</b> — {{ f.money(last.total, true) }}<span v-if="last.change"> · {{ tt('الباقي','Change') }} {{ f.money(last.change) }}</span><small v-if="last.offline" style="display:block">{{ tt('رقم مؤقت — تُرفع وتأخذ رقمها النهائي عند عودة الإنترنت', 'Temporary number — uploads and gets its final number when back online') }}</small></span><button class="btn ghost sm" @click="printLast"><i class="ti ti-printer" /> {{ tt('طباعة','Print') }}</button></div>
+      <div v-if="last" class="alert mt row between" :class="last.offline ? 'warn' : 'ok'"><span>{{ tt('تمت الفاتورة','Invoice done') }} <b dir="ltr">{{ last.number }}</b> — {{ f.money(last.total, true) }}<span v-if="last.change"> · {{ tt('الباقي','Change') }} {{ f.money(last.change) }}</span><span v-if="+last.points_earned > 0" style="display:block"><i class="ti ti-award" /> {{ tt('كسب العميل', 'Customer earned') }} {{ f.qty(last.points_earned) }} {{ tt('نقطة', 'points') }}</span><small v-if="last.offline" style="display:block">{{ tt('رقم مؤقت — تُرفع وتأخذ رقمها النهائي عند عودة الإنترنت', 'Temporary number — uploads and gets its final number when back online') }}</small></span><button class="btn ghost sm" @click="printLast"><i class="ti ti-printer" /> {{ tt('طباعة','Print') }}</button></div>
     </div>
   </div>
 
@@ -201,6 +229,7 @@ function printLast() {
 </template>
 
 <style scoped>
+.loyalty-box { background: var(--primary-50, #fff1f2); border: 1px dashed var(--primary); border-radius: 10px; padding: 8px 10px; margin: 6px 0; font-size: 13px; }
 .offline-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 14px; border-radius: 12px; margin-bottom: 12px; background: #e0f2fe; color: #075985; }
 .offline-bar.warn { background: #fef3c7; color: #92400e; }
 .offline-bar .btn { margin-inline-start: auto; }

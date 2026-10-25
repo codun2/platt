@@ -79,6 +79,7 @@ export function useI18n() {
     dir: computed(() => (_locale.value === 'ar' ? 'rtl' : 'ltr')),
     t,
     tt,
+    L,   // also auto-imported; returned for pages that destructure it from useI18n()
     setLocale,
     toggle,
   }

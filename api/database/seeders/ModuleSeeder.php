@@ -111,6 +111,10 @@ class ModuleSeeder extends Seeder
             ['key' => 'manufacturing_overview', 'parent_key' => 'manufacturing', 'engine' => 'manufacturing', 'name_ar' => 'نظرة عامة', 'name_en' => 'Overview', 'icon' => 'ti-layout-dashboard', 'route' => '/manufacturing'],
             ['key' => 'manufacturing_bom', 'parent_key' => 'manufacturing', 'engine' => 'manufacturing', 'name_ar' => 'الوصفات (BOM)', 'name_en' => 'BOM', 'icon' => 'ti-list-details', 'route' => '/manufacturing/bom'],
             ['key' => 'manufacturing_orders', 'parent_key' => 'manufacturing', 'engine' => 'manufacturing', 'name_ar' => 'أوامر الإنتاج', 'name_en' => 'Production Orders', 'icon' => 'ti-settings-automation', 'route' => '/manufacturing/orders'],
+
+            // ---- Advanced add-ons (engine "addons"): in no sector preset; the platform
+            //      admin turns them on for any tenant that asks (config/addons.php). ----
+            ['key' => 'loyalty', 'engine' => 'addons', 'name_ar' => 'الولاء والمحفظة', 'name_en' => 'Loyalty & Wallet', 'icon' => 'ti-award', 'route' => '/loyalty'],
         ];
     }
 }
