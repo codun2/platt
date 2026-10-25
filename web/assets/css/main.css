@@ -260,3 +260,5 @@ select option:checked { background: var(--primary-50); color: var(--primary); fo
 .quick a { border: 1px solid var(--line); border-radius: 12px; padding: 16px 10px; text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center; font-weight: 600; font-size: 13px; }
 .quick a i { font-size: 26px; color: var(--primary); }
 .quick a:hover { border-color: var(--primary); background: var(--primary-50); }
+/* Numbers / codes typed in an RTL page always read left-to-right. */
+input[dir="ltr"], textarea[dir="ltr"] { text-align: left; unicode-bidi: plaintext; }

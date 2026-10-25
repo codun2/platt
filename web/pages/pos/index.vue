@@ -10,7 +10,7 @@ const discount = ref(0); const method = ref<'cash' | 'card' | 'transfer' | 'cred
 const shift = ref<any>(null); const openCash = ref(0)
 const last = ref<any>(null); const err = ref(''); const busy = ref(false)
 const taxRate = computed(() => Number(auth.state.value.tenant?.tax_rate ?? 0))
-const warehouseId = computed(() => shift.value?.warehouse_id || meta.value.warehouses.find((w: any) => w.is_default)?.id || '')
+const warehouseId = computed(() => shift.value?.warehouse_id || meta.value.warehouses.find((w: any) => w.is_default)?.id || pack.value?.warehouse_id || '')
 
 // ---- Offline: the full catalog lives on the device (refreshed while online) ----
 const off = useOffline()
@@ -18,7 +18,7 @@ const pack = ref<any>(null)                       // { items, customers, categor
 const localMode = computed(() => !off.state.online)
 const packKey = () => `pos-pack:${warehouseId.value || 'default'}`
 async function refreshPack() {
-  try { const p = await api.get('/app/pos/offline-pack', { warehouse_id: warehouseId.value }); pack.value = p; await localKV.set(packKey(), p) } catch { /* keep the stored copy */ }
+  try { const p = await api.get('/app/pos/offline-pack', { warehouse_id: warehouseId.value }); pack.value = p; await localKV.set(packKey(), p); await localKV.set('pos-pack:last', p) } catch { /* keep the stored copy */ }
 }
 const norm = (v: any) => String(v ?? '').trim().toLowerCase()
 function searchPack(term: string, category = '') {
@@ -55,7 +55,7 @@ onMounted(async () => {
   } catch (e: any) {
     if (!e?.offline) throw e
     // Offline from the start: everything comes from the stored pack.
-    pack.value = pack.value || (await localKV.get('pos-pack:default'))
+    pack.value = pack.value || (await localKV.get('pos-pack:last')) || (await localKV.get('pos-pack:default'))
     if (pack.value) { customers.value = pack.value.customers; meta.value = { categories: pack.value.categories, warehouses: [] }; shift.value = pack.value.shift }
   }
   await loadItems()
@@ -64,7 +64,10 @@ onMounted(async () => {
 let packTimer: any = null
 onMounted(() => { packTimer = setInterval(() => { if (off.state.online) refreshPack() }, 300000) })
 onBeforeUnmount(() => clearInterval(packTimer))
-off.onSynced(op => { if (op.kind === 'pos_sale' && off.state.online) refreshPack() })
+off.onSynced(op => {
+  if (op.kind === 'pos_shift' && shift.value?.offline && op.result?.id) shift.value = op.result   // the shift now has its real number
+  if ((op.kind === 'pos_sale' || op.kind === 'pos_shift') && off.state.online) refreshPack()
+})
 function add(i: any) { const ex = cart.value.find(l => l.item_id === i.id); ex ? ex.qty++ : cart.value.push({ item_id: i.id, name: i.name, qty: 1, unit_price: Number(i.sale_price), discount: 0, stock: i.stock, track: i.track_stock }) }
 const subtotal = computed(() => cart.value.reduce((s, l) => s + l.qty * l.unit_price - l.discount, 0))
 const taxable = computed(() => Math.max(0, subtotal.value - Number(discount.value || 0)))
@@ -101,7 +104,18 @@ async function checkout() {
     clear(); await loadItems()
   } finally { busy.value = false }
 }
-async function openShift() { try { shift.value = await api.post('/app/pos/shifts/open', { opening_cash: openCash.value, warehouse_id: warehouseId.value || null }) } catch (e: any) { uiAlert(e.message) } }
+async function openShift() {
+  const body = { opening_cash: openCash.value, warehouse_id: warehouseId.value || null }
+  try { shift.value = await api.post('/app/pos/shifts/open', body) } catch (e: any) {
+    if (!e?.offline) { uiAlert(e.message); return }
+    // No internet: open the shift on the device; it uploads (with its real opening time) before the sales made in it.
+    const opened_at = new Date().toISOString()
+    const ref_ = tempNumber('SHIFT')
+    await off.outbox.add({ id: ref_, kind: 'pos_shift', method: 'POST', path: '/app/pos/shifts/open', body: { ...body, opened_at }, label: tt(`فتح وردية — نقد افتتاحي ${f.money(openCash.value || 0)}`, `Open shift — opening cash ${f.money(openCash.value || 0)}`) })
+    shift.value = { id: ref_, offline: true, opened_at, warehouse_id: body.warehouse_id, opening_cash: openCash.value || 0, sales_total: 0 }
+    if (pack.value) { pack.value.shift = shift.value; await localKV.set(packKey(), pack.value) }
+  }
+}
 function printLast() {
   // Offline sale → print the local receipt on this page; otherwise the server copy.
   if (last.value.offline) { nextTick(() => window.print()); return }
@@ -138,7 +152,7 @@ function printLast() {
       <div v-if="!shift" class="alert warn" style="background:#fef3c7;color:#92400e">
         {{ tt('لا توجد وردية مفتوحة.','No open shift.') }} <div class="row mt"><input v-model.number="openCash" type="number" step="0.001" :placeholder="tt('النقد الافتتاحي','Opening cash')" dir="ltr" style="padding:6px 10px;border:1px solid var(--line);border-radius:8px;width:140px" /><button class="btn sm" @click="openShift">{{ tt('فتح وردية','Open shift') }}</button></div>
       </div>
-      <div v-else class="row between" style="margin-bottom:8px"><small class="muted">{{ tt('وردية','Shift') }} #{{ shift.id }} · {{ shift.warehouse?.name }}</small><small class="muted">{{ tt('مبيعات الوردية:','Shift sales:') }} <b>{{ f.money(shift.sales_total) }}</b></small></div>
+      <div v-else class="row between" style="margin-bottom:8px"><small class="muted">{{ tt('وردية','Shift') }} <template v-if="shift.offline">{{ tt('(مفتوحة على الجهاز — تُرفع عند عودة الإنترنت)', '(opened on device — uploads when back online)') }}</template><template v-else>#{{ shift.id }}</template> · {{ shift.warehouse?.name }}</small><small class="muted">{{ tt('مبيعات الوردية:','Shift sales:') }} <b>{{ f.money(shift.sales_total) }}</b></small></div>
 
       <div class="field" style="margin-bottom:8px"><select v-model="customerId"><option value="">{{ tt('عميل نقدي','Walk-in customer') }}</option><option v-for="c in customers" :key="c.id" :value="c.id">{{ c.name }} {{ c.phone ? `— ${c.phone}` : '' }}</option></select></div>
 

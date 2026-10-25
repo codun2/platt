@@ -20,6 +20,8 @@ self.addEventListener('install', (e) => {
     await shell.add(BASE).catch(() => {});
     try {
       const list = await (await fetch(`${BASE}precache.json`, { cache: 'no-store' })).json();
+      // The app's "ready offline" indicator compares the device copy against this list.
+      await (await caches.open('rk-meta')).put(`precache-${VERSION}`, new Response(JSON.stringify(list)));
       const assets = await caches.open(ASSETS);
       // one by one so a single missing file never aborts the install
       await Promise.all(list.map((u) => assets.add(u).catch(() => {})));
@@ -37,6 +39,7 @@ self.addEventListener('activate', (e) => {
     const versions = [VERSION, ...prev.filter((v) => v !== VERSION)].slice(0, 2);
     await meta.put('versions', new Response(JSON.stringify(versions)));
     const keep = [...KEEP, 'rk-meta', ...versions.slice(1).map((v) => `${v}-assets`)];
+    for (const r of await meta.keys()) if (/precache-/.test(r.url) && !r.url.endsWith(`precache-${VERSION}`)) await meta.delete(r);
     for (const k of await caches.keys()) if (!keep.includes(k)) await caches.delete(k);
     await self.clients.claim();
   })());

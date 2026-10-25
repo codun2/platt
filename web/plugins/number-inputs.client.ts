@@ -1,7 +1,8 @@
 /**
  * Number fields everywhere: letters are blocked as they are typed (Safari lets
  * them into <input type="number">, which then submits an empty value), with a
- * short message under the field; Arabic-Indic digits are converted to 0-9.
+ * short message under the field; Arabic-Indic digits are converted to 0-9 in
+ * every field (number and text).
  */
 export default defineNuxtPlugin(() => {
   const AR = '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹'
@@ -13,6 +14,16 @@ export default defineNuxtPlugin(() => {
     input.reportValidity()
     setTimeout(() => input.setCustomValidity(''), 1800)
   }
+
+  // Text fields too (phone, ID, codes, notes): Arabic-Indic digits from an Arabic
+  // keyboard become 0-9 as typed, so numbers never show reversed or mixed.
+  document.addEventListener('beforeinput', (e: InputEvent) => {
+    const el = e.target as HTMLInputElement | HTMLTextAreaElement
+    if (!(el instanceof HTMLTextAreaElement || el instanceof HTMLInputElement) || (el as HTMLInputElement).type === 'number' || !e.data) return
+    if (!/[٠-٩۰-۹]/.test(e.data)) return
+    e.preventDefault()
+    document.execCommand('insertText', false, e.data.replace(/[٠-٩۰-۹]/g, d => String(AR.indexOf(d) % 10)))
+  }, true)
 
   document.addEventListener('beforeinput', (e: InputEvent) => {
     const el = e.target as HTMLInputElement

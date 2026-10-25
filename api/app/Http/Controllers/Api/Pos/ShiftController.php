@@ -27,14 +27,24 @@ class ShiftController extends Controller
 
     public function open(Request $request, InventoryService $inv): JsonResponse
     {
-        if (Shift::where('user_id', $request->user()->id)->where('status', 'open')->exists()) {
+        $data = $request->validate([
+            'opening_cash' => ['nullable', 'numeric', 'min:0'], 'warehouse_id' => ['nullable', 'integer'],
+            // Shift opened on the device without internet: keep the real opening time.
+            'opened_at' => ['nullable', 'date', 'before_or_equal:'.now()->addMinutes(5)->toIso8601String()],
+        ]);
+        $open = Shift::where('user_id', $request->user()->id)->where('status', 'open')->first();
+        if ($open) {
+            // An offline-opened shift uploading while one is already open: that shift is the one in use.
+            if (! empty($data['opened_at'])) {
+                return response()->json($this->summary($open->load('warehouse:id,name')));
+            }
+
             return response()->json(['message' => 'لديك وردية مفتوحة بالفعل.'], 422);
         }
-        $data = $request->validate(['opening_cash' => ['nullable', 'numeric', 'min:0'], 'warehouse_id' => ['nullable', 'integer']]);
         $shift = Shift::create([
             'user_id' => $request->user()->id,
             'warehouse_id' => $data['warehouse_id'] ?? $inv->defaultWarehouseId(),
-            'opened_at' => now(),
+            'opened_at' => ! empty($data['opened_at']) ? \Carbon\Carbon::parse($data['opened_at'])->setTimezone(config('app.timezone')) : now(),
             'opening_cash' => $data['opening_cash'] ?? 0,
             'status' => 'open',
         ]);

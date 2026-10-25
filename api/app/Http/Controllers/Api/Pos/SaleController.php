@@ -84,7 +84,7 @@ class SaleController extends Controller
             return response()->json($existing->load('items', 'customer:id,name,phone'), 200);
         }
         $offline = (bool) ($data['offline'] ?? false);
-        $soldAt = ! empty($data['sold_at']) ? \Carbon\Carbon::parse($data['sold_at']) : now();
+        $soldAt = ! empty($data['sold_at']) ? \Carbon\Carbon::parse($data['sold_at'])->setTimezone(config('app.timezone')) : now();
 
         $sale = DB::transaction(function () use ($data, $request, $inv, $tenant, $offline, $soldAt) {
             $warehouseId = (int) ($data['warehouse_id'] ?? $inv->defaultWarehouseId());

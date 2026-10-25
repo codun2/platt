@@ -9,6 +9,32 @@ async function retry(op: OutboxOp) { op.status = 'pending'; op.error = undefined
 async function discard(op: OutboxOp) { if (!(await uiConfirm(tt(`حذف «${op.label}» من الجهاز نهائياً؟ لن يُرفع للنظام.`, `Discard «${op.label}»? It will never be uploaded.`)))) return; await off.outbox.remove(op.id); await load() }
 async function syncAll() { await off.syncNow(); await load() }
 const secure = typeof window !== 'undefined' && window.isSecureContext && 'serviceWorker' in navigator
+
+// Is this device's copy of the app complete and current? (screens available offline)
+const build = (useRuntimeConfig().app as any).buildId || 'dev'
+const ready = reactive({ checked: false, total: 0, saved: 0, current: false, updating: false })
+async function checkReady() {
+  if (!secure) return
+  const reg = await navigator.serviceWorker.getRegistration('/app/')
+  const sw = reg?.active?.scriptURL || ''
+  ready.current = sw.includes(`v=${build}`)
+  const list: string[] = await (await caches.match(`precache-rk-${new URL(sw || location.href).searchParams.get('v')}`))?.json().catch(() => []) || []
+  ready.total = list.length
+  let n = 0; for (const u of list) if (await caches.match(u)) n++
+  ready.saved = n; ready.checked = true
+}
+onMounted(checkReady)
+const isReady = computed(() => ready.current && ready.total > 0 && ready.saved === ready.total)
+async function updateCopy() {
+  if (!off.state.online) { uiAlert(tt('التحديث يحتاج اتصالاً بالإنترنت.', 'Updating needs an internet connection.')); return }
+  ready.updating = true
+  try {
+    const reg = await navigator.serviceWorker.getRegistration('/app/')
+    await reg?.update()
+  } catch { /* ignore: the reload below fetches the latest anyway */ }
+  // The new copy installs in the background; reopen the app on it.
+  setTimeout(() => location.reload(), 6000)
+}
 </script>
 
 <template>
@@ -18,6 +44,17 @@ const secure = typeof window !== 'undefined' && window.isSecureContext && 'servi
       <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-cloud-upload" /></div><div><b>{{ off.state.pending }}</b><small>{{ tt('بانتظار الرفع', 'Waiting to upload') }}</small></div></div>
       <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-alert-triangle" /></div><div><b>{{ off.state.failed }}</b><small>{{ tt('رفضها النظام — تحتاج مراجعة', 'Rejected — needs review') }}</small></div></div>
       <div class="card stat"><div class="ic" style="background:var(--muted)"><i class="ti ti-clock" /></div><div><b style="font-size:14px">{{ off.state.lastSync ? f.dt(off.state.lastSync) : '—' }}</b><small>{{ tt('آخر مزامنة', 'Last sync') }}</small></div></div>
+    </div>
+    <div v-if="secure" class="card mt">
+      <div class="row between" style="flex-wrap:wrap;gap:10px">
+        <div>
+          <div class="card-title" style="margin:0 0 4px"><i :class="`ti ${isReady ? 'ti-circle-check' : 'ti-alert-circle'}`" :style="{ color: isReady ? 'var(--ok)' : 'var(--warn)' }" />
+            {{ !ready.checked ? tt('جارٍ فحص جاهزية العمل دون اتصال…', 'Checking offline readiness…') : isReady ? tt('الجهاز جاهز للعمل دون إنترنت', 'This device is ready to work offline') : tt('النسخة المحفوظة على الجهاز غير مكتملة أو قديمة', 'The copy on this device is incomplete or outdated') }}
+          </div>
+          <small class="muted">{{ tt('ملفات الشاشات المحفوظة', 'Screen files saved') }}: <b dir="ltr">{{ ready.saved }} / {{ ready.total }}</b> · {{ ready.current ? tt('أحدث نسخة', 'latest version') : tt('نسخة أقدم من الحالية', 'older than current') }}</small>
+        </div>
+        <button v-if="ready.checked && !isReady" class="btn" :disabled="ready.updating" @click="updateCopy"><i :class="`ti ${ready.updating ? 'ti-loader-2 spin' : 'ti-download'}`" /> {{ ready.updating ? tt('جارٍ التحديث…', 'Updating…') : tt('تحديث النسخة المحفوظة', 'Update device copy') }}</button>
+      </div>
     </div>
     <div class="card mt">
       <div class="row between" style="margin-bottom:12px">
