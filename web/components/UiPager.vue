@@ -45,5 +45,7 @@ function go(n: number) { if (n >= 1 && n <= last.value && n !== cur.value) { emi
 .pg.on { background: var(--primary); border-color: var(--primary); color: #fff; font-weight: 700; }
 .pg:disabled { opacity: .4; cursor: default; }
 .pg-gap { padding: 0 4px; color: var(--muted); }
-:global([dir="ltr"]) .pg .ti-chevron-right, :global([dir="ltr"]) .pg .ti-chevron-left { transform: scaleX(-1); }
+/* English layout: flip the page arrows. The whole selector sits inside :global() and starts
+   at <html>: a partial :global() compiles to a bare [dir=ltr] that mirrored every LTR field. */
+:global(html[dir="ltr"] .pg .ti-chevron-right), :global(html[dir="ltr"] .pg .ti-chevron-left) { transform: scaleX(-1); }
 </style>

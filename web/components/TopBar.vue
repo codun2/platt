@@ -26,6 +26,10 @@ const initials = computed(() => (auth.state.value.user?.name || '?').slice(0, 1)
       <span v-if="off.state.pending">{{ off.state.pending }} {{ isEn ? 'to upload' : 'بانتظار الرفع' }}</span>
       <span v-if="off.state.failed">{{ off.state.failed }} {{ isEn ? 'failed' : 'فشل رفعها' }}</span>
     </NuxtLink>
+    <!-- Always reachable: local data, offline readiness, update the device copy. -->
+    <NuxtLink v-else to="/offline" class="btn ghost sm" :title="isEn ? 'Local data & offline readiness' : 'البيانات المحلية وجاهزية العمل دون إنترنت'">
+      <i class="ti ti-cloud-check" style="color:var(--ok)" /> {{ isEn ? 'Local data' : 'البيانات المحلية' }}
+    </NuxtLink>
     <button v-if="pwa.canInstall.value" class="btn ghost sm" :title="isEn ? 'Install the app on this device' : 'تثبيت التطبيق على هذا الجهاز'" @click="pwa.install()">
       <i class="ti ti-download" /> {{ isEn ? 'Install app' : 'تثبيت التطبيق' }}
     </button>
