@@ -11,6 +11,13 @@ onMounted(load)
 <template>
   <div>
     <div class="breadcrumb"><NuxtLink to="/accounting">{{ tt('المحاسبة','Accounting') }}</NuxtLink> › <b>{{ tt('القيود اليومية','Journal') }}</b></div>
+    <PageHelp id="acc-journal" :title="tt('القيود اليومية: سجلّ كل حركة مالية', 'Journal: the log of every money movement')">
+      {{ tt('كل عملية في النظام (فاتورة بيع، تحصيل، مشتريات، مصروف، رواتب، عربون…) تُكتب هنا تلقائياً كقيد: من أي حساب خرج المال وإلى أي حساب دخل. هي «دفتر اليومية» الذي يطلبه المحاسب.', 'Every operation (sale, collection, purchase, expense, payroll, deposit…) is written here automatically as an entry: which account money left and which it entered. It is the journal an accountant asks for.') }}
+      <ul>
+        <li>{{ tt('القيود التلقائية لا تُعدَّل من هنا — عدّل أو ألغِ المستند الأصلي (الفاتورة، المصروف…) فيُعكس قيده تلقائياً.', 'Automatic entries are not edited here — change or cancel the original document and its entry reverses itself.') }}</li>
+        <li>{{ tt('«قيد يدوي» فقط لما لا يملك شاشة خاصة: رأس مال أودعه المالك، مسحوبات المالك، قرض، تسوية يطلبها المحاسب.', 'A manual entry is only for what has no screen of its own: owner capital or drawings, a loan, an adjustment your accountant asks for.') }}</li>
+      </ul>
+    </PageHelp>
     <div class="grid grid-4" style="margin-bottom:16px">
       <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-book" /></div><div><b>{{ page?.stats?.count ?? 0 }}</b><small>{{ tt('إجمالي القيود','Total entries') }}</small></div></div>
       <div class="card stat"><div class="ic" style="background:var(--ok)"><i class="ti ti-calendar" /></div><div><b>{{ page?.stats?.month_count ?? 0 }}</b><small>{{ tt('قيود هذا الشهر','Entries this month') }}</small></div></div>

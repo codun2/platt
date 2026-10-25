@@ -15,6 +15,9 @@ use Illuminate\Validation\Rule;
 /** Expenses: each one posts Dr expense (+ Dr VAT in) / Cr cash|bank automatically. */
 class ExpenseController extends Controller
 {
+    /** Expense accounts the system posts on its own (never entered by hand as an expense). */
+    private const AUTO = ['cogs', 'salaries'];
+
     public function __construct(private LedgerService $ledger) {}
 
     public function index(Request $request): JsonResponse
@@ -59,7 +62,10 @@ class ExpenseController extends Controller
         $this->ledger->ensureChart();
 
         return response()->json([
-            'categories' => Account::where('type', 'expense')->where('is_group', false)->where('is_active', true)->orderBy('code')->get(['id', 'code', 'name']),
+            // Cost of goods and salaries are posted by the system (POS / invoices / payroll):
+            // offering them here would book the same cost twice.
+            'categories' => Account::where('type', 'expense')->where('is_group', false)->where('is_active', true)
+                ->where(fn ($q) => $q->whereNull('system_key')->orWhereNotIn('system_key', self::AUTO))->orderBy('code')->get(['id', 'code', 'name']),
             'money' => Account::where('type', 'asset')->whereIn('system_key', ['cash', 'bank'])->orWhere(fn ($w) => $w->where('type', 'asset')->where('is_group', false)->where('code', 'like', '1%')->whereNull('system_key'))->orderBy('code')->get(['id', 'code', 'name', 'system_key']),
         ]);
     }
@@ -115,7 +121,13 @@ class ExpenseController extends Controller
 
         return $request->validate([
             'date' => ['required', 'date'],
-            'account_id' => ['required', Rule::exists('accounts', 'id')->where('tenant_id', $tenantId)->where('type', 'expense')->where('is_group', false)],
+            'account_id' => ['required', Rule::exists('accounts', 'id')->where('tenant_id', $tenantId)->where('type', 'expense')->where('is_group', false),
+                function ($attr, $value, $fail) {
+                    $key = Account::whereKey($value)->value('system_key');
+                    if (in_array($key, self::AUTO, true)) {
+                        $fail($key === 'salaries' ? 'الرواتب تُسجَّل تلقائياً من شاشة الرواتب — لا تُدخل هنا حتى لا تُحسب مرتين.' : 'تكلفة البضاعة تُسجَّل تلقائياً مع كل بيع — لا تُدخل هنا حتى لا تُحسب مرتين.');
+                    }
+                }],
             'paid_from_account_id' => ['required', Rule::exists('accounts', 'id')->where('tenant_id', $tenantId)->where('type', 'asset')->where('is_group', false)],
             'supplier_id' => ['nullable', Rule::exists('suppliers', 'id')->where('tenant_id', $tenantId)],
             'payee' => ['nullable', 'string', 'max:150'],

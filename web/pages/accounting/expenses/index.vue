@@ -12,6 +12,13 @@ async function remove(e: any) { if (!await uiConfirm(tt(`حذف المصروف $
 <template>
   <div>
     <div class="breadcrumb"><NuxtLink to="/accounting">{{ tt('المحاسبة','Accounting') }}</NuxtLink> › <b>{{ tt('المصروفات','Expenses') }}</b></div>
+    <PageHelp id="acc-expenses" :title="tt('المصروفات: ما تدفعه لتشغيل المحل', 'Expenses: what you pay to run the business')">
+      {{ tt('سجّل هنا ما تدفعه ولا يدخل المخزون: الإيجار، الكهرباء والماء، الإنترنت، الإعلانات، الصيانة، رسوم البنك…', 'Record here what you pay that is not stock: rent, utilities, internet, ads, maintenance, bank fees…') }}
+      <ul>
+        <li>{{ tt('لا تسجّل هنا: بضاعة أو مواد خام (من «المشتريات» لتدخل المخزون)، ولا الرواتب (من «الرواتب»)، ولا تكلفة ما بعته (تُحسب تلقائياً) — وإلا ستُحسب مرتين.', 'Do not record here: goods or raw materials (use Purchases so they enter stock), salaries (use Payroll), or cost of what you sold (automatic) — or they count twice.') }}</li>
+        <li>{{ tt('كل مصروف يُخصم من الصندوق أو البنك ويظهر في قائمة الدخل (الأرباح والخسائر).', 'Each expense comes out of cash or bank and shows in the income statement.') }}</li>
+      </ul>
+    </PageHelp>
     <div class="grid grid-4" style="margin-bottom:16px">
       <div class="card stat"><div class="ic" style="background:var(--primary)"><i class="ti ti-receipt" /></div><div><b>{{ f.money(page?.stats?.month_total) }}</b><small>مصروفات هذا الشهر ({{ page?.stats?.month_count ?? 0 }})</small></div></div>
       <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-coins" /></div><div><b>{{ f.money(page?.stats?.total) }}</b><small>إجمالي المصروفات ({{ page?.stats?.count ?? 0 }})</small></div></div>

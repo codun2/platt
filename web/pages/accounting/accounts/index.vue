@@ -34,6 +34,14 @@ const { rows: pRows, pager: pInfo, go: pGo } = usePaged(() => tree.value || [], 
 <template>
   <div>
     <div class="breadcrumb"><NuxtLink to="/accounting">{{ tt('المحاسبة','Accounting') }}</NuxtLink> › <b>{{ tt('شجرة الحسابات','Chart of Accounts') }}</b></div>
+    <PageHelp id="acc-accounts" :title="tt('شجرة الحسابات: أين يذهب كل ريال', 'Chart of accounts: where every riyal goes')">
+      {{ tt('قائمة «الخانات» التي يُصنَّف فيها كل مال يدخل أو يخرج: الصندوق، البنك، المخزون، ديون العملاء، ديون الموردين، المبيعات، أنواع المصروفات… وبجانب كل خانة رصيدها الحالي.', 'The list of “buckets” every money movement is filed in: cash, bank, stock, customer and supplier balances, sales, each expense type… with its current balance.') }}
+      <ul>
+        <li>{{ tt('لا تحتاج أن تُدخل فيها شيئاً: البيع والمشتريات والرواتب والمصروفات تُسجَّل فيها تلقائياً.', 'You do not enter anything here: sales, purchases, payroll and expenses are filed automatically.') }}</li>
+        <li>{{ tt('استخدمها لتعرف: كم في الصندوق والبنك؟ كم لك عند العملاء؟ كم عليك للموردين؟ — اضغط أي حساب لترى حركته.', 'Use it to see: how much is in cash and bank, owed by customers, owed to suppliers — open any account for its movements.') }}</li>
+        <li>{{ tt('أضف حساباً فقط إذا احتجت تفصيلاً (مثل بنك ثانٍ أو نوع مصروف جديد).', 'Add an account only for more detail (a second bank, a new expense type).') }}</li>
+      </ul>
+    </PageHelp>
     <div class="grid grid-4" style="margin-bottom:16px">
       <div class="card stat"><div class="ic" style="background:var(--info)"><i class="ti ti-building-bank" /></div><div><b>{{ f.money(typeTotal('asset')) }}</b><small>{{ tt('إجمالي الأصول','Total assets') }}</small></div></div>
       <div class="card stat"><div class="ic" style="background:var(--warn)"><i class="ti ti-file-dollar" /></div><div><b>{{ f.money(typeTotal('liability')) }}</b><small>{{ tt('إجمالي الالتزامات','Total liabilities') }}</small></div></div>

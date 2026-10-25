@@ -25,6 +25,13 @@ const print = () => window.print()
 <template>
   <div>
     <div class="breadcrumb no-print"><NuxtLink to="/accounting">{{ tt('المحاسبة','Accounting') }}</NuxtLink> › <b>{{ tt('التقارير المالية','Financial Reports') }}</b></div>
+    <PageHelp id="acc-reports" :title="tt('التقارير المالية: هل تربح؟ وما وضعك؟', 'Financial reports: are you profitable, where do you stand?')">
+      <ul>
+        <li><b>{{ tt('قائمة الدخل', 'Income statement') }}</b>: {{ tt('المبيعات − تكلفتها − المصروفات = صافي الربح لفترة تختارها.', 'Sales − their cost − expenses = net profit for a period.') }}</li>
+        <li><b>{{ tt('المركز المالي', 'Balance sheet') }}</b>: {{ tt('ما تملكه (صندوق، بنك، مخزون، ديون لك) مقابل ما عليك (موردون، ضريبة، رواتب) ورأس مالك.', 'What you own (cash, bank, stock, receivables) against what you owe (suppliers, VAT, salaries) and your capital.') }}</li>
+        <li><b>{{ tt('ميزان المراجعة', 'Trial balance') }}</b>: {{ tt('رصيد كل حساب — للمحاسب أو المدقق.', 'Every account balance — for your accountant or auditor.') }}</li>
+      </ul>
+    </PageHelp>
     <div class="card">
       <div class="row between no-print" style="margin-bottom:4px">
         <div class="tabs" style="margin-bottom:0;border:none">
