@@ -15,6 +15,8 @@ async function load() {
 }
 onMounted(load)
 const hasPeriod = computed(() => !!(from.value || to.value))
+// Choosing a period means "what moved in it": only those accounts, until the box is unticked.
+watch(hasPeriod, v => { onlyActive.value = v })
 function clearPeriod() { from.value = ''; to.value = ''; onlyActive.value = false; load() }
 const periodMoves = computed(() => rows.value.filter(a => !a.is_group).reduce((n, a) => n + (+a.debit || 0) + (+a.credit || 0), 0))
 // Tree order with depth for indentation.
@@ -77,8 +79,15 @@ const { rows: pRows, pager: pInfo, go: pGo } = usePaged(() => tree.value || [], 
         <button v-if="canManage" class="btn" @click="openNew()"><i class="ti ti-plus" /> {{ tt('حساب جديد','New account') }}</button>
       </div>
       <div v-if="swapped" class="alert warn">{{ tt('تاريخ البداية كان بعد تاريخ النهاية، فتم تبديلهما.', 'The start date was after the end date, so they were swapped.') }}</div>
-      <div v-if="hasPeriod && rows.length && !periodMoves" class="alert info"><i class="ti ti-info-circle" /> {{ tt('لا توجد أي حركة في هذه الفترة. القائمة تعرض كل الحسابات دائماً؛ عمودا مدين/دائن يخصّان الفترة، والرصيد هو رصيد الحساب حتى نهايتها.', 'No movement at all in this period. The list always shows every account; debit/credit are the period movements and the balance is the account balance at the end of it.') }}</div>
-      <table class="table">
+      <div v-if="hasPeriod && rows.length && !periodMoves" class="empty" style="padding:28px 0">
+        <i class="ti ti-calendar-off" style="font-size:34px;color:var(--muted)" /><br />
+        <b>{{ tt('لا توجد أي حركة في هذه الفترة', 'No movement in this period') }}</b><br />
+        <small class="muted">{{ tt('عمودا مدين/دائن يخصّان الفترة المختارة، والرصيد هو رصيد الحساب حتى نهايتها.', 'Debit/credit are the period movements; the balance is the account balance at its end.') }}</small><br />
+        <button class="btn ghost sm mt" @click="clearPeriod"><i class="ti ti-x" /> {{ tt('مسح الفترة وعرض كل الحسابات', 'Clear period & show all accounts') }}</button>
+        <button v-if="!onlyActive" class="btn ghost sm mt" @click="onlyActive = true">{{ tt('إخفاء الحسابات', 'Hide accounts') }}</button>
+        <button v-else class="btn ghost sm mt" @click="onlyActive = false">{{ tt('عرض كل الحسابات مع ذلك', 'Show all accounts anyway') }}</button>
+      </div>
+      <table v-if="pRows.length" class="table">
         <thead><tr><th>{{ tt('الرمز','Code') }}</th><th>{{ tt('الحساب','Account') }}</th><th>{{ tt('النوع','Type') }}</th><th>{{ tt('مدين (الفترة)','Debit (period)') }}</th><th>{{ tt('دائن (الفترة)','Credit (period)') }}</th><th>{{ to ? tt('الرصيد حتى', 'Balance at') + ' ' + to : tt('الرصيد','Balance') }}</th><th>{{ tt('الحالة','Status') }}</th><th></th></tr></thead>
         <tbody>
           <tr v-for="a in pRows" :key="a.id" :style="a.is_group ? 'background:#f8fafc' : ''">
@@ -93,7 +102,7 @@ const { rows: pRows, pager: pInfo, go: pGo } = usePaged(() => tree.value || [], 
           </tr>
         </tbody>
       </table>
-      <UiPager :p="pInfo" @go="pGo" />
+      <UiPager v-if="pRows.length" :p="pInfo" @go="pGo" />
     </div>
 
     <UiModal v-if="modal" :title="editing ? tt('تعديل حساب','Edit account') : tt('حساب جديد','New account')" @close="modal = false">

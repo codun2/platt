@@ -33,11 +33,12 @@ export const expenseToForm = (e: any) => ({
 export const expensePayload = (f: any) => ({ ...f, supplier_id: f.supplier_id || null, amount: +f.amount || 0, tax: +f.tax || 0 })
 
 /* ---- journal ---- */
-export const blankJournalLine = () => ({ account_id: '', debit: 0, credit: 0, description: '' })
-export const blankJournal = () => ({ date: todayStr(), reference: '', description: '', status: 'posted', lines: [blankJournalLine(), blankJournalLine()] })
+/** A line is one side only: `side` drives the form, debit/credit is what gets saved. */
+export const blankJournalLine = (side: 'debit' | 'credit' = 'debit') => ({ account_id: '', side, debit: 0, credit: 0, description: '' })
+export const blankJournal = () => ({ date: todayStr(), reference: '', description: '', status: 'posted', lines: [blankJournalLine('debit'), blankJournalLine('credit')] })
 export const journalToForm = (e: any) => ({
   date: e.date, reference: e.reference || '', description: e.description || '', status: e.status || 'posted',
-  lines: (e.lines || []).map((l: any) => ({ account_id: l.account_id, debit: +l.debit || 0, credit: +l.credit || 0, description: l.description || '' })),
+  lines: (e.lines || []).map((l: any) => ({ account_id: l.account_id, side: +l.credit > 0 ? 'credit' : 'debit', debit: +l.debit || 0, credit: +l.credit || 0, description: l.description || '' })),
 })
 export const journalPayload = (f: any) => ({ ...f, lines: f.lines.filter((l: any) => l.account_id && ((+l.debit || 0) > 0 || (+l.credit || 0) > 0)).map((l: any) => ({ account_id: l.account_id, debit: +l.debit || 0, credit: +l.credit || 0, description: l.description || null })) })
 export const journalTotals = (lines: any[]) => {

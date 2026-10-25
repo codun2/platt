@@ -16,6 +16,15 @@ async function save(status: 'posted' | 'draft') {
 <template>
   <div>
     <div class="breadcrumb"><NuxtLink to="/accounting/journal">{{ tt('القيود اليومية','Journal') }}</NuxtLink> › <b>{{ tt('قيد يدوي جديد','New journal entry') }}</b></div>
+    <PageHelp id="acc-journal-new" :title="tt('القيد اليدوي: نقل مبلغ من «خانة» إلى أخرى', 'Manual entry: move an amount from one “bucket” to another')">
+      {{ tt('كل قيد له طرفان على الأقل بنفس المبلغ: ', 'Every entry has at least two sides with the same amount: ') }}
+      <b style="color:#1d4ed8">{{ tt('مدين', 'Debit') }}</b> {{ tt('= الحساب الذي دخله المال أو زاد (الصندوق، البنك، مصروف، أصل)، و', '= the account money went into / that grew (cash, bank, an expense, an asset), and ') }}
+      <b style="color:#b91c1c">{{ tt('دائن', 'Credit') }}</b> {{ tt('= الحساب الذي خرج منه المال أو مصدره (رأس المال، إيراد، قرض، الصندوق عند الدفع منه). كل سطر طرف واحد فقط، ولا يُرحَّل القيد إلا إذا تساوى المجموعان.', '= where it came from (capital, income, a loan, cash when paying out). A line is one side only, and the entry posts only when both totals match.') }}
+      <ul>
+        <li>{{ tt('مثال: أودع المالك 10,000 في الصندوق → مدين: النقدية بالصندوق 10,000 / دائن: رأس المال 10,000.', 'Example: the owner deposits 10,000 in cash → Debit: cash 10,000 / Credit: capital 10,000.') }}</li>
+        <li>{{ tt('المبيعات والمشتريات والمصروفات والرواتب لها شاشاتها وتُسجَّل تلقائياً — لا تكرّرها هنا.', 'Sales, purchases, expenses and payroll have their own screens and post automatically — do not repeat them here.') }}</li>
+      </ul>
+    </PageHelp>
     <div class="card">
       <div v-if="err" class="alert bad">{{ err }}</div>
       <div class="card-title"><i class="ti ti-book" /> {{ tt('بيانات القيد','Entry details') }}</div>
