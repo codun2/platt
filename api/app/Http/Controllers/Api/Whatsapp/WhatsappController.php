@@ -26,6 +26,8 @@ class WhatsappController extends Controller
         'overdue_invoices' => ['crm', 'فواتير متأخرة السداد', 'مرحباً {name}، نود تذكيركم بأن الفاتورة رقم {number} بمبلغ {amount} كان موعد سدادها {due_date}. نرجو التكرم بالسداد، وشكراً لتعاملكم مع {company}.'],
         'rent_due' => ['rental', 'إيجارات مستحقة', 'مرحباً {name}، نذكّركم باستحقاق دفعة الإيجار بمبلغ {amount} بتاريخ {due_date} عن {asset} (عقد {number}). شكراً لكم — {company}.'],
         'order_ready' => ['service', 'طلبات جاهزة للاستلام', 'مرحباً {name}، طلبكم رقم {number} ({title}) جاهز للاستلام. بانتظاركم — {company}.'],
+        'preorders_ready' => ['orders', 'طلبات مسبقة جاهزة', 'مرحباً {name}، طلبكم رقم {number} جاهز. موعده {date} الساعة {time}، والمتبقي {amount}. بانتظاركم — {company}.'],
+        'preorders_tomorrow' => ['orders', 'طلبات مسبقة موعدها غداً', 'مرحباً {name}، نذكّركم بأن طلبكم رقم {number} موعد تسليمه غداً {date} الساعة {time}. المتبقي {amount}. شكراً لكم — {company}.'],
         'bookings_tomorrow' => ['bookings', 'حجوزات الغد', 'مرحباً {name}، نذكّركم بحجزكم رقم {number} في {unit} غداً {date} الساعة {time}. نسعد بخدمتكم — {company}.'],
         'hearings_soon' => ['projects', 'مواعيد قادمة للموكّلين', 'مرحباً {name}، نذكّركم بموعد {title} في قضيتكم يوم {date} الساعة {time} — {court}. {company}.'],
     ];
@@ -85,6 +87,11 @@ class WhatsappController extends Controller
                     ['number' => $i->contract?->number, 'amount' => $this->money((float) $i->amount - (float) $i->paid), 'due_date' => $i->due_date?->toDateString(), 'asset' => $i->contract?->asset?->name])),
             'order_ready' => ServiceOrder::with('customer:id,name,phone')->where('status', 'ready')->orderBy('updated_at')->limit(200)->get()
                 ->map(fn ($o) => $this->row($o->customer?->name ?? $o->customer_name, $o->customer?->phone ?? $o->customer_phone, $o->customer_id, "order:{$o->id}", ['number' => $o->number, 'title' => $o->title])),
+            'preorders_ready', 'preorders_tomorrow' => \App\Models\Order::with('customer:id,name,phone')
+                ->when($key === 'preorders_ready', fn ($q) => $q->where('status', 'ready'), fn ($q) => $q->whereNotIn('status', ['delivered', 'cancelled'])->whereDate('due_at', now()->addDay()->toDateString()))
+                ->orderBy('due_at')->limit(200)->get()
+                ->map(fn ($o) => $this->row($o->customer?->name ?? $o->customer_name, $o->customer?->phone ?? $o->customer_phone, $o->customer_id, "preorder:{$o->id}",
+                    ['number' => $o->number, 'date' => $o->due_at?->toDateString(), 'time' => $o->due_at?->format('H:i'), 'amount' => $this->money(max(0, (float) $o->total - (float) $o->paid))])),
             'bookings_tomorrow' => Booking::with('customer:id,name,phone', 'unit:id,name')->whereIn('status', ['pending', 'confirmed'])->whereDate('start_at', now()->addDay()->toDateString())->orderBy('start_at')->get()
                 ->map(fn ($b) => $this->row($b->customer?->name ?? $b->customer_name, $b->customer?->phone ?? $b->customer_phone, $b->customer_id, "booking:{$b->id}",
                     ['number' => $b->number, 'unit' => $b->unit?->name, 'date' => $b->start_at?->toDateString(), 'time' => $b->start_at?->format('H:i')])),

@@ -282,6 +282,19 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant', 'idem'])->prefix('ap
         });
     });
 
+    /* ---- Add-on: pre-orders & delivery ---- */
+    Route::prefix('orders')->middleware('perm:orders.view')->group(function () {
+        Route::get('summary', [Addons\OrderController::class, 'summary']);
+        Route::get('/', [Addons\OrderController::class, 'index']);
+        Route::get('{id}', [Addons\OrderController::class, 'show'])->whereNumber('id');
+        Route::post('/', [Addons\OrderController::class, 'store']);
+        Route::match(['put', 'patch'], '{id}', [Addons\OrderController::class, 'update'])->whereNumber('id');
+        Route::post('{id}/status', [Addons\OrderController::class, 'status'])->whereNumber('id');
+        Route::post('{id}/deposit', [Addons\OrderController::class, 'deposit'])->whereNumber('id');
+        Route::post('{id}/deliver', [Addons\OrderController::class, 'deliver'])->whereNumber('id');
+        Route::post('{id}/cancel', [Addons\OrderController::class, 'cancel'])->whereNumber('id')->middleware('perm:orders.manage');
+    });
+
     /* ---- Engine: Manufacturing (recipes / production) ---- */
     Route::prefix('manufacturing')->middleware('perm:manufacturing.view')->group(function () {
         Route::get('summary', [Manufacturing\OrderController::class, 'summary']);
