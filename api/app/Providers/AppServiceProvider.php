@@ -14,7 +14,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // One per request: transfer() reads the batches its stock-out just took.
+        $this->app->singleton(\App\Services\BatchService::class);
     }
 
     /**

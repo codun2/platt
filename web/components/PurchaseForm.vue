@@ -2,6 +2,8 @@
 /** Purchase invoice form: header + item lines + totals. Mutates `form` in place. */
 const props = defineProps<{ form: any; suppliers: any[]; warehouses: any[]; isNew?: boolean }>()
 const api = useApi(); const f = useFmt(); const { tt } = useI18n()
+// Expiry add-on: items that track expiry get a batch no + expiry date on each line.
+const batchesOn = computed(() => useAuth().hasModule('batches'))
 async function addWarehouse(name: string) { const r = await api.post('/app/inventory/warehouses', { name }); props.warehouses.push(r); return r.id }
 const iq = ref(''); const found = ref<any[]>([]); let timer: any = null
 const totals = computed(() => calcPurchase(props.form))
@@ -16,7 +18,7 @@ function onSearch() {
 }
 function add(i: any) {
   const ex = props.form.lines.find((l: any) => l.item_id === i.id)
-  ex ? ex.qty++ : props.form.lines.push({ item_id: i.id, name: i.name, sku: i.sku, unit: i.unit?.symbol || '', qty: 1, unit_cost: +i.cost_price || 0, stock: i.stock })
+  ex ? ex.qty++ : props.form.lines.push({ item_id: i.id, name: i.name, sku: i.sku, unit: i.unit?.symbol || '', qty: 1, unit_cost: +i.cost_price || 0, stock: i.stock, track_expiry: !!i.track_expiry, batch_no: '', expires_on: '' })
   found.value = []; iq.value = ''
 }
 // Supplier payment terms → due date when empty.
@@ -55,7 +57,13 @@ watch(() => [props.form.supplier_id, props.form.date], () => {
         <tbody>
           <tr v-for="(l, i) in form.lines" :key="l.item_id">
             <td class="muted">{{ i + 1 }}</td>
-            <td><b>{{ l.name }}</b><small v-if="l.sku" class="muted" dir="ltr"> ({{ l.sku }})</small><small v-if="l.stock != null" class="muted"> · {{ tt('الرصيد الحالي','current') }} {{ f.qty(l.stock) }}</small></td>
+            <td><b>{{ l.name }}</b><small v-if="l.sku" class="muted" dir="ltr"> ({{ l.sku }})</small><small v-if="l.stock != null" class="muted"> · {{ tt('الرصيد الحالي','current') }} {{ f.qty(l.stock) }}</small>
+              <div v-if="batchesOn && l.track_expiry" class="row" style="gap:6px;margin-top:6px;flex-wrap:nowrap">
+                <input v-model="l.expires_on" type="date" dir="ltr" :title="tt('تاريخ الصلاحية', 'Expiry date')" style="max-width:150px" :style="{ borderColor: l.expires_on ? '' : 'var(--warn)' }" />
+                <input v-model="l.batch_no" dir="ltr" :placeholder="tt('رقم الدفعة', 'Batch no.')" style="max-width:130px" />
+                <small v-if="!l.expires_on" style="color:var(--warn);white-space:nowrap"><i class="ti ti-calendar-due" /> {{ tt('أدخل الصلاحية', 'Enter expiry') }}</small>
+              </div>
+            </td>
             <td><input v-model.number="l.qty" type="number" step="0.001" min="0" dir="ltr" /></td>
             <td>{{ l.unit || '—' }}</td>
             <td><input v-model.number="l.unit_cost" type="number" step="0.001" min="0" dir="ltr" /></td>

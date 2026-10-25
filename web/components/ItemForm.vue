@@ -33,6 +33,7 @@ const margin = computed(() => { const c = +props.form.cost_price || 0, s = +prop
 
     <div class="card-title" style="margin-top:8px"><i class="ti ti-building-warehouse" /> {{ tt('المخزون','Stock') }}</div>
     <label class="switch" style="margin-bottom:10px"><input v-model="form.track_stock" type="checkbox" /><span /> {{ tt('يتتبّع المخزون (أطفئه للخدمات أو الأصناف غير المخزنية)','Track stock (off for services)') }}</label>
+    <label v-if="useAuth().hasModule('batches') && form.track_stock" class="switch" style="margin-bottom:10px;display:flex"><input v-model="form.track_expiry" type="checkbox" /><span /> {{ tt('يتتبّع تاريخ الصلاحية والدفعات (يُطلب التاريخ عند الشراء ويُباع الأقرب انتهاءً أولاً)', 'Track expiry & batches (date asked on purchase, earliest expiry sold first)') }}</label>
     <div v-show="form.track_stock" class="grid grid-4">
       <div class="field"><label>{{ tt('الحد الأدنى (تنبيه)','Minimum (alert)') }}</label><input v-model.number="form.min_stock" type="number" step="0.001" min="0" dir="ltr" /></div>
       <div class="field"><label>{{ tt('كمية إعادة الطلب','Reorder qty') }}</label><input v-model="form.reorder_qty" type="number" step="0.001" min="0" dir="ltr" /></div>

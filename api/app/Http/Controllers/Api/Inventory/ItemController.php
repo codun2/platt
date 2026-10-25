@@ -143,6 +143,7 @@ class ItemController extends Controller
             'cost_price' => ['nullable', 'numeric', 'min:0'],
             'sale_price' => ['required', 'numeric', 'min:0'],
             'track_stock' => ['boolean'],
+            'track_expiry' => ['boolean'],   // expiry add-on
             'min_stock' => ['nullable', 'numeric', 'min:0'],
             'reorder_qty' => ['nullable', 'numeric', 'min:0'],
             'max_stock' => ['nullable', 'numeric', 'min:0'],

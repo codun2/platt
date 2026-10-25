@@ -37,6 +37,11 @@ class InventoryService
 
         $level->update(['qty' => $new]);
 
+        // Add-on: items tracked by batch / expiry keep their batches in step.
+        if ($item->track_expiry && BatchService::enabled()) {
+            app(BatchService::class)->onMove($item, $warehouseId, $qty, $type, $opts);
+        }
+
         return StockMovement::create([
             'item_id' => $item->id,
             'warehouse_id' => $warehouseId,
@@ -67,7 +72,9 @@ class InventoryService
         }
         DB::transaction(function () use ($item, $fromWarehouse, $toWarehouse, $qty, $note) {
             $this->move($item, $fromWarehouse, -$qty, 'transfer_out', ['note' => $note]);
-            $this->move($item, $toWarehouse, $qty, 'transfer_in', ['note' => $note]);
+            // Batches travel with the goods (same batch no / expiry in the other warehouse).
+            $batches = $item->track_expiry && BatchService::enabled() ? app(BatchService::class)->lastTaken : [];
+            $this->move($item, $toWarehouse, $qty, 'transfer_in', ['note' => $note, 'batches' => $batches]);
         });
     }
 

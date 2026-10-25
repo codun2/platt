@@ -36,7 +36,7 @@ class PurchaseController extends Controller
 
     public function show(int $id): JsonResponse
     {
-        return response()->json(Purchase::with('items.item:id,name,sku,unit_id', 'items.item.unit:id,symbol', 'supplier', 'warehouse:id,name', 'creator:id,name')->findOrFail($id));
+        return response()->json(Purchase::with('items.item:id,name,sku,unit_id,track_expiry', 'items.item.unit:id,symbol', 'supplier', 'warehouse:id,name', 'creator:id,name')->findOrFail($id));
     }
 
     public function store(Request $request, InventoryService $inv): JsonResponse
@@ -144,7 +144,8 @@ class PurchaseController extends Controller
     {
         foreach ($p->items as $line) {
             $item = Item::findOrFail($line->item_id);
-            $inv->move($item, $p->warehouse_id, (float) $line->qty, 'purchase', ['ref_type' => 'purchase', 'ref_id' => $p->id, 'unit_cost' => $line->unit_cost]);
+            $inv->move($item, $p->warehouse_id, (float) $line->qty, 'purchase', ['ref_type' => 'purchase', 'ref_id' => $p->id, 'unit_cost' => $line->unit_cost,
+                'batch' => ['batch_no' => $line->batch_no, 'expires_on' => $line->expires_on]]);   // used by the expiry add-on
             $item->update(['cost_price' => $line->unit_cost]);   // last-cost valuation
         }
         $p->update(['status' => 'received', 'received_at' => now()]);
@@ -156,7 +157,8 @@ class PurchaseController extends Controller
         foreach ($lines as $l) {
             $total = round((float) $l['qty'] * (float) $l['unit_cost'], 3);
             $subtotal += $total;
-            PurchaseItem::create(['purchase_id' => $p->id, 'item_id' => $l['item_id'], 'qty' => $l['qty'], 'unit_cost' => $l['unit_cost'], 'total' => $total]);
+            PurchaseItem::create(['purchase_id' => $p->id, 'item_id' => $l['item_id'], 'qty' => $l['qty'], 'unit_cost' => $l['unit_cost'], 'total' => $total,
+                'batch_no' => $l['batch_no'] ?? null, 'expires_on' => $l['expires_on'] ?? null]);
         }
         $p->update(['subtotal' => $subtotal, 'total' => max(0, $subtotal - (float) $p->discount + (float) $p->tax)]);
     }
@@ -182,6 +184,8 @@ class PurchaseController extends Controller
             'lines.*.item_id' => ['required', \Illuminate\Validation\Rule::exists('items', 'id')->where('tenant_id', $tenantId)],
             'lines.*.qty' => ['required', 'numeric', 'gt:0'],
             'lines.*.unit_cost' => ['required', 'numeric', 'min:0'],
+            'lines.*.batch_no' => ['nullable', 'string', 'max:60'],
+            'lines.*.expires_on' => ['nullable', 'date'],
         ]);
     }
 }

@@ -320,6 +320,18 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant', 'idem'])->prefix('ap
         });
     });
 
+    /* ---- Add-on: batches & expiry dates ---- */
+    Route::prefix('batches')->middleware('perm:batches.view')->group(function () {
+        Route::get('summary', [Addons\BatchController::class, 'summary']);
+        Route::get('/', [Addons\BatchController::class, 'index']);
+        Route::get('untracked', [Addons\BatchController::class, 'untracked']);
+        Route::middleware('perm:batches.manage')->group(function () {
+            Route::post('assign', [Addons\BatchController::class, 'assign']);
+            Route::patch('{id}', [Addons\BatchController::class, 'update'])->whereNumber('id');
+            Route::post('{id}/write-off', [Addons\BatchController::class, 'writeOff'])->whereNumber('id');
+        });
+    });
+
     /* ---- Engine: Manufacturing (recipes / production) ---- */
     Route::prefix('manufacturing')->middleware('perm:manufacturing.view')->group(function () {
         Route::get('summary', [Manufacturing\OrderController::class, 'summary']);

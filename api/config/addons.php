@@ -22,6 +22,12 @@ return [
         'fits' => ['حلويات', 'مخابز', 'مطاعم', 'محلات', 'ورود وهدايا'],
         'requires' => ['orders'],
     ],
+    'batches' => [
+        'ar' => 'تتبع تاريخ الصلاحية ورقم الدفعة للأصناف المختارة: يُسجَّل عند استلام المشتريات، ويُصرف الأقرب انتهاءً أولاً تلقائياً في البيع والتحويل والإنتاج، مع لوحة لما انتهى وما سينتهي خلال أيام، وإتلاف التالف بقيده المحاسبي.',
+        'en' => 'Expiry date and batch number for chosen items: recorded when purchases are received, earliest expiry sold first automatically (sales, transfers, production), with a board of expired / expiring stock and write-off with its ledger entry.',
+        'fits' => ['حلويات ومخابز', 'سوبرماركت', 'صيدليات', 'مواد غذائية', 'مستحضرات تجميل'],
+        'requires' => ['inventory'],
+    ],
     'loyalty' => [
         'ar' => 'نقاط ولاء على كل عملية شراء تُستبدل خصماً عند الكاشير، ومحفظة رصيد مسبق للعميل (شحن، دفع من الرصيد، استرداد) مع كشف حركات لكل عميل.',
         'en' => 'Loyalty points on every purchase, redeemed as a discount at the till, plus a prepaid customer wallet (top-up, pay from balance, refund) with a per-customer statement.',

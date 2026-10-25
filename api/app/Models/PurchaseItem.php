@@ -9,7 +9,7 @@ class PurchaseItem extends Model
 {
     public $timestamps = false;
 
-    protected $fillable = ['purchase_id', 'item_id', 'qty', 'unit_cost', 'total'];
+    protected $fillable = ['purchase_id', 'item_id', 'qty', 'unit_cost', 'total', 'batch_no', 'expires_on'];
 
     protected function casts(): array
     {
