@@ -3,10 +3,13 @@
 export class ApiError extends Error {
   status: number
   errors: Record<string, string[]>
-  constructor(status: number, message: string, errors: Record<string, string[]> = {}) {
+  /** true when the request never reached the server (no internet / server down). */
+  offline: boolean
+  constructor(status: number, message: string, errors: Record<string, string[]> = {}, offline = false) {
     super(message)
     this.status = status
     this.errors = errors
+    this.offline = offline
   }
 }
 
@@ -18,7 +21,7 @@ export function useApi() {
     token.value = localStorage.getItem('rakeez_token')
   }
 
-  async function request<T = any>(path: string, opts: { method?: string; body?: any; query?: Record<string, any> } = {}): Promise<T> {
+  async function request<T = any>(path: string, opts: { method?: string; body?: any; query?: Record<string, any>; headers?: Record<string, string> } = {}): Promise<T> {
     const url = new URL(config.public.apiBase + path, window.location.origin)
     if (opts.query) {
       Object.entries(opts.query).forEach(([k, v]) => {
@@ -26,16 +29,29 @@ export function useApi() {
       })
     }
 
-    const res = await fetch(url.toString(), {
-      method: opts.method || 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'X-Locale': currentLocale(),
-        ...(token.value ? { Authorization: `Bearer ${token.value}` } : {}),
-      },
-      body: opts.body ? JSON.stringify(opts.body) : undefined,
-    })
+    let res: Response
+    try {
+      res = await fetch(url.toString(), {
+        method: opts.method || 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'X-Locale': currentLocale(),
+          ...(token.value ? { Authorization: `Bearer ${token.value}` } : {}),
+          ...(opts.headers || {}),
+        },
+        body: opts.body ? JSON.stringify(opts.body) : undefined,
+      })
+    } catch {
+      // Network failure: no internet or the server is unreachable.
+      markOnline(false)
+      throw new ApiError(0, tt('لا يوجد اتصال بالإنترنت.', 'No internet connection.'), {}, true)
+    }
+    // The service worker answered from the device's copy (or had none).
+    const cache = res.headers.get('X-Rk-Cache')
+    if (cache) markOnline(false)
+    else markOnline(true)
+    if (cache === 'miss') throw new ApiError(503, tt('أنت غير متصل بالإنترنت ولا توجد نسخة محفوظة من هذه الصفحة على الجهاز.', 'You are offline and this page was not saved on this device yet.'), {}, true)
 
     const text = await res.text()
     let data: any = null
@@ -71,6 +87,8 @@ export function useApi() {
   return {
     token,
     get: <T = any>(p: string, query?: Record<string, any>) => request<T>(p, { query }),
+    /** Low-level call used by the offline outbox (custom method + headers). */
+    raw: <T = any>(p: string, opts: { method?: string; body?: any; headers?: Record<string, string> }) => request<T>(p, opts),
     post: <T = any>(p: string, body?: any) => request<T>(p, { method: 'POST', body }),
     patch: <T = any>(p: string, body?: any) => request<T>(p, { method: 'PATCH', body }),
     del: <T = any>(p: string) => request<T>(p, { method: 'DELETE' }),

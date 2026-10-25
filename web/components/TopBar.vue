@@ -8,6 +8,7 @@ onMounted(() => { tm = setInterval(() => (now.value = new Date()), 1000) })
 onUnmounted(() => clearInterval(tm))
 const time = computed(() => now.value.toLocaleTimeString('en-GB'))
 const date = computed(() => now.value.toISOString().slice(0, 10))
+const off = useOffline()
 const initials = computed(() => (auth.state.value.user?.name || '?').slice(0, 1))
 </script>
 
@@ -18,6 +19,12 @@ const initials = computed(() => (auth.state.value.user?.name || '?').slice(0, 1)
     </NuxtLink>
     <h1>{{ title }}</h1>
     <div class="spacer" />
+    <NuxtLink v-if="!off.state.online || off.state.pending || off.state.failed" to="/offline" class="net-chip" :class="{ off: !off.state.online, bad: off.state.failed }">
+      <i :class="`ti ${!off.state.online ? 'ti-wifi-off' : off.state.syncing ? 'ti-loader-2 spin' : off.state.failed ? 'ti-alert-triangle' : 'ti-cloud-upload'}`" />
+      <span v-if="!off.state.online">{{ isEn ? 'Offline' : 'غير متصل' }}</span>
+      <span v-if="off.state.pending">{{ off.state.pending }} {{ isEn ? 'to upload' : 'بانتظار الرفع' }}</span>
+      <span v-if="off.state.failed">{{ off.state.failed }} {{ isEn ? 'failed' : 'فشل رفعها' }}</span>
+    </NuxtLink>
     <div class="clock">{{ time }}<br />{{ date }}</div>
     <button class="btn ghost sm lang-btn" :title="t('locale.switchTo')" @click="toggle">
       <i class="ti ti-language" /> {{ isEn ? 'ع' : 'EN' }}

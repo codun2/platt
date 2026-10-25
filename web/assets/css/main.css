@@ -48,6 +48,11 @@ h1, h2, h3 { margin: 0; }
 .topbar .back-btn { color: var(--primary); border-color: var(--primary); font-size: 13px; padding: 7px 12px; white-space: nowrap; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
 .topbar .back-btn:hover { background: var(--primary-50); }
 .topbar .spacer { flex: 1; }
+.net-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; background: #e0f2fe; color: #075985; white-space: nowrap; }
+.net-chip.off { background: #fef3c7; color: #92400e; }
+.net-chip.bad { background: #fee2e2; color: #991b1b; }
+.spin { animation: spin 1s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
 .topbar .clock { color: var(--muted); font-size: 12px; text-align: center; line-height: 1.2; }
 .topbar .user { display: flex; align-items: center; gap: 8px; }
 .topbar .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--primary-50); color: var(--primary); display: grid; place-items: center; font-weight: 800; }

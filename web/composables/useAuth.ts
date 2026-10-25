@@ -24,6 +24,11 @@ export function useAuth() {
       loaded: true,
     }
     applyAccent(payload.identity?.accent)
+    if (import.meta.client) {
+      // Last session kept on the device so the app still opens without internet.
+      try { localStorage.setItem('rakeez_me', JSON.stringify(payload)) } catch { /* storage full / private mode */ }
+      if (payload.tenant?.id) startOffline(payload.tenant.id)
+    }
   }
 
   // Per-sector accent: everything themed off --primary follows it.
@@ -63,14 +68,21 @@ export function useAuth() {
       const res = await api.get('/auth/me')
       apply(res)
       return res
-    } catch {
+    } catch (e: any) {
+      // No internet: keep working with the last session saved on this device.
+      if (e?.offline) {
+        try { const cached = JSON.parse(localStorage.getItem('rakeez_me') || 'null'); if (cached?.user) { apply(cached); return cached } } catch { /* corrupt copy */ }
+      }
       state.value = { user: null, tenant: null, permissions: [], sidebar: [], loaded: true }
       return null
     }
   }
 
   async function logout() {
+    const off = useOffline()
+    if (off.state.pending > 0 && !(await uiConfirm(tt(`يوجد ${off.state.pending} عملية محفوظة على الجهاز لم تُرفع بعد. ستُرفع عند تسجيل دخولك مجدداً من نفس الجهاز. تسجيل الخروج الآن؟`, `${off.state.pending} operations are waiting to upload. They will upload when you sign in again on this device. Sign out now?`), { tone: 'warn' }))) return
     try { await api.post('/auth/logout') } catch {}
+    try { localStorage.removeItem('rakeez_me'); navigator.serviceWorker?.controller?.postMessage('CLEAR_API') } catch { /* no SW */ }
     api.setToken(null)
     state.value = { user: null, tenant: null, permissions: [], sidebar: [], loaded: true }
     applyAccent(null)

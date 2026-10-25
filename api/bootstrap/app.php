@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'tenant' => \App\Http\Middleware\SetTenantContext::class,
+            'idem' => \App\Http\Middleware\IdempotencyKey::class,
             'tenant-user' => \App\Http\Middleware\EnsureTenantUser::class,
             'perm' => \App\Http\Middleware\EnsurePermission::class,
             'super' => \App\Http\Middleware\EnsureSuperAdmin::class,

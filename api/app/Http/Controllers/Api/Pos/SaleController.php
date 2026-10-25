@@ -68,6 +68,10 @@ class SaleController extends Controller
             'payment_method' => ['required', Rule::in(['cash', 'card', 'transfer', 'credit'])],
             'paid' => ['nullable', 'numeric', 'min:0'],
             'note' => ['nullable', 'string'],
+            // Offline sales (uploaded later by the device's outbox)
+            'client_ref' => ['nullable', 'string', 'max:60'],
+            'offline' => ['nullable', 'boolean'],
+            'sold_at' => ['nullable', 'date'],
             'lines' => ['required', 'array', 'min:1'],
             'lines.*.item_id' => ['required', Rule::exists('items', 'id')->where('tenant_id', $tenantId)],
             'lines.*.qty' => ['required', 'numeric', 'gt:0'],
@@ -75,9 +79,22 @@ class SaleController extends Controller
             'lines.*.discount' => ['nullable', 'numeric', 'min:0'],
         ]);
 
-        $sale = DB::transaction(function () use ($data, $request, $inv, $tenant) {
+        // Same device sale uploaded twice → the existing sale (idempotent by client_ref).
+        if (! empty($data['client_ref']) && ($existing = Sale::where('client_ref', $data['client_ref'])->first())) {
+            return response()->json($existing->load('items', 'customer:id,name,phone'), 200);
+        }
+        $offline = (bool) ($data['offline'] ?? false);
+        $soldAt = ! empty($data['sold_at']) ? \Carbon\Carbon::parse($data['sold_at']) : now();
+
+        $sale = DB::transaction(function () use ($data, $request, $inv, $tenant, $offline, $soldAt) {
             $warehouseId = (int) ($data['warehouse_id'] ?? $inv->defaultWarehouseId());
-            $shift = Shift::where('user_id', $request->user()->id)->where('status', 'open')->first();
+            // An offline sale belongs to the shift that was open when it happened.
+            $shift = $offline
+                ? (Shift::where('user_id', $request->user()->id)->where('opened_at', '<=', $soldAt)
+                    ->where(fn ($q) => $q->whereNull('closed_at')->orWhere('closed_at', '>=', $soldAt))->latest('opened_at')->first()
+                    ?? Shift::where('user_id', $request->user()->id)->where('status', 'open')->first())
+                : Shift::where('user_id', $request->user()->id)->where('status', 'open')->first();
+            $short = false;
 
             $taxRate = (float) ($data['tax_rate'] ?? $tenant->tax_rate ?? 0);
             $subtotal = 0;
@@ -98,10 +115,11 @@ class SaleController extends Controller
 
             $sale = Sale::create([
                 'number' => Sequence::next('sale', 'INV'),
+                'client_ref' => $data['client_ref'] ?? null, 'offline' => $offline, 'sold_at' => $soldAt,
                 'customer_id' => $data['customer_id'] ?? null,
                 'warehouse_id' => $warehouseId,
                 'shift_id' => $shift?->id,
-                'date' => $data['date'] ?? now()->toDateString(),
+                'date' => $data['date'] ?? $soldAt->toDateString(),
                 'status' => 'completed',
                 'subtotal' => $subtotal, 'discount' => $discount, 'tax_rate' => $taxRate, 'tax' => $tax, 'total' => $total,
                 'paid' => $paid, 'payment_method' => $method,
@@ -115,11 +133,19 @@ class SaleController extends Controller
                     'qty' => $l['qty'], 'unit_price' => $l['unit_price'], 'unit_cost' => $item->cost_price,
                     'discount' => $l['discount'] ?? 0, 'total' => $lineTotal,
                 ]);
-                $inv->move($item, $warehouseId, -(float) $l['qty'], 'sale', ['ref_type' => 'sale', 'ref_id' => $sale->id, 'unit_cost' => $item->cost_price]);
+                // The goods already left the shop: an offline sale is never refused for
+                // stock — it is recorded and flagged for review instead.
+                if ($offline && $item->track_stock && $inv->qty($item, $warehouseId) + 0.0005 < (float) $l['qty']) {
+                    $short = true;
+                }
+                $inv->move($item, $warehouseId, -(float) $l['qty'], 'sale', ['ref_type' => 'sale', 'ref_id' => $sale->id, 'unit_cost' => $item->cost_price, 'allow_negative' => $offline]);
             }
 
             if ($paid > 0) {
                 SalePayment::create(['sale_id' => $sale->id, 'amount' => $paid, 'method' => $method === 'credit' ? 'cash' : $method, 'date' => $sale->date, 'user_id' => $request->user()->id]);
+            }
+            if ($short) {
+                $sale->update(['stock_short' => true]);
             }
             app(LedgerService::class)->postSale($sale->fresh()->load('customer'));
 
@@ -127,6 +153,28 @@ class SaleController extends Controller
         });
 
         return response()->json($sale->load('items', 'customer:id,name,phone'), 201);
+    }
+
+    /**
+     * Everything the checkout screen needs to keep selling without internet:
+     * the full active catalog with stock in the warehouse, customers, categories,
+     * the open shift and the tax rate. The device stores it locally.
+     */
+    public function offlinePack(Request $request, InventoryService $inv): JsonResponse
+    {
+        $wh = (int) ($request->query('warehouse_id') ?: $inv->defaultWarehouseId());
+        $items = Item::with('unit:id,name,symbol')->where('is_active', true)
+            ->select(['id', 'name', 'sku', 'barcode', 'category_id', 'unit_id', 'sale_price', 'track_stock'])
+            ->withSum(['stockLevels as stock' => fn ($x) => $x->where('warehouse_id', $wh)], 'qty')
+            ->orderBy('name')->get();
+
+        return response()->json([
+            'generated_at' => now()->toIso8601String(), 'warehouse_id' => $wh,
+            'items' => $items, 'customers' => \App\Models\Customer::where('is_active', true)->orderBy('name')->get(['id', 'name', 'phone']),
+            'categories' => \App\Models\Category::orderBy('name')->get(['id', 'name']),
+            'shift' => Shift::where('user_id', $request->user()->id)->where('status', 'open')->first(['id', 'opened_at', 'warehouse_id', 'opening_cash']),
+            'tax_rate' => (float) (app('currentTenant')->tax_rate ?? 0),
+        ]);
     }
 
     /** Cancel a sale: restores stock. */

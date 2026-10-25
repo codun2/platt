@@ -9,8 +9,10 @@ export default defineNuxtConfig({
     head: {
       title: 'ركائز — منصّة الأعمال',
       htmlAttrs: { lang: 'ar', dir: 'rtl' },
-      meta: [{ name: 'viewport', content: 'width=device-width, initial-scale=1' }],
+      meta: [{ name: 'viewport', content: 'width=device-width, initial-scale=1' }, { name: 'theme-color', content: '#e11d48' }],
       link: [
+        { rel: 'manifest', href: '/app/manifest.webmanifest' },
+        { rel: 'icon', href: '/app/icon.svg', type: 'image/svg+xml' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap' },

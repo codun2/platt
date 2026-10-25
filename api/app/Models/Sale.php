@@ -12,13 +12,14 @@ class Sale extends Model
     use BelongsToTenant;
 
     protected $fillable = [
-        'tenant_id', 'number', 'customer_id', 'warehouse_id', 'shift_id', 'date', 'status',
+        'tenant_id', 'number', 'client_ref', 'offline', 'sold_at', 'stock_short', 'customer_id', 'warehouse_id', 'shift_id', 'date', 'status',
         'subtotal', 'discount', 'tax_rate', 'tax', 'total', 'paid', 'payment_method', 'note', 'created_by', 'cancelled_at',
     ];
 
     protected function casts(): array
     {
         return [
+            'offline' => 'boolean', 'stock_short' => 'boolean', 'sold_at' => 'datetime:Y-m-d H:i',
             'date' => 'date:Y-m-d', 'cancelled_at' => 'datetime',
             'subtotal' => 'decimal:3', 'discount' => 'decimal:3', 'tax_rate' => 'decimal:2', 'tax' => 'decimal:3',
             'total' => 'decimal:3', 'paid' => 'decimal:3',

@@ -46,7 +46,7 @@ Route::middleware(['auth:sanctum', 'tenant'])->prefix('auth')->group(function ()
 | Tenant app (scoped by tenant_id)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:sanctum', 'tenant-user', 'tenant'])->prefix('app')->group(function () {
+Route::middleware(['auth:sanctum', 'tenant-user', 'tenant', 'idem'])->prefix('app')->group(function () {
     Route::get('dashboard', App\DashboardController::class);
 
     Route::get('company', [App\CompanyController::class, 'show'])->middleware('perm:settings.manage');
@@ -227,6 +227,7 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant'])->prefix('app')->gro
         Route::post('sales/{id}/cancel', [Pos\SaleController::class, 'cancel'])->whereNumber('id')->middleware('perm:pos.manage');
 
         Route::get('shifts', [Pos\ShiftController::class, 'index']);
+        Route::get('offline-pack', [Pos\SaleController::class, 'offlinePack']);
         Route::get('shifts/current', [Pos\ShiftController::class, 'current']);
         Route::get('shifts/{id}', [Pos\ShiftController::class, 'show'])->whereNumber('id');
         Route::post('shifts/open', [Pos\ShiftController::class, 'open']);
