@@ -34,6 +34,10 @@ const margin = computed(() => { const c = +props.form.cost_price || 0, s = +prop
     <div class="card-title" style="margin-top:8px"><i class="ti ti-building-warehouse" /> {{ tt('المخزون','Stock') }}</div>
     <label class="switch" style="margin-bottom:10px"><input v-model="form.track_stock" type="checkbox" /><span /> {{ tt('يتتبّع المخزون (أطفئه للخدمات أو الأصناف غير المخزنية)','Track stock (off for services)') }}</label>
     <label v-if="useAuth().hasModule('batches') && form.track_stock" class="switch" style="margin-bottom:10px;display:flex"><input v-model="form.track_expiry" type="checkbox" /><span /> {{ tt('يتتبّع تاريخ الصلاحية والدفعات (يُطلب التاريخ عند الشراء ويُباع الأقرب انتهاءً أولاً)', 'Track expiry & batches (date asked on purchase, earliest expiry sold first)') }}</label>
+    <template v-if="useAuth().hasModule('serials') && form.track_stock">
+      <label class="switch" style="margin-bottom:10px;display:flex"><input v-model="form.track_serial" type="checkbox" /><span /> {{ tt('له رقم تسلسلي وضمان لكل وحدة (ألواح، إنفرترات، أجهزة)', 'Has a serial number & warranty per unit (panels, inverters, devices)') }}</label>
+      <div v-if="form.track_serial" class="field" style="max-width:280px"><label>{{ tt('مدة الضمان (شهور)', 'Warranty period (months)') }}</label><input v-model.number="form.warranty_months" type="number" min="0" max="600" dir="ltr" :placeholder="tt('مثال: 300 لـ25 سنة', 'e.g. 300 = 25y')" /><small class="muted">{{ tt('يُحتسب تاريخ انتهاء الضمان تلقائياً عند تسليم الوحدة للعميل.', 'The warranty end is computed automatically when a unit is delivered.') }}</small></div>
+    </template>
     <div v-show="form.track_stock" class="grid grid-4">
       <div class="field"><label>{{ tt('الحد الأدنى (تنبيه)','Minimum (alert)') }}</label><input v-model.number="form.min_stock" type="number" step="0.001" min="0" dir="ltr" /></div>
       <div class="field"><label>{{ tt('كمية إعادة الطلب','Reorder qty') }}</label><input v-model="form.reorder_qty" type="number" step="0.001" min="0" dir="ltr" /></div>

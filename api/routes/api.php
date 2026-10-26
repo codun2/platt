@@ -332,6 +332,22 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant', 'idem'])->prefix('ap
         });
     });
 
+    /* ---- Add-on: serial numbers & warranty ---- */
+    Route::prefix('serials')->middleware('perm:serials.view')->group(function () {
+        Route::get('summary', [Addons\SerialController::class, 'summary']);
+        Route::get('/', [Addons\SerialController::class, 'index']);
+        Route::get('lookup', [Addons\SerialController::class, 'lookup']);
+        Route::get('reconcile', [Addons\SerialController::class, 'reconcile']);
+        Route::get('{id}', [Addons\SerialController::class, 'show'])->whereNumber('id');
+        Route::middleware('perm:serials.manage')->group(function () {
+            Route::post('register', [Addons\SerialController::class, 'register']);
+            Route::post('deliver', [Addons\SerialController::class, 'deliver']);
+            Route::post('{id}/status', [Addons\SerialController::class, 'status'])->whereNumber('id');
+            Route::post('{id}/replace', [Addons\SerialController::class, 'replace'])->whereNumber('id');
+            Route::patch('{id}', [Addons\SerialController::class, 'update'])->whereNumber('id');
+        });
+    });
+
     /* ---- Engine: Manufacturing (recipes / production) ---- */
     Route::prefix('manufacturing')->middleware('perm:manufacturing.view')->group(function () {
         Route::get('summary', [Manufacturing\OrderController::class, 'summary']);

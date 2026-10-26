@@ -28,6 +28,12 @@ return [
         'fits' => ['حلويات ومخابز', 'سوبرماركت', 'صيدليات', 'مواد غذائية', 'مستحضرات تجميل'],
         'requires' => ['inventory'],
     ],
+    'serials' => [
+        'ar' => 'تتبّع كل وحدة برقمها التسلسلي وضمانها للأصناف المختارة (ألواح، إنفرترات، بطاريات، أجهزة): تسجيل عند الاستلام، تسليم للعميل مع احتساب تاريخ الضمان تلقائياً من مدة ضمان الصنف، لوحة ضمان (سارٍ/يقارب الانتهاء/منتهٍ)، بحث فوري بالرقم التسلسلي، وتتبّع الأعطال والاستبدال تحت الضمان.',
+        'en' => 'Track every unit by serial number and warranty for chosen items (panels, inverters, batteries, devices): register on receipt, hand to a customer with the warranty end computed automatically from the item warranty period, a warranty board (active / expiring / expired), instant serial lookup, and faulty/replacement tracking.',
+        'fits' => ['الطاقة الشمسية', 'إلكترونيات وأجهزة', 'مكيفات وتبريد', 'معدات ثقيلة', 'اتصالات'],
+        'requires' => ['inventory'],
+    ],
     'loyalty' => [
         'ar' => 'نقاط ولاء على كل عملية شراء تُستبدل خصماً عند الكاشير، ومحفظة رصيد مسبق للعميل (شحن، دفع من الرصيد، استرداد) مع كشف حركات لكل عميل.',
         'en' => 'Loyalty points on every purchase, redeemed as a discount at the till, plus a prepaid customer wallet (top-up, pay from balance, refund) with a per-customer statement.',

@@ -144,6 +144,8 @@ class ItemController extends Controller
             'sale_price' => ['required', 'numeric', 'min:0'],
             'track_stock' => ['boolean'],
             'track_expiry' => ['boolean'],   // expiry add-on
+            'track_serial' => ['boolean'],   // serials add-on
+            'warranty_months' => ['nullable', 'integer', 'min:0', 'max:600'],
             'min_stock' => ['nullable', 'numeric', 'min:0'],
             'reorder_qty' => ['nullable', 'numeric', 'min:0'],
             'max_stock' => ['nullable', 'numeric', 'min:0'],
