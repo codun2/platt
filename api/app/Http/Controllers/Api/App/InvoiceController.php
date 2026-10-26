@@ -59,7 +59,10 @@ class InvoiceController extends Controller
     {
         $inv = Invoice::with('items.item:id,sku', 'customer', 'quote:id,number', 'creator:id,name', 'payments.user:id,name')->findOrFail($id);
 
-        return response()->json(['invoice' => $inv, 'company' => $this->company()]);
+        $zatca = app(\App\Services\ZatcaService::class);
+        $qr = $zatca->qrPayload(app('currentTenant'), (float) $inv->total, (float) $inv->tax, ($inv->created_at ?? now())->toIso8601ZuluString());
+
+        return response()->json(['invoice' => $inv, 'company' => $this->company(), 'zatca_qr' => $qr]);
     }
 
     public function store(Request $request): JsonResponse
@@ -299,6 +302,7 @@ class InvoiceController extends Controller
             'name' => $t->name, 'phone' => $t->phone, 'email' => $t->email, 'currency' => $t->currency, 'logo' => $t->logo,
             'address' => $s['address'] ?? null, 'tax_number' => $s['tax_number'] ?? null, 'cr_number' => $s['cr_number'] ?? null,
             'bank_details' => $s['bank_details'] ?? null, 'invoice_terms' => $s['invoice_terms'] ?? null, 'invoice_footer' => $s['invoice_footer'] ?? null,
+            'einvoice' => app(\App\Services\ZatcaService::class)->meta($t),
         ];
     }
 }

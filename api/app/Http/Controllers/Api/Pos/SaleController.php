@@ -51,9 +51,13 @@ class SaleController extends Controller
         $sale = Sale::with('items.item:id,sku,unit_id', 'items.item.unit:id,symbol', 'customer', 'warehouse:id,name', 'creator:id,name', 'payments')->findOrFail($id);
         $tenant = app('currentTenant');
 
+        $zatca = app(\App\Services\ZatcaService::class);
+        $s = (array) ($tenant->settings ?? []);
+
         return response()->json(['sale' => $sale, 'company' => [
             'name' => $tenant->name, 'phone' => $tenant->phone, 'email' => $tenant->email, 'currency' => $tenant->currency,
-        ]]);
+            'address' => $s['address'] ?? null, 'einvoice' => $zatca->meta($tenant),
+        ], 'zatca_qr' => $zatca->qrPayload($tenant, (float) $sale->total, (float) $sale->tax, (($sale->sold_at ?? $sale->created_at) ?? now())->toIso8601ZuluString())]);
     }
 
     /** POS checkout: creates a completed sale, deducts stock, records payment. */

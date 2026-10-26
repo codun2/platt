@@ -3,12 +3,12 @@ definePageMeta({ title: 'فواتير المبيعات', titleEn: 'Sales Invoice
 const api = useApi(); const auth = useAuth(); const f = useFmt(); const route = useRoute(); const { tt } = useI18n()
 const page = ref<any>(null)
 const filt = reactive({ q: '', status: '', from: '', to: '', unpaid: false })
-const view = ref<any>(null); const company = ref<any>(null)
+const view = ref<any>(null); const company = ref<any>(null); const qr = ref<string | null>(null)
 const pay = reactive({ amount: 0, method: 'cash', note: '' })
 const printing = ref(false)
 
 async function load(p: any = 1) { const n = typeof p === 'number' ? p : 1; page.value = await api.get('/app/pos/sales', { ...filt, unpaid: filt.unpaid ? 1 : '', page: n }) }
-async function show(id: number) { const r = await api.get(`/app/pos/sales/${id}`); view.value = r.sale; company.value = r.company; pay.amount = Math.max(0, Number(r.sale.total) - Number(r.sale.paid)) }
+async function show(id: number) { const r = await api.get(`/app/pos/sales/${id}`); view.value = r.sale; company.value = r.company; qr.value = r.zatca_qr; pay.amount = Math.max(0, Number(r.sale.total) - Number(r.sale.paid)) }
 onMounted(async () => {
   await load()
   if (route.query.open) await show(Number(route.query.open))
@@ -51,7 +51,7 @@ function print() { printing.value = true; nextTick(() => { window.print(); setTi
     <!-- Invoice (modal on screen, plain sheet when printing) -->
     <UiModal v-if="view" :title="`${tt('فاتورة','Invoice')} ${view.number}`" lg @close="view = null">
       <div class="invoice">
-        <div class="row between"><div><h2 style="font-size:20px">{{ company?.name }}</h2><small class="muted">{{ company?.phone }} {{ company?.email }}</small></div><div style="text-align:left"><b style="font-size:16px">{{ view.number }}</b><br /><small>{{ f.d(view.date) }} · {{ f.dt(view.created_at).slice(11) }}</small></div></div>
+        <div class="row between"><div><h2 style="font-size:20px">{{ company?.name }}</h2><small class="muted">{{ company?.phone }} {{ company?.email }}</small><div v-if="company?.einvoice?.enabled && company?.einvoice?.vat_number" style="font-size:12px">{{ tt('الرقم الضريبي','VAT No.') }}: <b dir="ltr">{{ company.einvoice.vat_number }}</b></div></div><div style="text-align:left"><b v-if="company?.einvoice?.enabled && qr" style="display:block;font-size:13px">{{ tt('فاتورة ضريبية مبسطة','Simplified Tax Invoice') }}</b><b style="font-size:16px">{{ view.number }}</b><br /><small>{{ f.d(view.date) }} · {{ f.dt(view.created_at).slice(11) }}</small></div></div>
         <div class="row between mt"><span>{{ tt('العميل:','Customer:') }} <b>{{ view.customer?.name || tt('نقدي','Cash') }}</b> <small class="muted" dir="ltr">{{ view.customer?.phone }}</small></span><span class="badge" :class="view.status === 'completed' ? 'ok' : 'bad'">{{ view.status === 'completed' ? tt('مكتملة','Completed') : tt('ملغاة','Cancelled') }}</span></div>
         <table class="table mt"><thead><tr><th>#</th><th>{{ tt('الصنف','Item') }}</th><th>{{ tt('الكمية','Qty') }}</th><th>{{ tt('السعر','Price') }}</th><th>{{ tt('خصم','Disc.') }}</th><th>{{ tt('الإجمالي','Total') }}</th></tr></thead>
           <tbody><tr v-for="(l, i) in view.items" :key="l.id"><td>{{ i + 1 }}</td><td>{{ l.name }}</td><td class="num">{{ f.qty(l.qty) }}</td><td class="num">{{ f.money(l.unit_price) }}</td><td class="num">{{ f.money(l.discount) }}</td><td class="num">{{ f.money(l.total) }}</td></tr></tbody></table>
@@ -64,6 +64,7 @@ function print() { printing.value = true; nextTick(() => { window.print(); setTi
           <div v-if="Number(view.total) - Number(view.paid) > 0" class="row between" style="color:var(--primary)"><span>{{ tt('المتبقي','Balance') }}</span><b>{{ f.money(Number(view.total) - Number(view.paid)) }}</b></div>
         </div>
         <p v-if="view.note" class="muted mt">{{ view.note }}</p>
+        <div v-if="company?.einvoice?.enabled && qr" style="text-align:center;margin-top:10px"><ZatcaQr :value="qr" :size="110" style="margin:0 auto" /></div>
         <p class="muted mt" style="text-align:center;font-size:12px">{{ tt('شكراً لتعاملكم معنا','Thank you for your business') }}</p>
       </div>
       <template #footer>

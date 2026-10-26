@@ -6,14 +6,14 @@ const { tt, isEn } = useI18n()
 // What this business is called in its sector: المحل، المزرعة، المدرسة…
 const org = computed(() => { const o = auth.state.value.identity?.org || ['الشركة', 'Company']; return isEn.value ? o[1] : o[0] })
 const data = ref<any>(null)
-const form = reactive<any>({ name: '', phone: '', email: '', currency: 'SAR', tax_rate: 0, settings: { address: '', tax_number: '', cr_number: '', bank_details: '', invoice_terms: '', invoice_footer: '' } })
+const form = reactive<any>({ name: '', phone: '', email: '', currency: 'SAR', tax_rate: 0, settings: { address: '', tax_number: '', cr_number: '', bank_details: '', invoice_terms: '', invoice_footer: '', einvoice_enabled: false } })
 const msg = ref(''); const err = ref('')
 
 async function load() {
   data.value = await api.get('/app/company')
   const t = data.value.tenant; const s = t.settings || {}
   Object.assign(form, { name: t.name, phone: t.phone || '', email: t.email || '', currency: t.currency || 'SAR', tax_rate: +t.tax_rate || 0 })
-  Object.assign(form.settings, { address: s.address || '', tax_number: s.tax_number || '', cr_number: s.cr_number || '', bank_details: s.bank_details || '', invoice_terms: s.invoice_terms || '', invoice_footer: s.invoice_footer || '' })
+  Object.assign(form.settings, { address: s.address || '', tax_number: s.tax_number || '', cr_number: s.cr_number || '', bank_details: s.bank_details || '', invoice_terms: s.invoice_terms || '', invoice_footer: s.invoice_footer || '', einvoice_enabled: !!s.einvoice_enabled })
 }
 onMounted(load)
 
@@ -27,6 +27,7 @@ const myModules = computed(() => {
     .map((m: any) => { const i = menu.get(m.key); return { ...m, name_ar: i.name_ar, name_en: i.name_en, icon: i.icon } })
 })
 
+const vatValid = computed(() => /^3\d{13}3$/.test(String(form.settings.tax_number || '')))
 async function save() {
   msg.value = ''; err.value = ''
   try { await api.patch('/app/company', form); msg.value = tt('تم الحفظ','Saved'); await auth.fetchMe() }
@@ -61,6 +62,12 @@ async function save() {
           <div class="field"><label>{{ tt('بيانات التحويل البنكي','Bank transfer details') }}</label><textarea v-model="form.settings.bank_details" rows="2" :placeholder="tt('اسم البنك، رقم الحساب، IBAN','Bank name, account no., IBAN')" /></div>
           <div class="field"><label>{{ tt('شروط السداد الافتراضية (تظهر أسفل الفاتورة)','Default payment terms (shown on invoice)') }}</label><textarea v-model="form.settings.invoice_terms" rows="2" :placeholder="tt('مثال: يُسدَّد المبلغ خلال 30 يوماً من تاريخ الفاتورة','e.g. Payable within 30 days of invoice date')" /></div>
           <div class="field"><label>{{ tt('عبارة ختامية','Closing note') }}</label><input v-model="form.settings.invoice_footer" :placeholder="tt('شكراً لتعاملكم معنا','Thank you for your business')" /></div>
+          <div class="card-title" style="margin-top:14px"><i class="ti ti-qrcode" /> {{ tt('الفاتورة الإلكترونية (ZATCA)','E-invoicing (ZATCA)') }}</div>
+          <p class="muted" style="margin-top:0">{{ tt('عند التفعيل يُطبع رمز QR الضريبي (TLV) على الفواتير وفواتير نقطة البيع، مع مسمّى «فاتورة ضريبية» والرقم الضريبي — متوافق مع المرحلة الأولى لهيئة الزكاة والضريبة والجمارك.','When enabled, the ZATCA tax QR (TLV) is printed on invoices and POS receipts with the “Tax Invoice” label and VAT number — ZATCA Phase 1 compliant.') }}</p>
+          <label class="switch" style="margin-bottom:10px;display:flex"><input v-model="form.settings.einvoice_enabled" type="checkbox" /><span /> {{ tt('تفعيل الفاتورة الضريبية الإلكترونية','Enable e-invoicing') }}</label>
+          <div v-if="form.settings.einvoice_enabled && form.settings.tax_number && !vatValid" class="alert warn" style="margin-bottom:10px"><i class="ti ti-alert-triangle" /> {{ tt('الرقم الضريبي غير مطابق للصيغة السعودية (15 رقماً يبدأ وينتهي بـ3). سيُطبع كما هو — تأكّد منه.','The VAT number is not in the Saudi format (15 digits starting and ending with 3). It will print as-is.') }}</div>
+          <div v-if="form.settings.einvoice_enabled && !form.settings.tax_number" class="alert warn" style="margin-bottom:10px"><i class="ti ti-alert-triangle" /> {{ tt('أدخل الرقم الضريبي أعلاه ليظهر رمز QR على الفواتير.','Enter the VAT number above so the QR appears on invoices.') }}</div>
+          <small class="muted" style="display:block;margin-bottom:10px">{{ tt('ملاحظة: المرحلة الثانية (الربط المباشر وتوقيع XML مع منصة فاتورة) تتطلب تسجيلاً خاصاً لدى الهيئة وتُضاف لاحقاً.','Note: Phase 2 (XML signing & clearance via Fatoora) needs ZATCA onboarding and is added later.') }}</small>
           <button class="btn" @click="save"><i class="ti ti-check" /> {{ tt('حفظ','Save') }}</button>
         </div>
       </div>

@@ -43,6 +43,7 @@ class CompanyController extends Controller
             'settings.bank_details' => ['nullable', 'string', 'max:500'],
             'settings.invoice_terms' => ['nullable', 'string', 'max:1000'],
             'settings.invoice_footer' => ['nullable', 'string', 'max:255'],
+            'settings.einvoice_enabled' => ['nullable', 'boolean'],   // ZATCA e-invoicing
         ]);
         if (array_key_exists('settings', $data)) {
             $data['settings'] = array_merge((array) ($tenant->settings ?? []), (array) ($data['settings'] ?? []));

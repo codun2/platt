@@ -146,7 +146,7 @@ async function remove() { if (!await uiConfirm(tt('حذف المسودّة نه�
       </template>
     </div>
 
-    <DocPrint kind="invoice" :doc="inv" :company="data.company" />
+    <DocPrint kind="invoice" :doc="inv" :company="data.company" :zatca-qr="data.zatca_qr" />
   </div>
   <div v-else-if="notFound" class="card" style="text-align:center;padding:50px 20px">
     <i class="ti ti-file-off" style="font-size:48px;color:var(--muted)" />

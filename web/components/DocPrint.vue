@@ -1,11 +1,12 @@
 <script setup lang="ts">
 /** Printable A4 sheet for an invoice or quote. Hidden on screen, shown by @media print (see main.css). */
-const props = defineProps<{ kind: DocKind; doc: any; company: any }>()
+const props = defineProps<{ kind: DocKind; doc: any; company: any; zatcaQr?: string | null }>()
 const f = useFmt(); const { tt } = useI18n()
 const isInvoice = computed(() => props.kind === 'invoice')
 const { profile: P } = useDocProfile()
 // Sector naming on the printed document (فاتورة أتعاب / فاتورة رسوم / فاتورة إيجار…).
-const title = computed(() => tt(...(isInvoice.value ? P.value.invoice : P.value.quote)))
+const einvoice = computed(() => isInvoice.value && !!props.company?.einvoice?.enabled && !!props.zatcaQr)
+const title = computed(() => einvoice.value ? tt('فاتورة ضريبية', 'Tax Invoice') : tt(...(isInvoice.value ? P.value.invoice : P.value.quote)))
 const st = computed(() => (isInvoice.value ? invoiceStatus : quoteStatus)[props.doc.status]?.label)
 </script>
 
@@ -26,6 +27,7 @@ const st = computed(() => (isInvoice.value ? invoiceStatus : quoteStatus)[props.
         <h2>{{ title }}</h2>
         <b dir="ltr">{{ doc.number }}</b>
         <small>{{ st }}</small>
+        <ZatcaQr v-if="einvoice" :value="zatcaQr" :size="96" style="margin-top:6px;margin-inline-start:auto" />
       </div>
     </header>
 
