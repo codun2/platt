@@ -274,6 +274,20 @@ return [
         ],
     ],
 
+    'pharmacy' => [
+        'accent' => '#0d9488',
+        'org' => ['الصيدلية', 'Pharmacy'],
+        'order' => ['pos', 'inventory', 'crm', 'accounting', 'hr', 'whatsapp'],
+        'labels' => [
+            'pos' => ['الصرف والبيع', 'Dispensing & Sales', 'ti-cash-register'],
+            'pos_screen' => ['الكاشير', 'Dispense'],
+            'inventory' => ['الأدوية والأصناف', 'Medicines & Items', 'ti-pill'],
+            'inventory_items' => ['الأدوية والأصناف', 'Medicines & Items', 'ti-pill'],
+            'inventory_purchases' => ['المشتريات والموردون', 'Purchases & Suppliers'],
+            'crm' => ['العملاء والفواتير', 'Customers & Invoices'],
+        ],
+    ],
+
     // ---------------------------------------------------------- professional
     'law_firm' => [
         'accent' => '#1e3a8a',

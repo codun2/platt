@@ -68,6 +68,11 @@ async function remove() { if (!await uiConfirm(tt(`حذف الصنف ${item.valu
           <div><small class="muted">{{ tt('التصنيف','Category') }}</small><br /><b>{{ item.category?.name || '—' }}</b></div>
           <div><small class="muted">{{ tt('وحدة القياس','Unit') }}</small><br /><b>{{ item.unit ? `${item.unit.name} (${item.unit.symbol || ''})` : '—' }}</b></div>
           <div><small class="muted">{{ tt('العلامة / الموديل','Brand / model') }}</small><br /><b>{{ [item.brand, item.model].filter(Boolean).join(' · ') || '—' }}</b></div>
+          <template v-if="item.active_ingredient || item.strength || item.dosage_form || item.rx_required">
+            <div><small class="muted">{{ tt('المادة الفعّالة','Active ingredient') }}</small><br /><b>{{ item.active_ingredient || '—' }}</b></div>
+            <div><small class="muted">{{ tt('التركيز / الشكل','Strength / form') }}</small><br /><b dir="ltr">{{ [item.strength, item.dosage_form].filter(Boolean).join(' · ') || '—' }}</b></div>
+            <div><small class="muted">{{ tt('يُصرف بوصفة','Prescription') }}</small><br /><b :style="item.rx_required ? 'color:var(--primary)' : ''">{{ item.rx_required ? tt('نعم — يحتاج وصفة','Yes — Rx') : tt('لا','No') }}</b></div>
+          </template>
           <div><small class="muted">{{ tt('المورد الافتراضي','Default supplier') }}</small><br /><b v-if="item.supplier"><NuxtLink :to="`/inventory/suppliers/${item.supplier.id}`" style="color:var(--info)">{{ item.supplier.name }}</NuxtLink></b><b v-else>—</b></div>
           <div><small class="muted">{{ tt('الموقع / الرف','Location / shelf') }}</small><br /><b>{{ item.location || '—' }}</b></div>
           <div><small class="muted">{{ tt('الوزن','Weight') }}</small><br /><b>{{ item.weight ? f.qty(item.weight) + tt(' كجم',' kg') : '—' }}</b></div>
@@ -76,6 +81,12 @@ async function remove() { if (!await uiConfirm(tt(`حذف الصنف ${item.valu
           <div><small class="muted">{{ tt('تتبّع المخزون','Track stock') }}</small><br /><b>{{ item.track_stock ? tt('نعم','Yes') : tt('لا (خدمة)','No (service)') }}</b></div>
           <div v-if="item.description" style="grid-column:1/-1"><small class="muted">{{ tt('الوصف','Description') }}</small><br />{{ item.description }}</div>
           <div v-if="item.notes" style="grid-column:1/-1;background:var(--bg);padding:10px;border-radius:10px"><small class="muted"><i class="ti ti-lock" /> {{ tt('ملاحظات داخلية','Internal notes') }}</small><br />{{ item.notes }}</div>
+          <div v-if="d.alternatives?.length" style="grid-column:1/-1">
+            <div class="card-title"><i class="ti ti-arrows-exchange" /> {{ tt('البدائل العلمية','Scientific alternatives') }} <small class="muted">({{ tt('نفس المادة الفعّالة','same active ingredient') }}: {{ item.active_ingredient }})</small></div>
+            <table class="table"><thead><tr><th>{{ tt('الصنف','Item') }}</th><th>{{ tt('التركيز / الشكل','Strength / form') }}</th><th>{{ tt('المتوفر','In stock') }}</th><th>{{ tt('السعر','Price') }}</th></tr></thead>
+              <tbody><tr v-for="a in d.alternatives" :key="a.id"><td><NuxtLink :to="`/inventory/items/${a.id}`" style="color:var(--info);font-weight:700">{{ a.name }}</NuxtLink><small v-if="a.brand" class="muted"> · {{ a.brand }}</small></td><td dir="ltr">{{ [a.strength, a.dosage_form].filter(Boolean).join(' · ') || '—' }}</td><td class="num" :style="(+a.stock || 0) > 0 ? 'color:var(--ok)' : 'color:var(--primary)'">{{ f.qty(a.stock || 0) }}</td><td class="num">{{ f.money(a.sale_price) }}</td></tr></tbody>
+            </table>
+          </div>
         </div>
 
         <div v-else-if="tab === 'stock'">

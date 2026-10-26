@@ -1,4 +1,6 @@
 <script setup lang="ts">
+const _sector = computed(() => useAuth().state.value.identity?.key)
+const isPharmacy = computed(() => _sector.value === 'pharmacy')
 /** Full inventory item form (new + edit). */
 const props = defineProps<{ form: any; meta: any; suppliers: any[]; isNew?: boolean }>()
 const f = useFmt(); const { tt } = useI18n()
@@ -22,6 +24,11 @@ const margin = computed(() => { const c = +props.form.cost_price || 0, s = +prop
       <div class="field"><label>{{ tt('العلامة التجارية','Brand') }}</label><input v-model="form.brand" /></div>
       <div class="field"><label>{{ tt('الموديل / الصنف الفرعي','Model') }}</label><input v-model="form.model" dir="ltr" /></div>
       <div class="field"><label>{{ tt('المورد الافتراضي','Default supplier') }}</label><UiSelect v-model="form.supplier_id" :add-label="tt('إضافة مورد','Add supplier')" add-to="/inventory/suppliers/new" add-key="supplier"><option value="">—</option><option v-for="s in suppliers" :key="s.id" :value="s.id">{{ s.name }}</option></UiSelect></div>
+      <template v-if="isPharmacy">
+        <div class="field"><label>{{ tt('المادة الفعّالة','Active ingredient') }}</label><input v-model="form.active_ingredient" list="rk-ingredients" :placeholder="tt('مثال: باراسيتامول','e.g. Paracetamol')" /><datalist id="rk-ingredients"><option v-for="g in meta.ingredients || []" :key="g" :value="g" /></datalist><small class="muted">{{ tt('اكتب نفس الاسم للأصناف المتشابهة لتظهر كبدائل','Use the same name so alternatives match') }}</small></div>
+        <div class="field"><label>{{ tt('التركيز','Strength') }}</label><input v-model="form.strength" dir="ltr" :placeholder="tt('مثال: 500mg','e.g. 500mg')" /></div>
+        <div class="field"><label>{{ tt('الشكل الصيدلاني','Dosage form') }}</label><UiSelect v-model="form.dosage_form"><option value="">—</option><option v-for="x in ['أقراص','كبسولات','شراب','حقن','مرهم/كريم','قطرة','بخاخ','تحاميل','لصقة']" :key="x" :value="x">{{ x }}</option></UiSelect></div>
+      </template>
     </div>
 
     <div class="card-title" style="margin-top:8px"><i class="ti ti-tag" /> {{ tt('التسعير','Pricing') }}</div>
@@ -33,6 +40,7 @@ const margin = computed(() => { const c = +props.form.cost_price || 0, s = +prop
 
     <div class="card-title" style="margin-top:8px"><i class="ti ti-building-warehouse" /> {{ tt('المخزون','Stock') }}</div>
     <label class="switch" style="margin-bottom:10px"><input v-model="form.track_stock" type="checkbox" /><span /> {{ tt('يتتبّع المخزون (أطفئه للخدمات أو الأصناف غير المخزنية)','Track stock (off for services)') }}</label>
+    <label v-if="isPharmacy" class="switch" style="margin-bottom:10px;display:flex"><input v-model="form.rx_required" type="checkbox" /><span /> {{ tt('يُصرف بوصفة طبية (ينبّه الكاشير)','Prescription required (warns at the till)') }}</label>
     <label v-if="useAuth().hasModule('batches') && form.track_stock" class="switch" style="margin-bottom:10px;display:flex"><input v-model="form.track_expiry" type="checkbox" /><span /> {{ tt('يتتبّع تاريخ الصلاحية والدفعات (يُطلب التاريخ عند الشراء ويُباع الأقرب انتهاءً أولاً)', 'Track expiry & batches (date asked on purchase, earliest expiry sold first)') }}</label>
     <template v-if="useAuth().hasModule('serials') && form.track_stock">
       <label class="switch" style="margin-bottom:10px;display:flex"><input v-model="form.track_serial" type="checkbox" /><span /> {{ tt('له رقم تسلسلي وضمان لكل وحدة (ألواح، إنفرترات، أجهزة)', 'Has a serial number & warranty per unit (panels, inverters, devices)') }}</label>

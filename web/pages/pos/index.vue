@@ -100,7 +100,7 @@ off.onSynced(op => {
   if (op.kind === 'pos_shift' && shift.value?.offline && op.result?.id) shift.value = op.result   // the shift now has its real number
   if ((op.kind === 'pos_sale' || op.kind === 'pos_shift') && off.state.online) refreshPack()
 })
-function add(i: any) { const ex = cart.value.find(l => l.item_id === i.id); ex ? ex.qty++ : cart.value.push({ item_id: i.id, name: i.name, qty: 1, unit_price: Number(i.sale_price), discount: 0, stock: i.stock, track: i.track_stock }) }
+function add(i: any) { const ex = cart.value.find(l => l.item_id === i.id); ex ? ex.qty++ : cart.value.push({ item_id: i.id, name: i.name, qty: 1, unit_price: Number(i.sale_price), discount: 0, stock: i.stock, track: i.track_stock, rx: !!i.rx_required }) }
 const subtotal = computed(() => cart.value.reduce((s, l, i) => s + l.qty * l.unit_price - lineDisc(i), 0))
 const billPromo = computed(() => +(promo.value?.bill || 0))
 const taxable = computed(() => Math.max(0, subtotal.value - Number(discount.value || 0) - billPromo.value - pointsDiscount.value))
@@ -194,7 +194,7 @@ function printLast() {
 
       <div class="cart">
         <div v-for="(l, i) in cart" :key="l.item_id" class="cart-line">
-          <div style="flex:1"><b>{{ l.name }}</b><br /><small class="muted">{{ f.money(l.unit_price) }} × </small><input v-model.number="l.qty" type="number" min="0.001" step="1" dir="ltr" style="width:60px;padding:3px 6px;border:1px solid var(--line);border-radius:6px" /></div>
+          <div style="flex:1"><b>{{ l.name }}</b><span v-if="l.rx" class="badge" style="background:#fee2e2;color:#b91c1c;margin-inline-start:6px;font-size:11px"><i class="ti ti-prescription" /> {{ tt('وصفة','Rx') }}</span><br /><small class="muted">{{ f.money(l.unit_price) }} × </small><input v-model.number="l.qty" type="number" min="0.001" step="1" dir="ltr" style="width:60px;padding:3px 6px;border:1px solid var(--line);border-radius:6px" /></div>
           <div class="num" style="min-width:80px;text-align:left"><b>{{ f.money(l.qty * l.unit_price - lineDisc(i)) }}</b><small v-if="+(promo?.lines?.[i] || 0) > 0" style="display:block;color:var(--ok)"><i class="ti ti-discount-2" /> -{{ f.money(promo.lines[i]) }}</small></div>
           <button class="btn ghost sm icon" style="color:var(--primary)" @click="cart.splice(i, 1)"><i class="ti ti-x" /></button>
         </div>
@@ -224,6 +224,7 @@ function printLast() {
         <div class="row between"><span>{{ method === 'credit' ? tt('دفعة مقدمة','Down payment') : tt('المدفوع','Paid') }}</span><input v-model.number="paid" type="number" step="0.001" dir="ltr" :placeholder="f.money(total)" style="width:120px;padding:4px 8px;border:1px solid var(--line);border-radius:6px" /></div>
         <div v-if="change > 0" class="row between" style="color:var(--ok)"><span>{{ tt('الباقي للعميل','Change due') }}</span><b>{{ f.money(change) }}</b></div>
       </div>
+      <div v-if="cart.some(l => l.rx)" class="alert warn" style="padding:8px 10px"><i class="ti ti-prescription" /> {{ tt('توجد أصناف تُصرف بوصفة طبية — تأكّد من الوصفة قبل الصرف.','Prescription-only items in the cart — verify the prescription.') }}</div>
       <div v-if="err" class="alert bad">{{ err }}</div>
       <div class="row" style="margin-top:8px">
         <button class="btn ghost" @click="clear">{{ tt('إفراغ','Clear') }}</button>

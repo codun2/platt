@@ -220,7 +220,7 @@ class SaleController extends Controller
     {
         $wh = (int) ($request->query('warehouse_id') ?: $inv->defaultWarehouseId());
         $items = Item::with('unit:id,name,symbol')->where('is_active', true)
-            ->select(['id', 'name', 'sku', 'barcode', 'category_id', 'unit_id', 'sale_price', 'track_stock'])
+            ->select(['id', 'name', 'sku', 'barcode', 'category_id', 'unit_id', 'sale_price', 'track_stock', 'rx_required'])
             ->withSum(['stockLevels as stock' => fn ($x) => $x->where('warehouse_id', $wh)], 'qty')
             ->orderBy('name')->get();
 

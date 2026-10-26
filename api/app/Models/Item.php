@@ -12,7 +12,7 @@ class Item extends Model
     use BelongsToTenant;
 
     protected $fillable = [
-        'tenant_id', 'sku', 'barcode', 'name', 'name_en', 'brand', 'model', 'description', 'category_id', 'unit_id', 'supplier_id',
+        'tenant_id', 'sku', 'barcode', 'name', 'name_en', 'brand', 'model', 'active_ingredient', 'strength', 'dosage_form', 'rx_required', 'description', 'category_id', 'unit_id', 'supplier_id',
         'cost_price', 'sale_price', 'track_stock', 'track_expiry', 'track_serial', 'warranty_months', 'min_stock', 'reorder_qty', 'max_stock', 'location', 'weight', 'is_active', 'show_online', 'image', 'notes',
     ];
 
@@ -21,7 +21,7 @@ class Item extends Model
         return [
             'cost_price' => 'decimal:3', 'sale_price' => 'decimal:3', 'min_stock' => 'decimal:3',
             'reorder_qty' => 'decimal:3', 'max_stock' => 'decimal:3', 'weight' => 'decimal:3',
-            'track_stock' => 'boolean', 'track_expiry' => 'boolean', 'track_serial' => 'boolean', 'warranty_months' => 'integer', 'is_active' => 'boolean', 'show_online' => 'boolean',
+            'track_stock' => 'boolean', 'track_expiry' => 'boolean', 'track_serial' => 'boolean', 'warranty_months' => 'integer', 'rx_required' => 'boolean', 'is_active' => 'boolean', 'show_online' => 'boolean',
         ];
     }
 

@@ -1,6 +1,7 @@
 /** Inventory item form helpers (shared by new + edit pages). */
 export const blankItem = () => ({
   name: '', name_en: '', sku: '', barcode: '', brand: '', model: '', description: '',
+  active_ingredient: '', strength: '', dosage_form: '', rx_required: false,
   category_id: '', unit_id: '', supplier_id: '',
   cost_price: 0, sale_price: 0,
   track_stock: true, track_expiry: false, track_serial: false, warranty_months: '', min_stock: 0, reorder_qty: '', max_stock: '', location: '', weight: '',
@@ -10,7 +11,7 @@ export const blankItem = () => ({
 export const itemToForm = (i: any) => {
   const f: any = blankItem()
   for (const k of Object.keys(f)) f[k] = i[k] ?? (typeof f[k] === 'boolean' ? false : '')
-  f.track_stock = !!i.track_stock; f.track_expiry = !!i.track_expiry; f.track_serial = !!i.track_serial; f.is_active = !!i.is_active; f.warranty_months = i.warranty_months || ''
+  f.track_stock = !!i.track_stock; f.track_expiry = !!i.track_expiry; f.track_serial = !!i.track_serial; f.rx_required = !!i.rx_required; f.is_active = !!i.is_active; f.warranty_months = i.warranty_months || ''
   f.cost_price = +i.cost_price || 0; f.sale_price = +i.sale_price || 0; f.min_stock = +i.min_stock || 0
   f.category_id = i.category_id || ''; f.unit_id = i.unit_id || ''; f.supplier_id = i.supplier_id || ''
   f.opening_qty = 0

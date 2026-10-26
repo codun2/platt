@@ -69,7 +69,15 @@ class ItemController extends Controller
         $purchases = \App\Models\PurchaseItem::where('item_id', $item->id)->with('purchase:id,number,date,status,supplier_id', 'purchase.supplier:id,name')
             ->orderByDesc('id')->limit(20)->get(['id', 'purchase_id', 'qty', 'unit_cost', 'total']);
 
-        return response()->json(['item' => $item, 'levels' => $levels, 'movements' => $movements, 'purchases' => $purchases]);
+        // Pharmacy: scientific alternatives — active items sharing the active ingredient.
+        $alternatives = $item->active_ingredient
+            ? Item::where('is_active', true)->where('id', '!=', $item->id)
+                ->whereRaw('lower(active_ingredient) = ?', [mb_strtolower($item->active_ingredient)])
+                ->withSum('stockLevels as stock', 'qty')->orderByDesc('stock')
+                ->get(['id', 'name', 'brand', 'strength', 'dosage_form', 'sale_price'])
+            : [];
+
+        return response()->json(['item' => $item, 'levels' => $levels, 'movements' => $movements, 'purchases' => $purchases, 'alternatives' => $alternatives]);
     }
 
     public function store(Request $request, InventoryService $inv): JsonResponse
@@ -122,6 +130,8 @@ class ItemController extends Controller
             'categories' => Category::orderBy('sort')->orderBy('name')->get(['id', 'name', 'parent_id']),
             'units' => Unit::orderBy('name')->get(['id', 'name', 'symbol']),
             'warehouses' => Warehouse::where('is_active', true)->orderByDesc('is_default')->get(['id', 'name', 'is_default']),
+            // Pharmacy: reuse the same spelling so alternatives match reliably.
+            'ingredients' => Item::whereNotNull('active_ingredient')->where('active_ingredient', '!=', '')->distinct()->orderBy('active_ingredient')->pluck('active_ingredient'),
         ]);
     }
 
@@ -136,6 +146,10 @@ class ItemController extends Controller
             'barcode' => ['nullable', 'string', 'max:80', \Illuminate\Validation\Rule::unique('items', 'barcode')->where('tenant_id', $tenantId)->ignore($item?->id)],
             'brand' => ['nullable', 'string', 'max:80'],
             'model' => ['nullable', 'string', 'max:80'],
+            'active_ingredient' => ['nullable', 'string', 'max:150'],   // pharmacy
+            'strength' => ['nullable', 'string', 'max:60'],
+            'dosage_form' => ['nullable', 'string', 'max:40'],
+            'rx_required' => ['boolean'],
             'description' => ['nullable', 'string'],
             'category_id' => ['nullable', \Illuminate\Validation\Rule::exists('categories', 'id')->where('tenant_id', $tenantId)],
             'unit_id' => ['nullable', \Illuminate\Validation\Rule::exists('units', 'id')->where('tenant_id', $tenantId)],
