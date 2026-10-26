@@ -256,6 +256,23 @@ return [
             'crm_quotes' => ['عروض الصيانة', 'Maintenance Quotes'],
         ],
     ],
+    'solar' => [
+        'accent' => '#0e8f6e',
+        'org' => ['الشركة', 'Company'],
+        'order' => ['service', 'crm', 'inventory', 'pos', 'accounting', 'hr', 'whatsapp'],
+        'labels' => [
+            'service' => ['التركيب والصيانة', 'Installation & Service', 'ti-solar-panel-2'],
+            'service_tickets' => ['طلبات التركيب والصيانة', 'Jobs'],
+            'service_parts' => ['قائمة الأسعار والخدمات', 'Price list & Services'],
+            'service_technicians' => ['الفنيون والمركّبون', 'Technicians'],
+            'inventory' => ['الألواح والمعدات', 'Panels & Equipment', 'ti-solar-panel'],
+            'inventory_items' => ['الألواح والمعدات', 'Panels & Equipment', 'ti-solar-panel'],
+            'inventory_purchases' => ['المشتريات والموردون', 'Purchases & Suppliers'],
+            'crm' => ['العملاء والعروض', 'Customers & Quotes'],
+            'crm_quotes' => ['عروض أنظمة الطاقة', 'System Quotes', 'ti-file-dollar'],
+            'pos' => ['بيع القطع والمعدات', 'Parts Counter', 'ti-cash-register'],
+        ],
+    ],
 
     // ---------------------------------------------------------- professional
     'law_firm' => [

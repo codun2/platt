@@ -49,6 +49,7 @@ class TenantRegistrar
             ]);
 
             $this->createSystemRoles($tenant, $owner);
+            $this->seedStarterData($tenant, $data['sector']);
 
             return ['tenant' => $tenant, 'user' => $owner];
         });
@@ -69,6 +70,18 @@ class TenantRegistrar
 
         if ($owner) {
             $owner->roles()->syncWithoutDetaching([$admin->id]);
+        }
+    }
+
+    /** Sector starter data (inventory categories) from config/sector_starter.php. */
+    private function seedStarterData(Tenant $tenant, string $sector): void
+    {
+        $starter = config("sector_starter.$sector", []);
+        $cats = $starter['categories'] ?? [];
+        if ($cats && in_array('inventory', $tenant->enabledModuleKeys(), true)) {
+            foreach (array_values($cats) as $i => $name) {
+                \App\Models\Category::create(['tenant_id' => $tenant->id, 'name' => $name, 'sort' => ($i + 1) * 10]);
+            }
         }
     }
 

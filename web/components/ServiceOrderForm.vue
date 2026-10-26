@@ -35,6 +35,7 @@ async function addTechnician(name: string) { const r = await api.post('/app/serv
         <div v-if="fd.type === 'textarea'" class="field" style="grid-column:1/-1"><label>{{ fieldLabel(fd) }}</label><textarea v-model="form.details[fd.key]" rows="2" /></div>
         <div v-else-if="fd.type === 'switch'" class="field" style="align-self:end"><label class="switch"><input v-model="form.details[fd.key]" type="checkbox" /><span /> {{ fieldLabel(fd) }}</label></div>
         <div v-else-if="fd.type === 'select'" class="field"><label>{{ fieldLabel(fd) }}</label><UiSelect v-model="form.details[fd.key]"><option value="">—</option><option v-for="(_, k) in fd.options" :key="k" :value="k">{{ optionLabel(fd, String(k)) }}</option></UiSelect></div>
+        <div v-else-if="fd.type === 'date'" class="field"><label>{{ fieldLabel(fd) }}</label><input v-model="form.details[fd.key]" type="date" dir="ltr" /></div>
         <div v-else class="field"><label>{{ fieldLabel(fd) }}</label><input v-if="fd.type === 'number'" v-model.number="form.details[fd.key]" type="number" min="0" step="any" dir="ltr" /><input v-else v-model="form.details[fd.key]" :dir="fd.ltr ? 'ltr' : undefined" /></div>
       </template>
     </div>

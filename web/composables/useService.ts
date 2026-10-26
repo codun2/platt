@@ -10,7 +10,7 @@ export const orderStatus: Record<string, { label: string; cls: string; icon: str
 }
 export const OPEN_ORDER = ['received', 'in_progress', 'waiting_parts', 'ready']
 
-type Field = { key: string; ar: string; en: string; type?: 'text' | 'number' | 'select' | 'switch' | 'textarea'; options?: Record<string, [string, string]>; ltr?: boolean }
+type Field = { key: string; ar: string; en: string; type?: 'text' | 'number' | 'select' | 'switch' | 'textarea' | 'date'; options?: Record<string, [string, string]>; ltr?: boolean }
 
 /** Per-sector fields stored in order.details. */
 const FIELDS: Record<string, { title: [string, string]; icon: string; fields: Field[] }> = {
@@ -48,6 +48,21 @@ const FIELDS: Record<string, { title: [string, string]; icon: string; fields: Fi
       { key: 'style', ar: 'التفصيلة / ملاحظات القصّة', en: 'Style notes', type: 'textarea' },
     ],
   },
+  solar: {
+    title: ['بيانات نظام الطاقة والموقع', 'Solar system & site'], icon: 'ti-solar-panel-2',
+    fields: [
+      { key: 'job', ar: 'نوع العمل', en: 'Job type', type: 'select', options: { install: ['تركيب نظام جديد', 'New installation'], maintenance: ['صيانة', 'Maintenance'], inspection: ['فحص / معاينة', 'Survey / inspection'], expansion: ['توسعة نظام', 'Expansion'], repair: ['إصلاح عطل', 'Repair'] } },
+      { key: 'system_type', ar: 'نوع النظام', en: 'System type', type: 'select', options: { on_grid: ['مربوط بالشبكة (On-grid)', 'On-grid'], off_grid: ['مستقل (Off-grid)', 'Off-grid'], hybrid: ['هجين (Hybrid)', 'Hybrid'] } },
+      { key: 'capacity_kw', ar: 'قدرة النظام (كيلوواط)', en: 'Capacity (kW)', type: 'number', ltr: true },
+      { key: 'panel_count', ar: 'عدد الألواح', en: 'Panels', type: 'number', ltr: true },
+      { key: 'panel_brand', ar: 'ماركة الألواح', en: 'Panel brand' },
+      { key: 'inverter', ar: 'الإنفرتر (النوع/القدرة)', en: 'Inverter' },
+      { key: 'battery', ar: 'البطاريات (النوع/السعة)', en: 'Batteries' },
+      { key: 'roof_type', ar: 'نوع السطح', en: 'Roof type', type: 'select', options: { concrete: ['خرسانة', 'Concrete'], metal: ['صاج / معدني', 'Metal'], tile: ['قرميد', 'Tile'], ground: ['أرضي', 'Ground mount'], carport: ['مظلة / كاربورت', 'Carport'] } },
+      { key: 'address', ar: 'موقع التركيب', en: 'Site address' },
+      { key: 'warranty_until', ar: 'الضمان حتى', en: 'Warranty until', type: 'date', ltr: true },
+    ],
+  },
   default: {
     title: ['بيانات الجهاز / العمل', 'Item details'], icon: 'ti-device-desktop',
     fields: [{ key: 'device', ar: 'الجهاز / القطعة', en: 'Item' }, { key: 'brand', ar: 'الماركة', en: 'Brand' }, { key: 'serial', ar: 'الرقم التسلسلي', en: 'Serial', ltr: true }],
@@ -60,10 +75,10 @@ export function useServiceSector() {
   return reactive({
     key,
     spec: computed(() => FIELDS[key.value] || FIELDS.default),
-    order: computed(() => ({ auto_garage: tt('أمر إصلاح', 'Repair order'), laundry: tt('طلب غسيل', 'Laundry order'), maintenance: tt('بلاغ صيانة', 'Maintenance ticket'), tailoring: tt('طلب تفصيل', 'Tailoring order') } as any)[key.value] || tt('أمر عمل', 'Work order')),
-    orders: computed(() => ({ auto_garage: tt('أوامر الإصلاح', 'Repair orders'), laundry: tt('طلبات الغسيل', 'Laundry orders'), maintenance: tt('بلاغات الصيانة', 'Tickets'), tailoring: tt('طلبات التفصيل', 'Tailoring orders') } as any)[key.value] || tt('أوامر العمل', 'Work orders')),
-    titleLabel: computed(() => ({ auto_garage: tt('الشكوى / المطلوب', 'Complaint / request'), laundry: tt('وصف الطلب', 'Request'), maintenance: tt('وصف العطل', 'Issue'), tailoring: tt('المطلوب', 'Request') } as any)[key.value] || tt('المطلوب', 'Request')),
-    tech: computed(() => ({ laundry: tt('العامل', 'Staff'), tailoring: tt('الخيّاط', 'Tailor') } as any)[key.value] || tt('الفني', 'Technician')),
+    order: computed(() => ({ auto_garage: tt('أمر إصلاح', 'Repair order'), laundry: tt('طلب غسيل', 'Laundry order'), maintenance: tt('بلاغ صيانة', 'Maintenance ticket'), tailoring: tt('طلب تفصيل', 'Tailoring order'), solar: tt('طلب تركيب / صيانة', 'Job') } as any)[key.value] || tt('أمر عمل', 'Work order')),
+    orders: computed(() => ({ auto_garage: tt('أوامر الإصلاح', 'Repair orders'), laundry: tt('طلبات الغسيل', 'Laundry orders'), maintenance: tt('بلاغات الصيانة', 'Tickets'), tailoring: tt('طلبات التفصيل', 'Tailoring orders'), solar: tt('طلبات التركيب والصيانة', 'Jobs') } as any)[key.value] || tt('أوامر العمل', 'Work orders')),
+    titleLabel: computed(() => ({ auto_garage: tt('الشكوى / المطلوب', 'Complaint / request'), laundry: tt('وصف الطلب', 'Request'), maintenance: tt('وصف العطل', 'Issue'), tailoring: tt('المطلوب', 'Request'), solar: tt('المطلوب / وصف العمل', 'Scope') } as any)[key.value] || tt('المطلوب', 'Request')),
+    tech: computed(() => ({ laundry: tt('العامل', 'Staff'), tailoring: tt('الخيّاط', 'Tailor'), solar: tt('الفني / المركّب', 'Technician') } as any)[key.value] || tt('الفني', 'Technician')),
     techs: computed(() => ({ laundry: tt('العمّال', 'Staff'), tailoring: tt('الخيّاطون', 'Tailors') } as any)[key.value] || tt('الفنيون', 'Technicians')),
     usesStock: computed(() => !!auth.state.value.sidebar?.some((i: any) => i.key === 'inventory')),
   })
@@ -74,6 +89,7 @@ export function detailsSummary(key: string, d: any): string {
   if (key === 'auto_garage') return [d.make, d.model, d.year, d.plate].filter(Boolean).join(' · ')
   if (key === 'laundry') return [d.pieces ? `${d.pieces} ${tt('قطعة', 'pcs')}` : '', d.bag ? `#${d.bag}` : '', d.express ? tt('مستعجل', 'express') : ''].filter(Boolean).join(' · ')
   if (key === 'maintenance') return [d.address, d.building].filter(Boolean).join(' · ')
+  if (key === 'solar') return [d.capacity_kw ? `${d.capacity_kw} kW` : '', d.system_type ? optionLabel(FIELDS.solar.fields.find(f => f.key === 'system_type')!, d.system_type) : '', d.panel_count ? `${d.panel_count} ${tt('لوح', 'panels')}` : ''].filter(Boolean).join(' · ')
   if (key === 'tailoring') return [d.pieces ? `${d.pieces} ${tt('قطعة', 'pcs')}` : '', d.fabric].filter(Boolean).join(' · ')
   return [d.device, d.brand, d.serial].filter(Boolean).join(' · ')
 }
