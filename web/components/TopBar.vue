@@ -11,6 +11,16 @@ const date = computed(() => ymd(now.value))
 const off = useOffline()
 const pwa = usePwaInstall()
 const initials = computed(() => (auth.state.value.user?.name || '?').slice(0, 1))
+// Change own password (requires the current one).
+const pw = reactive({ open: false, current: '', next: '', confirm: '', err: '', busy: false })
+async function savePw() {
+  pw.err = ''
+  if (pw.next.length < 8) { pw.err = isEn.value ? 'At least 8 characters.' : 'كلمة المرور 8 أحرف على الأقل.'; return }
+  if (pw.next !== pw.confirm) { pw.err = isEn.value ? 'Passwords do not match.' : 'كلمتا المرور غير متطابقتين.'; return }
+  pw.busy = true
+  try { await useApi().patch('/auth/profile', { current_password: pw.current, password: pw.next, password_confirmation: pw.confirm }); pw.open = false; Object.assign(pw, { current: '', next: '', confirm: '' }); uiAlert(isEn.value ? 'Password changed.' : 'تم تغيير كلمة المرور.', { tone: 'info' }) }
+  catch (e: any) { pw.err = e.message } finally { pw.busy = false }
+}
 </script>
 
 <template>
@@ -43,7 +53,15 @@ const initials = computed(() => (auth.state.value.user?.name || '?').slice(0, 1)
         <b style="font-size:13px">{{ auth.state.value.user?.name }}</b><br />
         <small class="muted">{{ auth.state.value.tenant?.name || t('app.platformAdmin') }}</small>
       </div>
+      <button class="btn ghost sm" :title="isEn ? 'Change password' : 'تغيير كلمة المرور'" @click="pw.open = true; pw.err = ''"><i class="ti ti-key" /></button>
       <button class="btn ghost sm" :title="t('common.logout')" @click="auth.logout()"><i class="ti ti-logout" /></button>
     </div>
+    <UiModal v-if="pw.open" :title="isEn ? 'Change password' : 'تغيير كلمة المرور'" @close="pw.open = false">
+      <div v-if="pw.err" class="alert bad">{{ pw.err }}</div>
+      <div class="field"><label>{{ isEn ? 'Current password' : 'كلمة المرور الحالية' }}</label><input v-model="pw.current" type="password" dir="ltr" autocomplete="current-password" /></div>
+      <div class="field"><label>{{ isEn ? 'New password' : 'كلمة المرور الجديدة' }}</label><input v-model="pw.next" type="password" dir="ltr" autocomplete="new-password" /></div>
+      <div class="field"><label>{{ isEn ? 'Confirm new password' : 'تأكيد كلمة المرور الجديدة' }}</label><input v-model="pw.confirm" type="password" dir="ltr" autocomplete="new-password" /></div>
+      <template #footer><button class="btn ghost" @click="pw.open = false">{{ isEn ? 'Cancel' : 'إلغاء' }}</button><button class="btn" :disabled="pw.busy || !pw.current || !pw.next" @click="savePw"><i class="ti ti-check" /> {{ isEn ? 'Save' : 'حفظ' }}</button></template>
+    </UiModal>
   </header>
 </template>

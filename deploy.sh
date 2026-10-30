@@ -28,3 +28,5 @@ docker compose exec -T platt-api php artisan config:clear >> /opt/platt/deploy.l
 docker image prune -f >/dev/null 2>&1 || true
 echo "$REMOTE" > .last_deployed
 echo "$(date) done" >> /opt/platt/deploy.log
+# keep the deploy log bounded
+tail -n 3000 /opt/platt/deploy.log > /opt/platt/deploy.log.tmp && mv /opt/platt/deploy.log.tmp /opt/platt/deploy.log

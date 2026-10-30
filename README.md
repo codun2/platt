@@ -24,11 +24,9 @@ docker compose up -d --build        # http://localhost:8014
 ```
 الـ API يشغّل migrations + seeders (idempotent) تلقائياً عند الإقلاع.
 
-## حسابات افتراضية
-| الدور | البريد | كلمة المرور |
-|---|---|---|
-| Super-Admin | admin@rakeez.app | Rakeez@2026 (من `SUPER_ADMIN_PASSWORD`) |
-| شركة تجريبية (قطاع متاجر) | demo@rakeez.app | demo1234 |
+## الحسابات
+- **مدير المنصّة:** `admin@rakeez.app` — كلمة المرور من `SUPER_ADMIN_PASSWORD` في `/opt/platt/.env` (غير مرفوع). غيّرها من زر المفتاح في الشريط العلوي.
+- **حسابات التجربة** (`demo@rakeez.app`، `<sector>@test.app`) تُزرع فقط عندما `SEED_DEMO=true` (بيئة تجربة)؛ لا تُنشأ على الإنتاج.
 
 ## المسارات
 - `/` صفحة الهبوط · `/app/login` · `/app/register` (اختيار القطاع → تفعيل وحدات الباقة)
@@ -37,5 +35,11 @@ docker compose up -d --build        # http://localhost:8014
 - `/app/pos` شاشة البيع · `/app/pos/sales` الفواتير · `/app/inventory/*` المخزون · `/app/crm/customers` العملاء
 - `/app/bookings` الحجوزات · `/app/bookings/calendar` التقويم · `/app/travel` الرحلات والمسافرون
 
-## النشر
-Contabo VPS، `/opt/platt`، منفذ داخلي `127.0.0.1:8014` خلف nginx (الدومين https://rekaz.smartunita.com عبر Cloudflare، و:8100 بالـIP)، auto-deploy (edit→push→live) عبر `deploy.sh` (cron كل دقيقة).
+## النشر والتشغيل (إنتاج)
+Contabo VPS، `/opt/platt`، منفذ داخلي `127.0.0.1:8014` خلف nginx (الدومين https://rekaz.smartunita.com عبر Cloudflare، و:8100 بالـIP)، auto-deploy عبر `deploy.sh` (cron كل دقيقة، يتوقف تلقائياً إذا كانت هناك تعديلات غير مرفوعة).
+
+- **الأسرار:** `/opt/platt/.env` (انسخ `.env.example`) — كلمات مرور MySQL والمدير الأعلى؛ `api/.env` يحوي `APP_KEY` (لا تفقده: يفكّ تشفير البيانات).
+- **النسخ الاحتياطي:** `backup.sh` يومياً 03:15 (cron) → `/opt/platt-backups/<تاريخ>/` (قاعدة البيانات + رفوعات + ملفات env). احتفاظ 14 يوماً، ونسخ الأحد 60 يوماً. **الاستعادة:** `restore.sh <dir> [db]`.
+- **المراقبة:** `GET /api/health` (200 = التطبيق وقاعدة البيانات بخير).
+- **اختبارات الحساسيات:** `scripts/smoke.sh` (عزل المستأجرين، الصلاحيات، توازن القيود، idempotency، كلمة المرور).
+- التفاصيل الكاملة في `docs/PRODUCTION.md`.

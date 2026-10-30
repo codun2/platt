@@ -72,12 +72,17 @@ class AuthController extends Controller
         $data = $request->validate([
             'name' => ['sometimes', 'string', 'max:120'],
             'phone' => ['nullable', 'string', 'max:30'],
-            'password' => ['nullable', 'string', 'min:6'],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'current_password' => ['required_with:password', 'nullable', 'string'],
         ]);
 
         if (empty($data['password'])) {
             unset($data['password']);
+        } elseif (! \Illuminate\Support\Facades\Hash::check($data['current_password'] ?? '', $user->password)) {
+            // Changing the password needs the current one (a stolen session cannot lock the owner out).
+            return response()->json(['message' => 'كلمة المرور الحالية غير صحيحة.', 'errors' => ['current_password' => ['غير صحيحة']]], 422);
         }
+        unset($data['current_password']);
         $user->fill($data)->save();
 
         return response()->json($this->payload($user->fresh()));

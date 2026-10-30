@@ -30,6 +30,9 @@ CMD ["sh", "-c", "\
     [ -n \"$APP_URL\" ] && set_env APP_URL \"$APP_URL\"; \
     [ -n \"$SUPER_ADMIN_EMAIL\" ] && set_env SUPER_ADMIN_EMAIL \"$SUPER_ADMIN_EMAIL\"; \
     [ -n \"$SUPER_ADMIN_PASSWORD\" ] && set_env SUPER_ADMIN_PASSWORD \"$SUPER_ADMIN_PASSWORD\"; \
+    [ -n \"$SEED_DEMO\" ] && set_env SEED_DEMO \"$SEED_DEMO\"; \
+    [ -n \"$LOG_CHANNEL\" ] && set_env LOG_CHANNEL \"$LOG_CHANNEL\"; \
+    [ -n \"$LOG_LEVEL\" ] && set_env LOG_LEVEL \"$LOG_LEVEL\"; \
     set_env SESSION_DRIVER file; set_env CACHE_STORE file; set_env QUEUE_CONNECTION sync; \
     php artisan storage:link --force || true; \
     until php artisan migrate --force 2>/dev/null; do echo 'waiting for db...'; sleep 3; done; \

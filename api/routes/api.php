@@ -28,6 +28,11 @@ Route::middleware('throttle:20,1')->group(function () {
     Route::post('auth/login', [AuthController::class, 'login']);
     Route::post('auth/register', [AuthController::class, 'register']);
 });
+// Uptime monitoring: app + database reachable.
+Route::get('health', function () {
+    try { \Illuminate\Support\Facades\DB::select('select 1'); return response()->json(['ok' => true, 'db' => true, 'time' => now()->toIso8601String()]); }
+    catch (\Throwable) { return response()->json(['ok' => false, 'db' => false], 503); }
+})->middleware('throttle:60,1');
 Route::get('public/sectors', [PublicController::class, 'sectors']);
 // Add-on «صفحة الطلب أونلاين» — public, no login.
 Route::get('public/store/{handle}', [Addons\StorePublicController::class, 'show'])->middleware('throttle:store-view');

@@ -15,8 +15,10 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             SectorPresetSeeder::class,
             SuperAdminSeeder::class,
-            DemoTenantSeeder::class,
-            SectorDemoSeeder::class,
         ]);
+        // Demo tenants with public test passwords: never on production unless asked for.
+        if (filter_var(env('SEED_DEMO', false), FILTER_VALIDATE_BOOLEAN)) {
+            $this->call([DemoTenantSeeder::class, SectorDemoSeeder::class]);
+        }
     }
 }
