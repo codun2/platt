@@ -1,4 +1,6 @@
 // Rakeez SPA — served from /app/ by nginx; API proxied at /api.
+const RECOVERY = "(function(){var K='rk_recover_ts';function hit(m){m=(''+(m||'')).toLowerCase();return m.indexOf('importing a module script failed')>-1||m.indexOf('error loading dynamically')>-1||m.indexOf('failed to fetch dynamically')>-1||m.indexOf('dynamically imported module')>-1;}function bust(){try{var t=+sessionStorage.getItem(K)||0;if(Date.now()-t<20000)return;sessionStorage.setItem(K,''+Date.now());}catch(e){}if(!navigator.onLine)return;var done=function(){location.reload();};try{var ps=[];if(window.caches&&caches.keys){ps.push(caches.keys().then(function(ks){return Promise.all(ks.map(function(k){return caches.delete(k);}));}));}if(navigator.serviceWorker&&navigator.serviceWorker.getRegistrations){ps.push(navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.update&&r.update();}));}));}Promise.all(ps).then(done,done);}catch(e){done();}}addEventListener('error',function(e){if(hit(e&&e.message))bust();},true);addEventListener('unhandledrejection',function(e){var r=e&&e.reason;if(hit(r&&(r.message||r)))bust();});addEventListener('load',function(){setTimeout(function(){try{var n=document.getElementById('__nuxt');if(n&&n.children.length)sessionStorage.removeItem(K);}catch(e){}},5000);});})();"
+
 export default defineNuxtConfig({
   ssr: false,
   devtools: { enabled: false },
@@ -9,6 +11,7 @@ export default defineNuxtConfig({
     head: {
       title: 'ركائز — منصّة الأعمال',
       htmlAttrs: { lang: 'ar', dir: 'rtl' },
+      script: [{ innerHTML: RECOVERY, tagPosition: 'head' }],
       meta: [{ name: 'viewport', content: 'width=device-width, initial-scale=1' }, { name: 'theme-color', content: '#e11d48' }, { name: 'apple-mobile-web-app-capable', content: 'yes' }, { name: 'mobile-web-app-capable', content: 'yes' }, { name: 'apple-mobile-web-app-title', content: 'ركائز' }],
       link: [
         { rel: 'manifest', href: '/app/manifest.webmanifest' },
