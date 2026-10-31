@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ركائز — حلول العقارات والأملاك</title>
+  <meta name="description" content="إدارة متكاملة لعقاراتك وأملاكك: سجل الوحدات، عقود الإيجار، تحصيل الإيجارات وتذكيرها، وكشوف لكل مالك. باقات تبدأ من 15 ريال شهرياً." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --blue:#2563eb; --blue-dark:#1d4ed8; --navy:#0f172a;
+      --emerald:#10b981; --amber:#f59e0b; --violet:#7c3aed; --rose:#f43f5e;
+      --ink:#0f172a; --muted:#64748b; --bg:#f1f5f9; --card:#ffffff;
+      --ring:rgba(37,99,235,.1); --shadow:0 18px 40px -18px rgba(15,23,42,.22);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Cairo',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased}
+    a{text-decoration:none;color:inherit}
+    .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+    header{position:sticky;top:0;z-index:50;background:rgba(241,245,249,.82);backdrop-filter:blur(14px);border-bottom:1px solid rgba(15,23,42,.06)}
+    nav{display:flex;align-items:center;justify-content:space-between;height:74px;gap:16px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:900;font-size:23px}
+    .logo{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--blue),#60a5fa);display:grid;place-items:center;color:#fff;box-shadow:0 8px 20px -6px var(--blue)}
+    .nav-links{display:flex;gap:30px;align-items:center;font-weight:600;color:var(--muted)}
+    .nav-links a:hover{color:var(--blue)}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:12px;font-weight:700;font-family:inherit;cursor:pointer;border:none;transition:.2s;font-size:15px}
+    .btn-primary{background:var(--blue);color:#fff;box-shadow:0 10px 24px -10px var(--blue)}
+    .btn-primary:hover{background:var(--blue-dark);transform:translateY(-2px)}
+    .btn-ghost{background:transparent;color:var(--ink)}
+    .btn-ghost:hover{background:var(--ring)}
+    @media(max-width:860px){.nav-links{display:none}}
+    .svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    section{padding:66px 0}
+    .sec-head{text-align:center;max-width:720px;margin:0 auto 46px}
+    .pill{display:inline-flex;align-items:center;gap:8px;background:var(--ring);color:var(--blue);font-weight:700;font-size:14px;padding:8px 16px;border-radius:999px;margin-bottom:16px}
+    .sec-head h2{font-size:clamp(28px,4vw,40px);font-weight:900;letter-spacing:-.5px}
+    .sec-head p{color:var(--muted);font-size:17px;margin-top:14px}
+    .back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-weight:700;font-size:14px}
+    .back:hover{color:var(--blue)}
+    .hero-sector{padding:56px 0 40px;text-align:center}
+    .sector-badge{width:90px;height:90px;border-radius:24px;display:inline-grid;place-items:center;font-size:46px;background:#fff;box-shadow:var(--shadow);border:1px solid rgba(15,23,42,.05);margin-bottom:22px}
+    .hero-sector h1{font-size:clamp(32px,5vw,52px);font-weight:900;line-height:1.2;letter-spacing:-.5px}
+    .hero-sector h1 .grad{background:linear-gradient(120deg,var(--blue),var(--emerald));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .hero-sector .lead{font-size:19px;color:var(--muted);margin:20px auto 30px;max-width:640px}
+    .hero-cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+    .chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:30px}
+    .chip{background:#fff;border:1px solid rgba(15,23,42,.06);box-shadow:var(--shadow);border-radius:999px;padding:8px 16px;font-weight:700;font-size:14px;display:inline-flex;gap:8px;align-items:center}
+    .chip .d{width:8px;height:8px;border-radius:50%;background:var(--emerald)}
+    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+    .feat{background:var(--card);border-radius:20px;padding:28px;box-shadow:var(--shadow);border:1px solid rgba(15,23,42,.05);transition:.25s}
+    .feat:hover{transform:translateY(-6px)}
+    .feat .fi{width:54px;height:54px;border-radius:15px;display:grid;place-items:center;color:#fff;margin-bottom:18px;font-size:26px}
+    .feat h3{font-size:18px;font-weight:800;margin-bottom:8px}
+    .feat p{color:var(--muted);font-size:15px}
+    .bg-blue{background:var(--blue)} .bg-emerald{background:var(--emerald)}
+    .bg-amber{background:var(--amber)} .bg-violet{background:var(--violet)} .bg-rose{background:var(--rose)}
+    @media(max-width:860px){.features{grid-template-columns:1fr}}
+    .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+    @media(max-width:860px){.pricing{grid-template-columns:1fr}}
+    .plan{background:var(--card);border-radius:22px;padding:30px 26px;box-shadow:var(--shadow);border:1px solid rgba(15,23,42,.06);display:flex;flex-direction:column;position:relative}
+    .plan.pop{border:2px solid var(--blue);box-shadow:0 28px 56px -22px rgba(37,99,235,.45)}
+    .plan .tag{position:absolute;top:-13px;inset-inline:0;margin-inline:auto;width:max-content;background:var(--blue);color:#fff;font-size:12px;font-weight:800;padding:5px 16px;border-radius:999px}
+    .plan h3{font-size:20px;font-weight:900}
+    .plan .ptip{color:var(--muted);font-size:13.5px;min-height:38px}
+    .plan .price{font-size:42px;font-weight:900;margin:10px 0 2px;line-height:1}
+    .plan .price small{font-size:15px;font-weight:700;color:var(--muted)}
+    .plan .per{color:var(--muted);font-size:13px;margin-bottom:20px}
+    .plan ul{list-style:none;display:flex;flex-direction:column;gap:11px;margin:4px 0 24px;flex:1}
+    .plan li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;font-weight:600;color:#1e293b}
+    .plan li .ck{color:var(--emerald);font-weight:900;flex-shrink:0}
+    .plan .btn{justify-content:center;width:100%}
+    .plan.pop .btn-ghost{background:var(--blue);color:#fff}
+    .price-note{text-align:center;color:var(--muted);font-size:13.5px;margin-top:22px}
+    .cmp-wrap{overflow-x:auto;background:#fff;border-radius:20px;box-shadow:var(--shadow);border:1px solid rgba(15,23,42,.05)}
+    .cmp{width:100%;border-collapse:collapse;min-width:640px}
+    .cmp th,.cmp td{padding:15px 18px;text-align:center;border-bottom:1px solid rgba(15,23,42,.06)}
+    .cmp th:first-child,.cmp td:first-child{text-align:start;font-weight:700;color:#334155}
+    .cmp thead th{font-size:16px;font-weight:900}
+    .cmp thead th .mo{display:block;font-size:12px;font-weight:700;color:var(--muted)}
+    .cmp thead th.pop{color:var(--blue)}
+    .cmp tbody tr:last-child td{border-bottom:0}
+    .cmp tbody tr:nth-child(even){background:#f8fafc}
+    .cmp .yes{color:var(--emerald);font-weight:900;font-size:18px}
+    .cmp .no{color:#cbd5e1;font-weight:900}
+    .faq{max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+    .faq details{background:#fff;border-radius:16px;box-shadow:var(--shadow);border:1px solid rgba(15,23,42,.05);padding:2px 22px}
+    .faq summary{cursor:pointer;list-style:none;padding:18px 0;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .faq summary::-webkit-details-marker{display:none}
+    .faq summary::after{content:"+";font-size:26px;color:var(--blue);font-weight:800;transition:.2s;line-height:1}
+    .faq details[open] summary::after{transform:rotate(45deg)}
+    .faq p{color:var(--muted);padding:0 0 20px;font-size:15px}
+    .cta{background:linear-gradient(135deg,var(--blue),var(--blue-dark));border-radius:28px;padding:56px;text-align:center;color:#fff}
+    .cta h2{font-size:clamp(26px,4vw,38px);font-weight:900}
+    .cta p{color:rgba(255,255,255,.85);font-size:18px;margin:16px 0 30px}
+    .cta .btn-primary{background:#fff;color:var(--blue)}
+    .cta .btn-primary:hover{background:#eff6ff}
+    footer{padding:48px 0 32px;color:var(--muted);text-align:center}
+    footer .brand{justify-content:center;margin-bottom:14px;color:var(--ink)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav>
+        <a href="/" class="brand">
+          <div class="logo"><svg class="svg" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg></div>
+          ركائز
+        </a>
+        <div class="nav-links">
+          <a href="/#sectors">القطاعات</a>
+          <a href="#pricing">الباقات</a>
+          <a href="#faq">الأسئلة</a>
+          <a href="mailto:hello@rakeez.app">تواصل</a>
+        </div>
+        <a href="/app/login" class="btn btn-ghost">تسجيل الدخول</a>
+        <a href="/app/register" class="btn btn-primary">ابدأ مجاناً</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero-sector">
+    <div class="wrap">
+      <a href="/#sectors" class="back">→ كل القطاعات</a>
+      <div style="margin-top:20px"><div class="sector-badge">🏢</div></div>
+      <h1>العقارات <span class="grad">والأملاك</span></h1>
+      <p class="lead">إدارة متكاملة لعقاراتك وأملاكك: سجل الوحدات، عقود الإيجار، تحصيل الإيجارات وتذكيرها، وكشوف لكل مالك.</p>
+      <div class="hero-cta">
+        <a href="/app/register" class="btn btn-primary">ابدأ تجربتك المجانية</a>
+        <a href="#pricing" class="btn btn-ghost">شوف الباقات ←</a>
+      </div>
+      <div class="chips">
+        <span class="chip"><span class="d"></span>سجل الوحدات</span>
+        <span class="chip"><span class="d"></span>عقود الإيجار</span>
+        <span class="chip"><span class="d"></span>تحصيل الإيجارات</span>
+        <span class="chip"><span class="d"></span>المحاسبة</span>
+        <span class="chip"><span class="d"></span>بوابة الملّاك</span>
+        <span class="chip"><span class="d"></span>الصيانة</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="why" style="background:#fff">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="pill">لماذا ركائز</span>
+        <h2>كل أملاكك وعقودك في مكان واحد</h2>
+        <p>من تأجير الوحدة حتى تحصيل الإيجار وكشف المالك — بدون جداول متفرّقة.</p>
+      </div>
+      <div class="features">
+        <div class="feat">
+          <div class="fi bg-blue">🏘️</div>
+          <h3>سجل الوحدات والعقارات</h3>
+          <p>بطاقة لكل وحدة بحالتها وإيجارها ومستأجرها الحالي.</p>
+        </div>
+        <div class="feat">
+          <div class="fi bg-emerald">📄</div>
+          <h3>عقود الإيجار</h3>
+          <p>أنشئ عقوداً بمددها ودفعاتها وتجديداتها بشكل منظّم.</p>
+        </div>
+        <div class="feat">
+          <div class="fi bg-amber">💰</div>
+          <h3>تحصيل وتذكير</h3>
+          <p>جدول الإيجارات المستحقة وتذكير المستأجرين تلقائياً.</p>
+        </div>
+        <div class="feat">
+          <div class="fi bg-violet">👤</div>
+          <h3>بوابة الملّاك والمستأجرين</h3>
+          <p>كشف حساب ومستندات لكل طرف في مكان آمن.</p>
+        </div>
+        <div class="feat">
+          <div class="fi bg-rose">🛠️</div>
+          <h3>طلبات الصيانة</h3>
+          <p>استقبل بلاغات الصيانة وتابع تنفيذها وتكاليفها.</p>
+        </div>
+        <div class="feat">
+          <div class="fi bg-blue">📊</div>
+          <h3>تقارير الإشغال والدخل</h3>
+          <p>نِسب الإشغال، الدخل الشهري، والمتأخرات لكل عقار.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="pill">الباقات</span>
+        <h2>باقات تناسب حجم عملك</h2>
+        <p>ابدأ صغيراً وكبِّر وقت ما تحب. ترقية أو تخفيض الباقة في أي وقت.</p>
+      </div>
+      <div class="pricing">
+        <div class="plan">
+          <h3>الأساسية</h3>
+          <p class="ptip">للبداية والأعمال الصغيرة بوحدة واحدة.</p>
+          <div class="price">15 <small>ريال</small></div>
+          <div class="per">شهرياً</div>
+          <ul>
+            <li><span class="ck">✓</span> حتى 3 مستخدمين</li>
+            <li><span class="ck">✓</span> وحدة / فرع واحد</li>
+            <li><span class="ck">✓</span> سجل الوحدات والعقارات</li>
+            <li><span class="ck">✓</span> عقود الإيجار</li>
+            <li><span class="ck">✓</span> الفواتير الضريبية (ZATCA)</li>
+            <li><span class="ck">✓</span> تقارير أساسية</li>
+            <li><span class="ck">✓</span> نسخ احتياطي يومي</li>
+            <li><span class="ck">✓</span> دعم عبر البريد</li>
+          </ul>
+          <a href="/app/register" class="btn btn-ghost" style="border:1.5px solid var(--blue);color:var(--blue)">ابدأ بالأساسية</a>
+        </div>
+        <div class="plan pop">
+          <span class="tag">الأكثر طلباً</span>
+          <h3>الاحترافية</h3>
+          <p class="ptip">للأعمال النامية ومتعددة الفروع.</p>
+          <div class="price">35 <small>ريال</small></div>
+          <div class="per">شهرياً</div>
+          <ul>
+            <li><span class="ck">✓</span> حتى 10 مستخدمين</li>
+            <li><span class="ck">✓</span> حتى 3 فروع / وحدات</li>
+            <li><span class="ck">✓</span> كل مزايا الأساسية</li>
+            <li><span class="ck">✓</span> تحصيل الإيجارات وتذكيرها</li>
+            <li><span class="ck">✓</span> بوابة الملّاك/المستأجرين</li>
+            <li><span class="ck">✓</span> الموارد البشرية والرواتب</li>
+            <li><span class="ck">✓</span> تقارير متقدمة</li>
+            <li><span class="ck">✓</span> دعم بأولوية</li>
+          </ul>
+          <a href="/app/register" class="btn btn-ghost">ابدأ بالاحترافية</a>
+        </div>
+        <div class="plan">
+          <h3>المؤسسات</h3>
+          <p class="ptip">للسلاسل والمؤسسات الكبيرة.</p>
+          <div class="price">80 <small>ريال</small></div>
+          <div class="per">شهرياً</div>
+          <ul>
+            <li><span class="ck">✓</span> حتى 50 مستخدم</li>
+            <li><span class="ck">✓</span> وحدات وفروع غير محدودة</li>
+            <li><span class="ck">✓</span> كل مزايا الاحترافية</li>
+            <li><span class="ck">✓</span> تحليلات ولوحات متقدمة</li>
+            <li><span class="ck">✓</span> صلاحيات وأدوار متقدمة</li>
+            <li><span class="ck">✓</span> نسخ احتياطي لحظي</li>
+            <li><span class="ck">✓</span> تكاملات وواجهة برمجية (API)</li>
+            <li><span class="ck">✓</span> مدير حساب مخصّص</li>
+          </ul>
+          <a href="/app/register" class="btn btn-ghost" style="border:1.5px solid var(--blue);color:var(--blue)">ابدأ بالمؤسسات</a>
+        </div>
+      </div>
+      <p class="price-note">الأسعار مبدئية وقابلة للتعديل · تجربة مجانية قبل الاشتراك · يمكن تغيير الباقة في أي وقت.</p>
+    </div>
+  </section>
+
+  <section style="background:#fff;padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="pill">مقارنة الباقات</span>
+        <h2>قارن واختر الأنسب</h2>
+      </div>
+      <div class="cmp-wrap">
+        <table class="cmp">
+          <thead>
+            <tr>
+              <th>الميزة</th>
+              <th>الأساسية<span class="mo">15 ريال/شهر</span></th>
+              <th class="pop">الاحترافية<span class="mo">35 ريال/شهر</span></th>
+              <th>المؤسسات<span class="mo">80 ريال/شهر</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>عدد المستخدمين</td><td><b>3</b></td><td><b>10</b></td><td><b>50</b></td></tr>
+            <tr><td>الفروع / الوحدات</td><td>واحد</td><td>حتى 3</td><td>غير محدود</td></tr>
+            <tr><td>سجل الوحدات والعقارات</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td>عقود الإيجار</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td>الفواتير الضريبية (ZATCA)</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td>تحصيل الإيجارات وتذكيرها</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td>بوابة الملّاك/المستأجرين</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td>الموارد البشرية والرواتب</td><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+            <tr><td>التقارير</td><td>أساسية</td><td>متقدمة</td><td>كاملة + تحليلات</td></tr>
+            <tr><td>النسخ الاحتياطي</td><td>يومي</td><td>يومي</td><td>لحظي</td></tr>
+            <tr><td>الدعم الفني</td><td>بريد</td><td>أولوية</td><td>مدير حساب مخصّص</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="pill">أسئلة شائعة</span>
+        <h2>أسئلة عن النظام</h2>
+      </div>
+      <div class="faq">
+        <details open><summary>هل يذكّر النظام بمواعيد الإيجارات؟</summary><p>نعم، يجدول الإيجارات المستحقة ويذكّر المستأجرين تلقائياً، مع متابعة المتأخرات في الباقة الاحترافية فأعلى.</p></details>
+        <details><summary>هل أحتاج خبرة تقنية لتشغيل النظام؟</summary><p>لا. الواجهة عربية بالكامل وبسيطة، والوحدات تتفعّل تلقائياً حسب نشاطك، فتبدأ العمل خلال دقائق بدون إعداد معقّد.</p></details>
+        <details><summary>هل بياناتي آمنة؟</summary><p>نعم. كل مشترك بياناته معزولة تماماً عن غيره (Multi-Tenant)، مع صلاحيات دقيقة لكل مستخدم ونسخ احتياطي دوري.</p></details>
+        <details><summary>هل يدعم النظام الفاتورة الإلكترونية (ZATCA)؟</summary><p>نعم. يصدر فواتير ضريبية متوافقة مع المرحلة الأولى لهيئة الزكاة والضريبة برمز QR جاهز للطباعة.</p></details>
+        <details><summary>هل أقدر أغيّر الباقة لاحقاً؟</summary><p>بالتأكيد. يمكنك الترقية أو التخفيض في أي وقت، وتُحتسب الفروق تلقائياً.</p></details>
+        <details><summary>كم يستغرق تفعيل الحساب؟</summary><p>دقائق فقط: تسجّل حسابك، تختار قطاع "العقارات والأملاك"، وتبدأ مباشرة.</p></details>
+        <details><summary>هل يوجد عقد أو التزام طويل؟</summary><p>لا. الاشتراك شهري مرن، وتبدأ بتجربة مجانية قبل أي دفع.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="cta">
+        <h2>جاهز تبدأ؟</h2>
+        <p>سجّل الآن وفعّل نظامك خلال دقائق — تجربة مجانية بدون بطاقة.</p>
+        <a href="/app/register" class="btn btn-primary">ابدأ تجربتك المجانية</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <a href="/" class="brand"><div class="logo"><svg class="svg" viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg></div>ركائز</a>
+      <p>منصّة الأعمال المتكاملة © ۲۰۲۶ — جميع الحقوق محفوظة.</p>
+    </div>
+  </footer>
+</body>
+</html>
