@@ -1,11 +1,12 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'auth' })
 const auth = useAuth()
-const { t, tt, toggle, isEn } = useI18n()
+const { t, tt } = useI18n()
 const email = ref('')
 const password = ref('')
 const err = ref('')
 const busy = ref(false)
+const show = ref(false)
 
 async function submit() {
   err.value = ''; busy.value = true
@@ -17,19 +18,15 @@ async function submit() {
 </script>
 
 <template>
-  <div class="box">
-    <div class="row between">
-      <div class="logo"><div class="mark">ر</div><div><b>{{ t('app.name') }}</b><br /><small class="muted">{{ t('app.tagline') }}</small></div></div>
-      <button class="btn ghost sm" @click="toggle"><i class="ti ti-language" /> {{ isEn ? 'ع' : 'EN' }}</button>
-    </div>
-    <h2>{{ t('auth.login') }}</h2>
+  <div class="auth-card">
+    <h2>{{ t('auth.login') }} <span class="wave">👋</span></h2>
     <p class="sub">{{ tt('أدخل بياناتك للوصول إلى لوحة التحكم', 'Enter your credentials to access the dashboard') }}</p>
     <div v-if="err" class="alert bad">{{ err }}</div>
     <form @submit.prevent="submit">
-      <div class="field"><label>{{ t('auth.email') }}</label><input v-model="email" type="email" required dir="ltr" /></div>
-      <div class="field"><label>{{ t('auth.password') }}</label><input v-model="password" type="password" required dir="ltr" /></div>
-      <button class="btn" style="width:100%;justify-content:center" :disabled="busy">{{ busy ? '...' : t('auth.loginBtn') }}</button>
+      <div class="field ic"><label>{{ t('auth.email') }}</label><i class="ti ti-mail" /><input v-model="email" type="email" required dir="ltr" placeholder="you@company.com" autocomplete="username" /></div>
+      <div class="field ic"><label>{{ t('auth.password') }}</label><i class="ti ti-lock" /><input v-model="password" :type="show ? 'text' : 'password'" required dir="ltr" placeholder="••••••••" autocomplete="current-password" /><button type="button" class="eye" @click="show = !show"><i :class="`ti ${show ? 'ti-eye-off' : 'ti-eye'}`" /></button></div>
+      <button class="btn big" :disabled="busy"><span v-if="busy" class="spin"><i class="ti ti-loader-2" /></span><template v-else>{{ t('auth.loginBtn') }} <i class="ti ti-arrow-left rtl-flip" /></template></button>
     </form>
-    <p class="mt muted" style="text-align:center">{{ t('auth.noAccount') }} <NuxtLink to="/register" style="color:var(--primary);font-weight:700">{{ tt('سجّل شركتك مجاناً', 'Register your company free') }}</NuxtLink></p>
+    <p class="switch">{{ t('auth.noAccount') }} <NuxtLink to="/register">{{ tt('سجّل شركتك مجاناً', 'Register free') }}</NuxtLink></p>
   </div>
 </template>

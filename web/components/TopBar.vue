@@ -11,6 +11,7 @@ const date = computed(() => ymd(now.value))
 const off = useOffline()
 const pwa = usePwaInstall()
 const initials = computed(() => (auth.state.value.user?.name || '?').slice(0, 1))
+const navOpen = useState('nav-open', () => false)
 // Change own password (requires the current one).
 const pw = reactive({ open: false, current: '', next: '', confirm: '', err: '', busy: false })
 async function savePw() {
@@ -25,6 +26,7 @@ async function savePw() {
 
 <template>
   <header class="topbar">
+    <button class="menu-btn" :title="isEn ? 'Menu' : 'القائمة'" @click="navOpen = !navOpen"><i class="ti ti-menu-2" /></button>
     <NuxtLink v-if="back" :to="back.to" class="btn ghost sm back-btn" :title="back.label">
       <i :class="`ti ${isEn ? 'ti-arrow-left' : 'ti-arrow-right'}`" /> {{ isEn ? 'Back to' : 'رجوع إلى' }} {{ back.label }}
     </NuxtLink>
