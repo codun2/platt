@@ -30,8 +30,8 @@ async function submit() {
     <p class="sub">{{ tt('أدخل بياناتك للوصول إلى لوحة التحكم', 'Enter your credentials to access the dashboard') }}</p>
     <div v-if="err" class="alert bad">{{ err }}</div>
     <form @submit.prevent="submit">
-      <div class="field ic"><label>{{ t('auth.email') }}</label><i class="ti ti-mail" /><input v-model="email" type="email" required dir="ltr" placeholder="you@company.com" autocomplete="username" /></div>
-      <div class="field ic"><label>{{ t('auth.password') }}</label><i class="ti ti-lock" /><input v-model="password" :type="show ? 'text' : 'password'" required dir="ltr" placeholder="••••••••" autocomplete="current-password" /><button type="button" class="eye" @click="show = !show"><i :class="`ti ${show ? 'ti-eye-off' : 'ti-eye'}`" /></button></div>
+      <div class="fld"><i class="ti ti-mail fld-ic" /><input id="f-email" v-model="email" type="email" required placeholder=" " autocomplete="username" /><label for="f-email">{{ t('auth.email') }}</label></div>
+      <div class="fld has-eye"><i class="ti ti-lock fld-ic" /><input id="f-pass" v-model="password" :type="show ? 'text' : 'password'" required placeholder=" " autocomplete="current-password" /><label for="f-pass">{{ t('auth.password') }}</label><button type="button" class="fld-eye" :title="show ? tt('إخفاء','Hide') : tt('إظهار','Show')" @click="show = !show"><i :class="`ti ${show ? 'ti-eye-off' : 'ti-eye'}`" /></button></div>
       <button class="btn big" :disabled="busy"><span v-if="busy" class="spin"><i class="ti ti-loader-2" /></span><template v-else>{{ t('auth.loginBtn') }} <i class="ti ti-arrow-left rtl-flip" /></template></button>
     </form>
     <div v-if="quick.length" class="quick-logins">

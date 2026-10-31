@@ -429,6 +429,34 @@ select option:checked { background: var(--accent-soft); color: var(--primary); f
 .auth-card .switch { text-align: center; margin-top: 18px; color: #64748b; font-size: 14px; }
 .auth-card .switch a { color: var(--primary); font-weight: 700; text-decoration: none; }
 .auth-card .switch a:hover { text-decoration: underline; }
+/* ---- Floating-label underline fields (auth) ---- */
+.auth-card .fld { position: relative; margin-bottom: 20px; }
+.auth-card .fld input {
+  width: 100%; box-sizing: border-box; height: 54px;
+  padding-block: 22px 6px; padding-inline: 38px 12px;
+  border: 0; border-bottom: 1.6px solid #dfe5ef; border-radius: 10px 10px 0 0;
+  background: #f7f9fc; color: #0f172a; font: inherit; font-size: 15px;
+  unicode-bidi: plaintext; text-align: start;
+  transition: border-color .16s, background .16s, box-shadow .16s;
+}
+.auth-card .fld.has-eye input { padding-inline-end: 42px; }
+.auth-card .fld input:focus { outline: none; border-color: var(--primary); background: #fff; box-shadow: 0 6px 16px -12px var(--primary); }
+.auth-card .fld input:-webkit-autofill { -webkit-text-fill-color: #0f172a; box-shadow: 0 0 0 100px #f7f9fc inset; }
+.auth-card .fld .fld-ic { position: absolute; inset-inline-start: 9px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 20px; pointer-events: none; transition: color .16s; }
+.auth-card .fld:focus-within .fld-ic { color: var(--primary); }
+.auth-card .fld label {
+  position: absolute; inset-inline-start: 38px; top: 50%; transform: translateY(-50%);
+  color: #94a3b8; font-size: 15px; font-weight: 500; pointer-events: none;
+  transform-origin: inset-inline-start center; transition: top .16s, transform .16s, color .16s, font-size .16s;
+  background: transparent;
+}
+.auth-card .fld input:focus ~ label,
+.auth-card .fld input:not(:placeholder-shown) ~ label {
+  top: 13px; transform: translateY(0); font-size: 11.5px; font-weight: 700; color: var(--primary);
+}
+.auth-card .fld .fld-eye { position: absolute; inset-inline-end: 4px; top: 50%; transform: translateY(-50%); background: none; border: 0; color: #94a3b8; cursor: pointer; padding: 6px; font-size: 18px; line-height: 0; border-radius: 8px; }
+.auth-card .fld .fld-eye:hover { color: var(--primary); background: var(--primary-50); }
+
 .sec-search { width: 100%; box-sizing: border-box; padding: 9px 13px; border: 1.5px solid #e2e8f0; border-radius: 10px; font: inherit; margin-bottom: 8px; background: #fff; color: #0f172a; }
 .sec-search:focus { outline: none; border-color: var(--primary); }
 .sectors { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-height: 232px; overflow-y: auto; padding: 2px; }
