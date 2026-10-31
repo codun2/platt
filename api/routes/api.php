@@ -27,7 +27,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('throttle:20,1')->group(function () {
     Route::post('auth/login', [AuthController::class, 'login']);
     Route::post('auth/register', [AuthController::class, 'register']);
+    // One-click demo logins (allowlisted; no password from the client; gated by QUICK_LOGINS env)
+    Route::post('public/demo-login', [PublicController::class, 'demoLogin']);
 });
+Route::get('public/quick-logins', [PublicController::class, 'quickLogins'])->middleware('throttle:60,1');
 // Uptime monitoring: app + database reachable.
 Route::get('health', function () {
     try { \Illuminate\Support\Facades\DB::select('select 1'); return response()->json(['ok' => true, 'db' => true, 'time' => now()->toIso8601String()]); }

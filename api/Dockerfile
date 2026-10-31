@@ -31,6 +31,7 @@ CMD ["sh", "-c", "\
     [ -n \"$SUPER_ADMIN_EMAIL\" ] && set_env SUPER_ADMIN_EMAIL \"$SUPER_ADMIN_EMAIL\"; \
     [ -n \"$SUPER_ADMIN_PASSWORD\" ] && set_env SUPER_ADMIN_PASSWORD \"$SUPER_ADMIN_PASSWORD\"; \
     [ -n \"$SEED_DEMO\" ] && set_env SEED_DEMO \"$SEED_DEMO\"; \
+    [ -n \"$QUICK_LOGINS\" ] && set_env QUICK_LOGINS \"$QUICK_LOGINS\"; \
     [ -n \"$LOG_CHANNEL\" ] && set_env LOG_CHANNEL \"$LOG_CHANNEL\"; \
     [ -n \"$LOG_LEVEL\" ] && set_env LOG_LEVEL \"$LOG_LEVEL\"; \
     set_env SESSION_DRIVER file; set_env CACHE_STORE file; set_env QUEUE_CONNECTION sync; \

@@ -41,6 +41,8 @@ services:
       SUPER_ADMIN_EMAIL: ${SUPER_ADMIN_EMAIL:-admin@rakeez.app}
       SUPER_ADMIN_PASSWORD: ${SUPER_ADMIN_PASSWORD}
       SEED_DEMO: ${SEED_DEMO:-false}
+      # Quick-login chips on the login page (demo accounts). Set false on a real production.
+      QUICK_LOGINS: ${QUICK_LOGINS:-true}
       LOG_CHANNEL: daily
       LOG_LEVEL: ${LOG_LEVEL:-warning}
       # PHP built-in server: several workers so cashiers do not queue behind each other.

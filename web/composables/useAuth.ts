@@ -62,6 +62,14 @@ export function useAuth() {
     return res
   }
 
+  /** One-click demo login (allowlisted server-side; no password sent). */
+  async function demoLogin(email: string) {
+    const res = await api.post('/public/demo-login', { email })
+    api.setToken(res.token)
+    apply(res)
+    return res
+  }
+
   async function register(form: Record<string, any>) {
     const res = await api.post('/auth/register', form)
     api.setToken(res.token)
@@ -102,5 +110,5 @@ export function useAuth() {
 
   /** Is a module / add-on enabled for this tenant (e.g. hasModule('loyalty'))? */
   const hasModule = (key: string) => (state.value.modules || []).includes(key)
-  return { state, login, register, fetchMe, logout, can, isSuper, isLoggedIn, hasModule }
+  return { state, login, demoLogin, register, fetchMe, logout, can, isSuper, isLoggedIn, hasModule }
 }

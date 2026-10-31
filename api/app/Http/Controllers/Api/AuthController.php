@@ -88,6 +88,9 @@ class AuthController extends Controller
         return response()->json($this->payload($user->fresh()));
     }
 
+    /** Public wrapper so the demo-login endpoint can build the same session payload. */
+    public function publicPayload(User $user): array { return $this->payload($user); }
+
     /** Common auth payload: user + tenant + permissions + dynamic sidebar. */
     private function payload(User $user): array
     {

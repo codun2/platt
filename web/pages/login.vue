@@ -7,6 +7,13 @@ const password = ref('')
 const err = ref('')
 const busy = ref(false)
 const show = ref(false)
+const quick = ref<any[]>([])
+onMounted(async () => { try { quick.value = await useApi().get('/public/quick-logins') } catch { /* */ } })
+async function quickLogin(acc: any) {
+  err.value = ''; busy.value = true
+  try { const res = await auth.demoLogin(acc.email); navigateTo(res.user.is_super_admin ? '/super' : '/') }
+  catch (e: any) { err.value = e.message } finally { busy.value = false }
+}
 
 async function submit() {
   err.value = ''; busy.value = true
@@ -27,6 +34,14 @@ async function submit() {
       <div class="field ic"><label>{{ t('auth.password') }}</label><i class="ti ti-lock" /><input v-model="password" :type="show ? 'text' : 'password'" required dir="ltr" placeholder="••••••••" autocomplete="current-password" /><button type="button" class="eye" @click="show = !show"><i :class="`ti ${show ? 'ti-eye-off' : 'ti-eye'}`" /></button></div>
       <button class="btn big" :disabled="busy"><span v-if="busy" class="spin"><i class="ti ti-loader-2" /></span><template v-else>{{ t('auth.loginBtn') }} <i class="ti ti-arrow-left rtl-flip" /></template></button>
     </form>
+    <div v-if="quick.length" class="quick">
+      <div class="q-sep"><span>{{ tt('أو جرّب حساباً جاهزاً', 'Or try a ready account') }}</span></div>
+      <div class="q-grid">
+        <button v-for="a in quick" :key="a.email" type="button" class="q-chip" :disabled="busy" @click="quickLogin(a)">
+          <i :class="`ti ${a.icon}`" /> {{ tt(a.name_ar, a.name_en || a.name_ar) }}
+        </button>
+      </div>
+    </div>
     <p class="switch">{{ t('auth.noAccount') }} <NuxtLink to="/register">{{ tt('سجّل شركتك مجاناً', 'Register free') }}</NuxtLink></p>
   </div>
 </template>

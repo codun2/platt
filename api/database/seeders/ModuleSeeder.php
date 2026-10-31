@@ -26,33 +26,33 @@ class ModuleSeeder extends Seeder
 
         return [
             // ---- Core (always on) ----
-            $core(['key' => 'dashboard', 'name_ar' => 'الرئيسية', 'name_en' => 'Dashboard', 'icon' => 'ti-layout-dashboard', 'route' => '/']),
-            $core(['key' => 'settings', 'name_ar' => 'الإعدادات العامة', 'name_en' => 'Settings', 'icon' => 'ti-settings', 'route' => '/settings']),
+            $core(['key' => 'dashboard', 'name_ar' => 'لوحة البداية', 'name_en' => 'Dashboard', 'icon' => 'ti-layout-dashboard', 'route' => '/']),
+            $core(['key' => 'settings', 'name_ar' => 'الإعدادات', 'name_en' => 'Settings', 'icon' => 'ti-settings', 'route' => '/settings']),
             $core(['key' => 'settings_company', 'parent_key' => 'settings', 'name_ar' => 'بيانات الشركة', 'name_en' => 'Company', 'icon' => 'ti-building', 'route' => '/settings/company']),
             $core(['key' => 'settings_users', 'parent_key' => 'settings', 'name_ar' => 'المستخدمون', 'name_en' => 'Users', 'icon' => 'ti-users', 'route' => '/settings/users']),
             $core(['key' => 'settings_roles', 'parent_key' => 'settings', 'name_ar' => 'الأدوار والصلاحيات', 'name_en' => 'Roles', 'icon' => 'ti-shield-lock', 'route' => '/settings/roles']),
 
             // ---- Core (horizontal, enabled per preset) ----
-            ['key' => 'accounting', 'engine' => 'core', 'name_ar' => 'المحاسبة', 'name_en' => 'Accounting', 'icon' => 'ti-calculator', 'route' => '/accounting'],
+            ['key' => 'accounting', 'engine' => 'core', 'name_ar' => 'المالية والمحاسبة', 'name_en' => 'Accounting', 'icon' => 'ti-calculator', 'route' => '/accounting'],
             ['key' => 'accounting_accounts', 'parent_key' => 'accounting', 'engine' => 'core', 'name_ar' => 'شجرة الحسابات', 'name_en' => 'Chart of Accounts', 'icon' => 'ti-sitemap', 'route' => '/accounting/accounts'],
             ['key' => 'accounting_journal', 'parent_key' => 'accounting', 'engine' => 'core', 'name_ar' => 'القيود اليومية', 'name_en' => 'Journal', 'icon' => 'ti-book', 'route' => '/accounting/journal'],
             ['key' => 'accounting_expenses', 'parent_key' => 'accounting', 'engine' => 'core', 'name_ar' => 'المصروفات', 'name_en' => 'Expenses', 'icon' => 'ti-receipt', 'route' => '/accounting/expenses'],
             ['key' => 'accounting_reports', 'parent_key' => 'accounting', 'engine' => 'core', 'name_ar' => 'التقارير المالية', 'name_en' => 'Reports', 'icon' => 'ti-report-analytics', 'route' => '/accounting/reports'],
 
-            ['key' => 'crm', 'engine' => 'core', 'name_ar' => 'العملاء والفواتير', 'name_en' => 'CRM & Invoices', 'icon' => 'ti-users-group', 'route' => '/crm'],
+            ['key' => 'crm', 'engine' => 'core', 'name_ar' => 'العملاء والمبيعات', 'name_en' => 'CRM & Invoices', 'icon' => 'ti-users-group', 'route' => '/crm'],
             ['key' => 'crm_customers', 'parent_key' => 'crm', 'engine' => 'core', 'name_ar' => 'العملاء', 'name_en' => 'Customers', 'icon' => 'ti-user', 'route' => '/crm/customers'],
             ['key' => 'crm_invoices', 'parent_key' => 'crm', 'engine' => 'core', 'name_ar' => 'الفواتير', 'name_en' => 'Invoices', 'icon' => 'ti-file-invoice', 'route' => '/crm/invoices'],
             ['key' => 'crm_quotes', 'parent_key' => 'crm', 'engine' => 'core', 'name_ar' => 'عروض الأسعار', 'name_en' => 'Quotes', 'icon' => 'ti-file-dollar', 'route' => '/crm/quotes'],
 
-            ['key' => 'hr', 'engine' => 'core', 'name_ar' => 'الموارد البشرية', 'name_en' => 'HR', 'icon' => 'ti-id-badge', 'route' => '/hr'],
+            ['key' => 'hr', 'engine' => 'core', 'name_ar' => 'فريق العمل', 'name_en' => 'HR', 'icon' => 'ti-id-badge', 'route' => '/hr'],
             ['key' => 'hr_employees', 'parent_key' => 'hr', 'engine' => 'core', 'name_ar' => 'الموظفون', 'name_en' => 'Employees', 'icon' => 'ti-users', 'route' => '/hr/employees'],
             ['key' => 'hr_attendance', 'parent_key' => 'hr', 'engine' => 'core', 'name_ar' => 'الحضور والإجازات', 'name_en' => 'Attendance', 'icon' => 'ti-calendar-check', 'route' => '/hr/attendance'],
             ['key' => 'hr_payroll', 'parent_key' => 'hr', 'engine' => 'core', 'name_ar' => 'الرواتب', 'name_en' => 'Payroll', 'icon' => 'ti-cash', 'route' => '/hr/payroll'],
 
-            ['key' => 'whatsapp', 'engine' => 'core', 'name_ar' => 'رسائل واتساب', 'name_en' => 'WhatsApp Messages', 'icon' => 'ti-brand-whatsapp', 'route' => '/whatsapp'],
+            ['key' => 'whatsapp', 'engine' => 'core', 'name_ar' => 'التواصل والتذكير', 'name_en' => 'WhatsApp Messages', 'icon' => 'ti-brand-whatsapp', 'route' => '/whatsapp'],
 
             // ---- Engine: Inventory + POS ----
-            ['key' => 'inventory', 'engine' => 'inventory', 'name_ar' => 'المخزون', 'name_en' => 'Inventory', 'icon' => 'ti-package', 'route' => '/inventory'],
+            ['key' => 'inventory', 'engine' => 'inventory', 'name_ar' => 'المخزون والأصناف', 'name_en' => 'Inventory', 'icon' => 'ti-package', 'route' => '/inventory'],
             ['key' => 'inventory_items', 'parent_key' => 'inventory', 'engine' => 'inventory', 'name_ar' => 'الأصناف', 'name_en' => 'Items', 'icon' => 'ti-box', 'route' => '/inventory/items'],
             ['key' => 'inventory_warehouses', 'parent_key' => 'inventory', 'engine' => 'inventory', 'name_ar' => 'المستودعات', 'name_en' => 'Warehouses', 'icon' => 'ti-building-warehouse', 'route' => '/inventory/warehouses'],
             ['key' => 'inventory_purchases', 'parent_key' => 'inventory', 'engine' => 'inventory', 'name_ar' => 'المشتريات والموردون', 'name_en' => 'Purchases', 'icon' => 'ti-truck-delivery', 'route' => '/inventory/purchases'],
