@@ -171,7 +171,7 @@ function printLast() {
   <div class="pos no-print">
     <div class="pos-left card">
       <div class="row" style="margin-bottom:10px">
-        <input v-model="q" :placeholder="tt('ابحث أو امسح الباركود ثم Enter','Search or scan barcode then Enter')" autofocus style="flex:1;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font-size:15px" @keyup.enter="onEnter" @input="loadItems" />
+        <input v-model="q" :placeholder="tt('ابحث عن صنف ثم اضغط Enter','Search an item then Enter')" autofocus style="flex:1;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font-size:15px" @keyup.enter="onEnter" @input="loadItems" />
         <select v-model="cat" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="loadItems"><option value="">{{ tt('كل التصنيفات','All categories') }}</option><option v-for="c in meta.categories" :key="c.id" :value="c.id">{{ c.name }}</option></select>
       </div>
       <div class="pos-grid">

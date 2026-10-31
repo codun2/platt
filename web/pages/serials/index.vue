@@ -70,7 +70,7 @@ async function saveDeliver() {
 
     <!-- Scan / lookup -->
     <div class="card mt">
-      <div class="card-title"><i class="ti ti-scan" /> {{ tt('بحث بالرقم التسلسلي (أو امسح الباركود)', 'Look up a serial (or scan)') }}</div>
+      <div class="card-title"><i class="ti ti-search" /> {{ tt('بحث بالرقم التسلسلي', 'Look up a serial') }}</div>
       <div class="row"><input v-model="scan" :placeholder="tt('أدخل الرقم التسلسلي ثم Enter', 'Enter serial then Enter')" dir="ltr" style="flex:1;max-width:360px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font-size:15px" autofocus @keyup.enter="doScan" /><button class="btn" :disabled="scanning" @click="doScan"><i :class="`ti ${scanning ? 'ti-loader-2 spin' : 'ti-search'}`" /> {{ tt('بحث', 'Find') }}</button></div>
       <p v-if="notFound" class="alert warn mt">{{ tt('لا توجد وحدة بهذا الرقم التسلسلي.', 'No unit with this serial.') }}</p>
       <div v-if="hit" class="hit mt">
