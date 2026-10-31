@@ -2,6 +2,7 @@
 defineProps<{ title: string; back?: { to: string; label: string } | null }>()
 const auth = useAuth()
 const { toggle, isEn, t } = useI18n()
+const theme = useTheme()
 const now = ref(new Date())
 let tm: any
 onMounted(() => { tm = setInterval(() => (now.value = new Date()), 1000) })
@@ -46,6 +47,9 @@ async function savePw() {
       <i class="ti ti-download" /> {{ isEn ? 'Install app' : 'تثبيت التطبيق' }}
     </button>
     <div class="clock">{{ time }}<br />{{ date }}</div>
+    <button class="btn ghost sm theme-btn" :title="isEn ? (theme.mode.value === 'dark' ? 'Light mode' : 'Dark mode') : (theme.mode.value === 'dark' ? 'الوضع الفاتح' : 'الوضع الداكن')" @click="theme.toggle()">
+      <i :class="`ti ${theme.mode.value === 'dark' ? 'ti-sun' : 'ti-moon'}`" />
+    </button>
     <button class="btn ghost sm lang-btn" :title="t('locale.switchTo')" @click="toggle">
       <i class="ti ti-language" /> {{ isEn ? 'ع' : 'EN' }}
     </button>

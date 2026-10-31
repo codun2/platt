@@ -34,7 +34,7 @@ async function submit() {
       <div class="field ic"><label>{{ t('auth.password') }}</label><i class="ti ti-lock" /><input v-model="password" :type="show ? 'text' : 'password'" required dir="ltr" placeholder="••••••••" autocomplete="current-password" /><button type="button" class="eye" @click="show = !show"><i :class="`ti ${show ? 'ti-eye-off' : 'ti-eye'}`" /></button></div>
       <button class="btn big" :disabled="busy"><span v-if="busy" class="spin"><i class="ti ti-loader-2" /></span><template v-else>{{ t('auth.loginBtn') }} <i class="ti ti-arrow-left rtl-flip" /></template></button>
     </form>
-    <div v-if="quick.length" class="quick">
+    <div v-if="quick.length" class="quick-logins">
       <div class="q-sep"><span>{{ tt('أو جرّب حساباً جاهزاً', 'Or try a ready account') }}</span></div>
       <div class="q-grid">
         <button v-for="a in quick" :key="a.email" type="button" class="q-chip" :disabled="busy" @click="quickLogin(a)">
