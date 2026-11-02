@@ -1,10 +1,10 @@
 :root {
-  --primary: #ea580c;
-  /* Default brand "amber sunset"; a sector accent overrides these four from
-     useAuth.applyAccent (plain colours, no color-mix, for older browsers). */
-  --primary-600: #c2410c;
+  --primary: #f97316;
+  /* Default brand "amber sunset" (lighter); a sector accent overrides these four
+     from useAuth.applyAccent (plain colours, no color-mix, for older browsers). */
+  --primary-600: #ea580c;
   --primary-50: #fff7ed;
-  --primary-ring: rgba(234, 88, 12, .16);
+  --primary-ring: rgba(249, 115, 22, .18);
   /* Adaptive soft accent: a translucent wash of the (possibly sector) accent.
      Reads as a pale tint on light panels and a soft glow on dark ones, so it
      works in both themes and with any runtime accent colour. */
@@ -373,7 +373,7 @@ select option:checked { background: var(--accent-soft); color: var(--primary); f
 
 /* ---- Brand panel ---- */
 .auth-brand { position: relative; flex: 0 0 46%; max-width: 620px; overflow: hidden; color: #fff;
-  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 45%, #e11d48 100%); background-size: 200% 200%; animation: authGrad 16s ease infinite; }
+  background: linear-gradient(135deg, #fbbf24 0%, #f97316 45%, #fb7185 100%); background-size: 200% 200%; animation: authGrad 16s ease infinite; }
 @keyframes authGrad { 0%,100% { background-position: 0% 50% } 50% { background-position: 100% 50% } }
 .auth-brand .blob { position: absolute; border-radius: 50%; filter: blur(42px); opacity: .5; mix-blend-mode: screen; }
 .auth-brand .b1 { width: 340px; height: 340px; background: #fbbf24; top: -80px; inset-inline-start: -60px; animation: float1 13s ease-in-out infinite; }
