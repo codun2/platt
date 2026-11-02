@@ -325,6 +325,8 @@ Route::middleware(['auth:sanctum', 'tenant-user', 'tenant', 'idem'])->prefix('ap
         Route::middleware('perm:storefront.manage')->group(function () {
             Route::put('/', [Addons\StorefrontController::class, 'update']);
             Route::post('items', [Addons\StorefrontController::class, 'toggleItems']);
+            Route::post('logo', [Addons\StorefrontController::class, 'uploadLogo']);
+            Route::delete('logo', [Addons\StorefrontController::class, 'deleteLogo']);
         });
     });
 

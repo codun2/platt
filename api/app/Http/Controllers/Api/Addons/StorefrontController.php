@@ -48,7 +48,28 @@ class StorefrontController extends Controller
             'lead_hours' => ['nullable', 'numeric', 'min:0', 'max:720'],
             'hide_out_of_stock' => ['required', 'boolean'],
             'notice' => ['nullable', 'string', 'max:500'],
-        ], ['handle.regex' => 'اسم الرابط: حروف إنجليزية صغيرة وأرقام وشرطة فقط (مثال: halawiyat-alsham).']);
+            // ---- page customization ----
+            'accent' => ['nullable', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            'theme' => ['nullable', 'in:light,dark'],
+            'layout' => ['nullable', 'in:classic,modern,minimal'],
+            'tagline' => ['nullable', 'string', 'max:160'],
+            'about' => ['nullable', 'string', 'max:2000'],
+            'socials' => ['nullable', 'array'],
+            'socials.*' => ['nullable', 'string', 'max:300'],
+            'sections' => ['nullable', 'array', 'max:10'],
+            'sections.*.key' => ['required', Rule::in(StorefrontService::SECTION_KEYS)],
+            'sections.*.on' => ['required', 'boolean'],
+        ], [
+            'handle.regex' => 'اسم الرابط: حروف إنجليزية صغيرة وأرقام وشرطة فقط (مثال: halawiyat-alsham).',
+            'accent.regex' => 'لون غير صالح، استخدم صيغة مثل #ea580c.',
+        ]);
+        // Keep only known social keys.
+        if (isset($d['socials'])) {
+            $d['socials'] = array_intersect_key($d['socials'], array_flip(StorefrontService::SOCIAL_KEYS));
+        }
+        if (isset($d['sections'])) {
+            $d['sections'] = StorefrontService::normalizeSections($d['sections']);
+        }
         if (! $d['pickup'] && ! $d['delivery']) {
             return response()->json(['message' => 'فعّل الاستلام من المحل أو التوصيل (واحد على الأقل).', 'errors' => ['pickup' => ['مطلوب']]], 422);
         }
@@ -57,10 +78,45 @@ class StorefrontController extends Controller
             return response()->json(['message' => 'اسم الرابط مستخدم لمتجر آخر، اختر اسماً مختلفاً.', 'errors' => ['handle' => ['مستخدم']]], 422);
         }
         $settings = $tenant->settings ?? [];
-        $settings['storefront'] = $d;
+        // Merge so upload-set fields (logo) and any untouched keys are preserved.
+        $settings['storefront'] = array_merge((array) ($settings['storefront'] ?? []), $d);
         $tenant->update(['settings' => $settings]);
 
         return $this->show();
+    }
+
+    /** Upload / replace the storefront logo (public disk). */
+    public function uploadLogo(Request $request): JsonResponse
+    {
+        $request->validate(['logo' => ['required', 'image', 'mimes:png,jpg,jpeg,webp,svg', 'max:2048']]);
+        $tenant = app('currentTenant');
+        $settings = $tenant->settings ?? [];
+        $old = $settings['storefront']['logo'] ?? null;
+
+        $ext = strtolower($request->file('logo')->getClientOriginalExtension() ?: 'png');
+        $path = $request->file('logo')->storeAs("storefront/{$tenant->id}", 'logo-'.time().'.'.$ext, 'public');
+
+        $settings['storefront'] = array_merge((array) ($settings['storefront'] ?? []), ['logo' => $path]);
+        $tenant->update(['settings' => $settings]);
+        if ($old && $old !== $path) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($old);
+        }
+
+        return response()->json(['logo' => $path, 'url' => \Illuminate\Support\Facades\Storage::disk('public')->url($path)]);
+    }
+
+    /** Remove the storefront logo. */
+    public function deleteLogo(): JsonResponse
+    {
+        $tenant = app('currentTenant');
+        $settings = $tenant->settings ?? [];
+        if ($old = ($settings['storefront']['logo'] ?? null)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($old);
+        }
+        $settings['storefront'] = array_merge((array) ($settings['storefront'] ?? []), ['logo' => null]);
+        $tenant->update(['settings' => $settings]);
+
+        return response()->json(['ok' => true]);
     }
 
     /** Items with their «show on the page» switch. */

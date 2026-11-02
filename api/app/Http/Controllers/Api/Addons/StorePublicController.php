@@ -61,7 +61,11 @@ class StorePublicController extends Controller
                 'pickup' => (bool) $s['pickup'], 'delivery' => (bool) $s['delivery'], 'delivery_fee' => (float) $s['delivery_fee'],
                 'min_order' => (float) $s['min_order'], 'lead_hours' => (float) $s['lead_hours'],
                 'currency' => $tenant->currency, 'tax_rate' => (float) ($tenant->tax_rate ?? 0),
-                'accent' => SectorIdentity::publicFor($tenant)['accent'],
+                // Tenant-chosen colour wins; sector accent is the fallback.
+                'accent' => $s['accent'] ?: SectorIdentity::publicFor($tenant)['accent'],
+                'theme' => $s['theme'], 'layout' => $s['layout'],
+                'logo' => StorefrontService::logoUrl($s), 'tagline' => $s['tagline'], 'about' => $s['about'],
+                'socials' => (object) $s['socials'], 'sections' => $s['sections'],
             ],
             'categories' => Category::whereIn('id', $catIds)->orderBy('name')->get(['id', 'name']),
             'items' => $items->map(fn ($i) => [
