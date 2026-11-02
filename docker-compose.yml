@@ -65,6 +65,10 @@ services:
       - "127.0.0.1:8014:80"
     depends_on:
       - platt-api
+    # Serve uploaded files (logos, images) straight from nginx: php artisan serve
+    # refuses symlinked files outside public/, so the web container reads the same volume.
+    volumes:
+      - platt-api-storage:/usr/share/nginx/html/storage:ro
     networks: [platt-net]
 
 volumes:
