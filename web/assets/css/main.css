@@ -1,10 +1,10 @@
 :root {
-  --primary: #f97316;
-  /* Default brand "amber sunset" (lighter); a sector accent overrides these four
+  --primary: #0d9488;
+  /* Default brand "calm teal"; a sector accent overrides these four
      from useAuth.applyAccent (plain colours, no color-mix, for older browsers). */
-  --primary-600: #ea580c;
-  --primary-50: #fff7ed;
-  --primary-ring: rgba(249, 115, 22, .18);
+  --primary-600: #0f766e;
+  --primary-50: #f0fdfa;
+  --primary-ring: rgba(13, 148, 136, .18);
   /* Adaptive soft accent: a translucent wash of the (possibly sector) accent.
      Reads as a pale tint on light panels and a soft glow on dark ones, so it
      works in both themes and with any runtime accent colour. */
@@ -373,12 +373,12 @@ select option:checked { background: var(--accent-soft); color: var(--primary); f
 
 /* ---- Brand panel ---- */
 .auth-brand { position: relative; flex: 0 0 46%; max-width: 620px; overflow: hidden; color: #fff;
-  background: linear-gradient(135deg, #fbbf24 0%, #f97316 45%, #fb7185 100%); background-size: 200% 200%; animation: authGrad 16s ease infinite; }
+  background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 45%, #0e7490 100%); background-size: 200% 200%; animation: authGrad 16s ease infinite; }
 @keyframes authGrad { 0%,100% { background-position: 0% 50% } 50% { background-position: 100% 50% } }
 .auth-brand .blob { position: absolute; border-radius: 50%; filter: blur(42px); opacity: .5; mix-blend-mode: screen; }
-.auth-brand .b1 { width: 340px; height: 340px; background: #fbbf24; top: -80px; inset-inline-start: -60px; animation: float1 13s ease-in-out infinite; }
-.auth-brand .b2 { width: 300px; height: 300px; background: #fb7185; bottom: -70px; inset-inline-end: -40px; animation: float2 17s ease-in-out infinite; }
-.auth-brand .b3 { width: 220px; height: 220px; background: #fdba74; top: 42%; inset-inline-start: 38%; animation: float1 20s ease-in-out infinite reverse; }
+.auth-brand .b1 { width: 340px; height: 340px; background: #5eead4; top: -80px; inset-inline-start: -60px; animation: float1 13s ease-in-out infinite; }
+.auth-brand .b2 { width: 300px; height: 300px; background: #22d3ee; bottom: -70px; inset-inline-end: -40px; animation: float2 17s ease-in-out infinite; }
+.auth-brand .b3 { width: 220px; height: 220px; background: #67e8f9; top: 42%; inset-inline-start: 38%; animation: float1 20s ease-in-out infinite reverse; }
 @keyframes float1 { 0%,100% { transform: translate(0,0) scale(1) } 50% { transform: translate(30px,-26px) scale(1.12) } }
 @keyframes float2 { 0%,100% { transform: translate(0,0) scale(1) } 50% { transform: translate(-28px,24px) scale(1.1) } }
 .ab-inner { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; padding: 48px; box-sizing: border-box; }

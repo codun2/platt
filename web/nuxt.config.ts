@@ -14,7 +14,7 @@ export default defineNuxtConfig({
       title: 'ركائز — منصّة الأعمال',
       htmlAttrs: { lang: 'ar', dir: 'rtl' },
       script: [{ innerHTML: THEME, tagPosition: 'head' }, { innerHTML: RECOVERY, tagPosition: 'head' }],
-      meta: [{ name: 'viewport', content: 'width=device-width, initial-scale=1' }, { name: 'theme-color', content: '#f97316' }, { name: 'apple-mobile-web-app-capable', content: 'yes' }, { name: 'mobile-web-app-capable', content: 'yes' }, { name: 'apple-mobile-web-app-title', content: 'ركائز' }],
+      meta: [{ name: 'viewport', content: 'width=device-width, initial-scale=1' }, { name: 'theme-color', content: '#0d9488' }, { name: 'apple-mobile-web-app-capable', content: 'yes' }, { name: 'mobile-web-app-capable', content: 'yes' }, { name: 'apple-mobile-web-app-title', content: 'ركائز' }],
       link: [
         { rel: 'manifest', href: '/app/manifest.webmanifest' },
         { rel: 'icon', href: '/app/icon.svg', type: 'image/svg+xml' },

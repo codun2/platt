@@ -41,11 +41,17 @@ export function useAuth() {
   // Per-sector accent: everything themed off --primary follows it.
   // Shades are computed here as plain colours (not CSS color-mix) so older
   // browsers still get a visible hover/active state.
+  // Calm-teal default; the browser chrome (theme-color) follows the sector accent.
+  const DEFAULT_ACCENT = '#0d9488'
+  function setThemeColor(color: string) {
+    if (!import.meta.client) return
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
+  }
   function applyAccent(color?: string | null) {
     if (!import.meta.client) return
     const el = document.documentElement
     const vars = ['--primary', '--primary-600', '--primary-50', '--primary-ring']
-    if (!color || !/^#[0-9a-f]{6}$/i.test(color)) { vars.forEach(v => el.style.removeProperty(v)); return }
+    if (!color || !/^#[0-9a-f]{6}$/i.test(color)) { vars.forEach(v => el.style.removeProperty(v)); setThemeColor(DEFAULT_ACCENT); return }
     const [r, g, b] = [1, 3, 5].map(i => parseInt(color.slice(i, i + 2), 16))
     const mix = (t: number, k: number) => [r, g, b].map(c => Math.round(c * k + t * (1 - k)))
     const hex = (a: number[]) => '#' + a.map(c => c.toString(16).padStart(2, '0')).join('')
@@ -53,6 +59,7 @@ export function useAuth() {
     el.style.setProperty('--primary-600', hex(mix(0, 0.82)))
     el.style.setProperty('--primary-50', hex(mix(255, 0.08)))
     el.style.setProperty('--primary-ring', `rgba(${r}, ${g}, ${b}, .14)`)
+    setThemeColor(color)   // browser top bar matches the in-app accent
   }
 
   async function login(email: string, password: string) {
