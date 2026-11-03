@@ -141,20 +141,21 @@ onBeforeUnmount(() => { document.removeEventListener('click', onDocClick); docum
 </template>
 
 <style scoped>
-.ui-phone { position: relative; display: flex; align-items: stretch; gap: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--field-bg); overflow: hidden; }
+.ui-phone { position: relative; display: flex; align-items: stretch; gap: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--field-bg); }
 .ui-phone.open, .ui-phone:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-ring); }
 .ui-phone.dis { opacity: .6; }
-.uiph-cc { display: flex; align-items: center; gap: 6px; padding: 9px 11px; border: 0; border-inline-end: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+.uiph-cc { display: flex; align-items: center; gap: 6px; padding: 9px 11px; border: 0; border-inline-end: 1px solid var(--line); border-start-start-radius: 9px; border-end-start-radius: 9px; background: var(--bg); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
 .uiph-cc .fl { font-size: 17px; line-height: 1; }
 .uiph-caret { font-size: 15px; color: var(--muted); transition: transform .15s; }
 .ui-phone.open .uiph-caret { transform: rotate(180deg); }
-.uiph-num { flex: 1; min-width: 0; border: 0; background: transparent; padding: 9px 12px; font: inherit; color: var(--ink); text-align: left; }
-.uiph-num:focus { outline: none; }
+/* `.ui-phone` prefix keeps these ahead of the global `.field input` rule. */
+.ui-phone .uiph-num { flex: 1; min-width: 0; border: 0; border-radius: 0; background: transparent; padding: 9px 12px; font: inherit; color: var(--ink); text-align: left; }
+.ui-phone .uiph-num:focus { outline: none; box-shadow: none; }
 .uiph-pop { position: absolute; z-index: 60; top: calc(100% + 6px); inset-inline-start: 0; width: 300px; max-width: min(300px, 86vw); background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-lg); padding: 8px; }
 .uiph-search { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 0 10px; margin-bottom: 6px; }
 .uiph-search i { color: var(--muted); font-size: 17px; }
-.uiph-search input { flex: 1; border: 0; background: transparent; padding: 9px 0; font: inherit; color: var(--ink); }
-.uiph-search input:focus { outline: none; }
+.ui-phone .uiph-search input { flex: 1; width: auto; border: 0; border-radius: 0; background: transparent; padding: 9px 0; font: inherit; color: var(--ink); }
+.ui-phone .uiph-search input:focus { outline: none; box-shadow: none; }
 .uiph-list { max-height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
 .uiph-opt { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border: 0; background: none; border-radius: 8px; cursor: pointer; font: inherit; color: var(--ink); text-align: start; }
 .uiph-opt:hover { background: var(--accent-soft); }
