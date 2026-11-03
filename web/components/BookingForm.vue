@@ -53,7 +53,7 @@ defineExpose({ avail })
     <div class="grid grid-3">
       <div class="field"><label>{{ tt('عميل مسجّل','Registered customer') }}</label><UiSelect v-model="form.customer_id" :placeholder="tt('— بدون —','— none —')" :add-label="tt('إضافة عميل','Add customer')" add-to="/crm/customers/new" add-key="customer"><option value="">{{ tt('— بدون —','— none —') }}</option><option v-for="c in customers" :key="c.id" :value="c.id">{{ c.name }}<template v-if="c.phone"> — {{ c.phone }}</template></option></UiSelect></div>
       <div class="field"><label>{{ tt('اسم العميل','Customer name') }}</label><input v-model="form.customer_name" :placeholder="tt('للحجز السريع بدون تسجيل','Quick booking without registration')" /></div>
-      <div class="field"><label>{{ tt('الهاتف','Phone') }}</label><UiPhone v-model="form.customer_phone" :country="useAuth().state.value.tenant?.country" /></div>
+      <div class="field"><label>{{ tt('الهاتف','Phone') }}</label><UiPhone v-model="form.customer_phone" :country="useAuth().state.value.tenant?.country" :code="false" /></div>
       <div class="field"><label>{{ tt('البريد الإلكتروني','Email') }}</label><input v-model="form.customer_email" dir="ltr" /></div>
       <div class="field"><label>{{ tt('نوع المناسبة','Event type') }}</label><input v-model="form.event_type" :placeholder="tt('زفاف، اجتماع، إقامة...','Wedding, meeting, stay...')" /></div>
       <div class="field"><label>{{ tt('عدد الضيوف','Guests') }}</label><input v-model="form.guests" type="number" min="0" dir="ltr" /></div>

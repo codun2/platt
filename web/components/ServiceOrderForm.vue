@@ -23,7 +23,7 @@ async function addTechnician(name: string) { const r = await api.post('/app/serv
     <div class="grid grid-3">
       <template v-if="walkIn">
         <div class="field"><label>{{ tt('الاسم', 'Name') }} <span style="color:var(--primary)">*</span></label><input v-model="form.customer_name" /></div>
-        <div class="field"><label>{{ tt('الجوال', 'Mobile') }}</label><UiPhone v-model="form.customer_phone" :country="useAuth().state.value.tenant?.country" /></div>
+        <div class="field"><label>{{ tt('الجوال', 'Mobile') }}</label><UiPhone v-model="form.customer_phone" :country="useAuth().state.value.tenant?.country" :code="false" /></div>
       </template>
       <div v-else class="field" style="grid-column:span 2"><label>{{ tt('العميل', 'Customer') }} <span style="color:var(--primary)">*</span></label><UiSelect v-model="form.customer_id" :placeholder="tt('اختر', 'Select')" :add-label="tt('إضافة عميل', 'Add customer')" add-to="/crm/customers/new" add-key="customer"><option value="">—</option><option v-for="c in customers" :key="c.id" :value="c.id">{{ c.name }}<template v-if="c.phone"> — {{ c.phone }}</template></option></UiSelect></div>
       <div class="field"><label>{{ tt('الأولوية', 'Priority') }}</label><UiSelect v-model="form.priority"><option v-for="(s, k) in priorities" :key="k" :value="k">{{ s.label }}</option></UiSelect></div>

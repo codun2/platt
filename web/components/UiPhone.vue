@@ -14,7 +14,8 @@ const props = withDefaults(defineProps<{
   country?: string | null   // ISO2 default (e.g. 'SA'); falls back to the tenant's / SA
   placeholder?: string
   disabled?: boolean
-}>(), { modelValue: '', country: '', placeholder: '', disabled: false })
+  code?: boolean            // false → plain local number, no dial-code picker (phones). WhatsApp keeps it.
+}>(), { modelValue: '', country: '', placeholder: '', disabled: false, code: true })
 const emit = defineEmits<{ 'update:modelValue': [string] }>()
 defineOptions({ inheritAttrs: false })
 
@@ -71,6 +72,8 @@ const local = ref('')
 
 // Parse an incoming value into (country, local digits).
 function parse(val: string) {
+  // Plain mode: the value is the local number as-is (keep leading zeros).
+  if (!props.code) return { iso: defCountry.value.iso, local: String(val || '').replace(/\D/g, '') }
   let s = String(val || '').trim().replace(/[\s()\-]/g, '')
   if (s.startsWith('00')) s = '+' + s.slice(2)
   if (s.startsWith('+')) {
@@ -96,6 +99,8 @@ const filtered = computed(() => {
 })
 
 function emitValue() {
+  // Plain mode: emit the local digits unchanged (no dial code).
+  if (!props.code) { emit('update:modelValue', local.value); return }
   const digits = local.value.replace(/\D/g, '').replace(/^0+/, '')
   emit('update:modelValue', digits ? `+${selCountry.value.dial}${digits}` : '')
 }
@@ -154,7 +159,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div ref="root" class="ui-phone" :class="{ open, dis: disabled }">
-    <button type="button" class="uiph-cc" :disabled="disabled" @click.stop="toggle">
+    <button v-if="code" type="button" class="uiph-cc" :disabled="disabled" @click.stop="toggle">
       <span class="fl">{{ selCountry.flag }}</span>
       <span dir="ltr">+{{ selCountry.dial }}</span>
       <i class="ti ti-chevron-down uiph-caret" />
@@ -164,7 +169,7 @@ onBeforeUnmount(() => {
       :value="local" :placeholder="placeholder || '5xxxxxxxx'" :disabled="disabled"
       @input="onLocal"
     />
-    <Teleport to="body">
+    <Teleport v-if="code" to="body">
       <div v-if="open" ref="popEl" class="uiph-pop" :style="popStyle" @click.stop @mousedown.stop>
         <div class="uiph-search"><i class="ti ti-search" /><input ref="searchEl" v-model="q" :placeholder="tt('ابحث عن دولة أو مقدمة', 'Search country or code')" /></div>
         <div class="uiph-list">

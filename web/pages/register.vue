@@ -39,7 +39,7 @@ async function submit() {
         <div class="field ic"><label>{{ tt('اسم الشركة', 'Company name') }}</label><i class="ti ti-building-store" /><input v-model="form.company_name" required /></div>
         <div class="field ic"><label>{{ tt('اسمك', 'Your name') }}</label><i class="ti ti-user" /><input v-model="form.name" required /></div>
         <div class="field ic"><label>{{ tt('البريد الإلكتروني', 'Email') }}</label><i class="ti ti-mail" /><input v-model="form.email" type="email" required dir="ltr" placeholder="you@company.com" /></div>
-        <div class="field"><label>{{ tt('الهاتف', 'Phone') }}</label><UiPhone v-model="form.phone" /></div>
+        <div class="field"><label>{{ tt('الهاتف', 'Phone') }}</label><UiPhone v-model="form.phone" :code="false" /></div>
         <div class="field ic" style="grid-column:1/-1"><label>{{ tt('كلمة المرور', 'Password') }}</label><i class="ti ti-lock" /><input v-model="form.password" :type="show ? 'text' : 'password'" minlength="6" required dir="ltr" placeholder="••••••••" /><button type="button" class="eye" @click="show = !show"><i :class="`ti ${show ? 'ti-eye-off' : 'ti-eye'}`" /></button></div>
       </div>
       <button class="btn big" :disabled="busy"><span v-if="busy" class="spin"><i class="ti ti-loader-2" /></span><template v-else>{{ tt('إنشاء الحساب وبدء التجربة', 'Create account & start') }} <i class="ti ti-arrow-left rtl-flip" /></template></button>

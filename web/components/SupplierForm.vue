@@ -18,8 +18,8 @@ const isCompany = computed(() => props.form.supplier_type === 'company')
 
     <div class="card-title" style="margin-top:8px"><i class="ti ti-phone" /> {{ tt('بيانات التواصل','Contact details') }}</div>
     <div class="grid grid-4">
-      <div class="field"><label>{{ tt('الهاتف','Phone') }}</label><UiPhone v-model="form.phone" :country="useAuth().state.value.tenant?.country" /></div>
-      <div class="field"><label>{{ tt('هاتف إضافي','Alt. phone') }}</label><UiPhone v-model="form.phone2" :country="useAuth().state.value.tenant?.country" /></div>
+      <div class="field"><label>{{ tt('الهاتف','Phone') }}</label><UiPhone v-model="form.phone" :country="useAuth().state.value.tenant?.country" :code="false" /></div>
+      <div class="field"><label>{{ tt('هاتف إضافي','Alt. phone') }}</label><UiPhone v-model="form.phone2" :country="useAuth().state.value.tenant?.country" :code="false" /></div>
       <div class="field"><label>{{ tt('واتساب','WhatsApp') }}</label><UiPhone v-model="form.whatsapp" :country="useAuth().state.value.tenant?.country" /></div>
       <div class="field"><label>{{ tt('البريد الإلكتروني','Email') }}</label><input v-model="form.email" dir="ltr" /></div>
     </div>
