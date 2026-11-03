@@ -25,7 +25,7 @@ const net = computed(() => Math.round((gross.value - (+props.form.fixed_deductio
 
     <div class="card-title" style="margin-top:8px"><i class="ti ti-user" /> {{ tt('البيانات الشخصية','Personal info') }}</div>
     <div class="grid grid-4">
-      <div class="field"><label>{{ tt('الهاتف','Phone') }}</label><input v-model="form.phone" dir="ltr" /></div>
+      <div class="field"><label>{{ tt('الهاتف','Phone') }}</label><UiPhone v-model="form.phone" :country="useAuth().state.value.tenant?.country" /></div>
       <div class="field"><label>{{ tt('البريد','Email') }}</label><input v-model="form.email" dir="ltr" /></div>
       <div class="field"><label>{{ tt('رقم الهوية / الإقامة','ID / residency no.') }}</label><input v-model="form.national_id" dir="ltr" /></div>
       <div class="field"><label>{{ tt('الجنسية','Nationality') }}</label><input v-model="form.nationality" /></div>
@@ -34,7 +34,7 @@ const net = computed(() => Math.round((gross.value - (+props.form.fixed_deductio
       <div class="field"><label>{{ tt('الحالة الاجتماعية','Marital status') }}</label><UiSelect v-model="form.marital_status"><option value="">—</option><option v-for="(l, k) in maritalStatus" :key="k" :value="k">{{ l }}</option></UiSelect></div>
       <div class="field"><label>{{ tt('العنوان','Address') }}</label><input v-model="form.address" /></div>
       <div class="field"><label>{{ tt('جهة اتصال للطوارئ','Emergency contact') }}</label><input v-model="form.emergency_name" /></div>
-      <div class="field"><label>{{ tt('هاتف الطوارئ','Emergency phone') }}</label><input v-model="form.emergency_phone" dir="ltr" /></div>
+      <div class="field"><label>{{ tt('هاتف الطوارئ','Emergency phone') }}</label><UiPhone v-model="form.emergency_phone" :country="useAuth().state.value.tenant?.country" /></div>
     </div>
 
     <div class="card-title" style="margin-top:8px"><i class="ti ti-cash" /> {{ tt('الراتب والبدلات','Salary & allowances') }}</div>

@@ -10,7 +10,7 @@ defineProps<{ form: any }>()
       <div class="field"><label>{{ tt('الاسم', 'Name') }} <span style="color:var(--primary)">*</span></label><input v-model="form.name" /></div>
       <div class="field"><label>{{ tt('الصفة', 'Role') }}</label><UiSelect v-model="form.type"><option value="owner">{{ tt('مالك', 'Owner') }}</option><option value="broker">{{ tt('وسيط', 'Broker') }}</option></UiSelect></div>
       <div class="field"><label>{{ tt('رقم الهوية / السجل', 'ID / CR no.') }}</label><input v-model="form.national_id" dir="ltr" /></div>
-      <div class="field"><label>{{ tt('الهاتف', 'Phone') }}</label><input v-model="form.phone" dir="ltr" /></div>
+      <div class="field"><label>{{ tt('الهاتف', 'Phone') }}</label><UiPhone v-model="form.phone" :country="useAuth().state.value.tenant?.country" /></div>
       <div class="field"><label>{{ tt('البريد', 'Email') }}</label><input v-model="form.email" dir="ltr" /></div>
       <div class="field"><label>{{ tt('نسبة الإدارة / العمولة %', 'Management fee / commission %') }}</label><input v-model.number="form.commission_rate" type="number" min="0" max="100" step="0.01" dir="ltr" /><small class="muted">{{ tt('تُخصم من الإيجار المحصّل في كشف المالك', 'Deducted from collected rent in the owner statement') }}</small></div>
     </div>

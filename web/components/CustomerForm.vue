@@ -27,9 +27,9 @@ const sellsOnCredit = computed(() => ['general', 'wholesale', 'accounting_firm',
 
     <div class="card-title" style="margin-top:8px"><i class="ti ti-phone" /> {{ tt('بيانات التواصل', 'Contact details') }}</div>
     <div class="grid grid-3">
-      <div class="field"><label>{{ tt('الهاتف', 'Phone') }}</label><input v-model="form.phone" dir="ltr" /></div>
-      <div class="field"><label>{{ tt('هاتف إضافي', 'Alt. phone') }}</label><input v-model="form.phone2" dir="ltr" /></div>
-      <div class="field"><label>{{ tt('واتساب', 'WhatsApp') }}</label><input v-model="form.whatsapp" dir="ltr" /></div>
+      <div class="field"><label>{{ tt('الهاتف', 'Phone') }}</label><UiPhone v-model="form.phone" :country="auth.state.value.tenant?.country" /></div>
+      <div class="field"><label>{{ tt('هاتف إضافي', 'Alt. phone') }}</label><UiPhone v-model="form.phone2" :country="auth.state.value.tenant?.country" /></div>
+      <div class="field"><label>{{ tt('واتساب', 'WhatsApp') }}</label><UiPhone v-model="form.whatsapp" :country="auth.state.value.tenant?.country" /></div>
       <div class="field"><label>{{ tt('البريد الإلكتروني', 'Email') }}</label><input v-model="form.email" dir="ltr" /></div>
     </div>
 

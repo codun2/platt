@@ -46,7 +46,7 @@ async function save() {
           <div class="card-title"><i class="ti ti-building" /> {{ org }}</div>
           <div class="field"><label>{{ tt('اسم', '') }} {{ org }}{{ isEn ? ' name' : '' }}</label><input v-model="form.name" /></div>
           <div class="grid grid-2">
-            <div class="field"><label>{{ tt('الهاتف','Phone') }}</label><input v-model="form.phone" dir="ltr" /></div>
+            <div class="field"><label>{{ tt('الهاتف','Phone') }}</label><UiPhone v-model="form.phone" :country="form.country" /></div>
             <div class="field"><label>{{ tt('البريد','Email') }}</label><input v-model="form.email" dir="ltr" /></div>
             <div class="field"><label>{{ tt('العملة','Currency') }}</label><input v-model="form.currency" dir="ltr" /></div>
             <div class="field"><label>{{ tt('نسبة الضريبة الافتراضية %','Default tax rate %') }}</label><input v-model.number="form.tax_rate" type="number" step="0.01" min="0" max="100" dir="ltr" /></div>
