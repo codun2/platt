@@ -59,8 +59,12 @@ const uid = Symbol('ui-phone')
 const openId = useState<symbol | null>('ui-phone-open', () => null)
 const open = computed({ get: () => openId.value === uid, set: v => { openId.value = v ? uid : (openId.value === uid ? null : openId.value) } })
 const root = ref<HTMLElement | null>(null)
+const popEl = ref<HTMLElement | null>(null)
 const q = ref('')
 const searchEl = ref<HTMLInputElement | null>(null)
+// The dropdown is positioned with `fixed` + JS so no scroll container or
+// ancestor `overflow:hidden` can clip it, and it flips up near the viewport edge.
+const popStyle = ref<Record<string, string>>({})
 
 const selIso = ref(defCountry.value.iso)
 const local = ref('')
@@ -104,11 +108,48 @@ function pickCountry(c: typeof COUNTRIES[number]) {
   open.value = false; q.value = ''
   emitValue()
 }
-function toggle() { if (props.disabled) return; open.value = !open.value; if (open.value) nextTick(() => searchEl.value?.focus()) }
-function onDocClick(e: MouseEvent) { if (open.value && root.value && !root.value.contains(e.target as Node)) open.value = false }
+// Anchor the fixed popup to the field: align its start edge, flip up when the
+// space below is too small, and clamp inside the viewport.
+function place() {
+  const r = root.value?.getBoundingClientRect()
+  if (!r) return
+  const vw = window.innerWidth, vh = window.innerHeight, gap = 6, pad = 8
+  const w = Math.min(300, vw - pad * 2)
+  const rtl = getComputedStyle(root.value!).direction === 'rtl'
+  let left = rtl ? r.right - w : r.left
+  left = Math.max(pad, Math.min(left, vw - w - pad))
+  const h = popEl.value?.offsetHeight || 300
+  const below = vh - r.bottom - gap, above = r.top - gap
+  const up = h > below && above > below
+  const top = up ? Math.max(pad, r.top - gap - h) : r.bottom + gap
+  const maxH = Math.max(160, (up ? above : below) - pad)
+  popStyle.value = { top: `${top}px`, left: `${left}px`, width: `${w}px`, maxHeight: `${maxH}px` }
+}
+function toggle() {
+  if (props.disabled) return
+  open.value = !open.value
+  if (open.value) nextTick(() => { place(); searchEl.value?.focus() })
+}
+function reposition() { if (open.value) place() }
+function onDocClick(e: MouseEvent) {
+  if (!open.value) return
+  const t = e.target as Node
+  if (root.value?.contains(t) || popEl.value?.contains(t)) return
+  open.value = false
+}
 function onKey(e: KeyboardEvent) { if (e.key === 'Escape') open.value = false }
-onMounted(() => { document.addEventListener('click', onDocClick); document.addEventListener('keydown', onKey) })
-onBeforeUnmount(() => { document.removeEventListener('click', onDocClick); document.removeEventListener('keydown', onKey) })
+onMounted(() => {
+  document.addEventListener('click', onDocClick)
+  document.addEventListener('keydown', onKey)
+  window.addEventListener('resize', reposition)
+  window.addEventListener('scroll', reposition, true)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('click', onDocClick)
+  document.removeEventListener('keydown', onKey)
+  window.removeEventListener('resize', reposition)
+  window.removeEventListener('scroll', reposition, true)
+})
 </script>
 
 <template>
@@ -123,20 +164,22 @@ onBeforeUnmount(() => { document.removeEventListener('click', onDocClick); docum
       :value="local" :placeholder="placeholder || '5xxxxxxxx'" :disabled="disabled"
       @input="onLocal"
     />
-    <div v-if="open" class="uiph-pop" @click.stop>
-      <div class="uiph-search"><i class="ti ti-search" /><input ref="searchEl" v-model="q" :placeholder="tt('ابحث عن دولة أو مقدمة', 'Search country or code')" /></div>
-      <div class="uiph-list">
-        <button
-          v-for="c in filtered" :key="c.iso" type="button"
-          class="uiph-opt" :class="{ sel: c.iso === selIso }" @click.stop="pickCountry(c)"
-        >
-          <span class="fl">{{ c.flag }}</span>
-          <span class="nm">{{ tt(c.ar, c.en) }}</span>
-          <span class="dl" dir="ltr">+{{ c.dial }}</span>
-        </button>
-        <div v-if="!filtered.length" class="uiph-empty">{{ tt('لا نتائج', 'No results') }}</div>
+    <Teleport to="body">
+      <div v-if="open" ref="popEl" class="uiph-pop" :style="popStyle" @click.stop @mousedown.stop>
+        <div class="uiph-search"><i class="ti ti-search" /><input ref="searchEl" v-model="q" :placeholder="tt('ابحث عن دولة أو مقدمة', 'Search country or code')" /></div>
+        <div class="uiph-list">
+          <button
+            v-for="c in filtered" :key="c.iso" type="button"
+            class="uiph-opt" :class="{ sel: c.iso === selIso }" @click.stop="pickCountry(c)"
+          >
+            <span class="fl">{{ c.flag }}</span>
+            <span class="nm">{{ tt(c.ar, c.en) }}</span>
+            <span class="dl" dir="ltr">+{{ c.dial }}</span>
+          </button>
+          <div v-if="!filtered.length" class="uiph-empty">{{ tt('لا نتائج', 'No results') }}</div>
+        </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
@@ -151,12 +194,12 @@ onBeforeUnmount(() => { document.removeEventListener('click', onDocClick); docum
 /* `.ui-phone` prefix keeps these ahead of the global `.field input` rule. */
 .ui-phone .uiph-num { flex: 1; min-width: 0; border: 0; border-radius: 0; background: transparent; padding: 9px 12px; font: inherit; color: var(--ink); text-align: left; }
 .ui-phone .uiph-num:focus { outline: none; box-shadow: none; }
-.uiph-pop { position: absolute; z-index: 60; top: calc(100% + 6px); inset-inline-start: 0; width: 300px; max-width: min(300px, 86vw); background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-lg); padding: 8px; }
-.uiph-search { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 0 10px; margin-bottom: 6px; }
+.uiph-pop { position: fixed; z-index: 1000; display: flex; flex-direction: column; width: 300px; max-width: min(300px, 86vw); background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow-lg); padding: 8px; overflow: hidden; }
+.uiph-search { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 0 10px; margin-bottom: 6px; flex-shrink: 0; }
 .uiph-search i { color: var(--muted); font-size: 17px; }
-.ui-phone .uiph-search input { flex: 1; width: auto; border: 0; border-radius: 0; background: transparent; padding: 9px 0; font: inherit; color: var(--ink); }
-.ui-phone .uiph-search input:focus { outline: none; box-shadow: none; }
-.uiph-list { max-height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
+.uiph-pop .uiph-search input { flex: 1; width: auto; border: 0; border-radius: 0; background: transparent; padding: 9px 0; font: inherit; color: var(--ink); }
+.uiph-pop .uiph-search input:focus { outline: none; box-shadow: none; }
+.uiph-list { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
 .uiph-opt { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border: 0; background: none; border-radius: 8px; cursor: pointer; font: inherit; color: var(--ink); text-align: start; }
 .uiph-opt:hover { background: var(--accent-soft); }
 .uiph-opt.sel { background: var(--accent-soft); font-weight: 700; }
