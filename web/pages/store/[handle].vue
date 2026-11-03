@@ -57,6 +57,7 @@ const socialList = computed(() => Object.entries(SOC)
   .map(s => ({ icon: s.icon, label: s.label, href: s.url(String(s.val).trim()) })))
 
 const shown = computed(() => (d.value?.items || []).filter((i: any) => (!cat.value || i.category_id === cat.value) && (!q.value || i.name.includes(q.value.trim()))))
+const catName = (id: number) => (d.value?.categories || []).find((c: any) => c.id === id)?.name || ''
 const lines = computed(() => Object.entries(cart.value).map(([id, c]) => ({ item: d.value.items.find((i: any) => i.id === +id), ...c })).filter(l => l.item && l.qty > 0))
 const count = computed(() => lines.value.reduce((n, l) => n + l.qty, 0))
 const subtotal = computed(() => lines.value.reduce((n, l) => n + l.qty * l.item.price, 0))
@@ -171,16 +172,19 @@ const initials = computed(() => (store.value.name || '؟').trim().slice(0, 1))
                   <button v-for="c in d.categories" :key="c.id" :class="{ on: cat === c.id }" @click="cat = c.id">{{ c.name }}</button>
                 </div>
                 <div class="grid">
-                  <div v-for="i in shown" :key="i.id" class="item" :class="{ in: cart[i.id] }">
-                    <div class="img" :style="i.image ? { backgroundImage: `url(${i.image})` } : {}"><i v-if="!i.image" class="ti ti-photo" /></div>
+                  <article v-for="i in shown" :key="i.id" class="item" :class="{ in: cart[i.id] }">
+                    <div class="img" :style="i.image ? { backgroundImage: `url(${i.image})` } : {}">
+                      <i v-if="!i.image" class="ti ti-photo ph" />
+                      <span v-if="i.left !== null && i.left <= 5" class="stock">{{ tt(`متبقٍ ${i.left}`, `${i.left} left`) }}</span>
+                    </div>
                     <div class="ibody">
-                      <b>{{ i.name }}</b>
+                      <span v-if="catName(i.category_id)" class="cat">{{ catName(i.category_id) }}</span>
+                      <b class="nm">{{ i.name }}</b>
                       <span class="price">{{ money(i.price) }}<small v-if="i.unit"> / {{ i.unit }}</small></span>
-                      <small v-if="i.left !== null && i.left <= 5" class="left">{{ tt(`متبقٍ ${i.left}`, `${i.left} left`) }}</small>
                       <div v-if="cart[i.id]" class="qty"><button @click="add(i, -1)">−</button><b>{{ cart[i.id].qty }}</b><button @click="add(i, 1)">+</button></div>
                       <button v-else class="sbtn sm" @click="add(i)"><i class="ti ti-plus" /> {{ tt('أضف', 'Add') }}</button>
                     </div>
-                  </div>
+                  </article>
                 </div>
                 <p v-if="!shown.length" class="center muted">{{ tt('لا توجد أصناف.', 'No items.') }}</p>
               </template>
@@ -265,16 +269,21 @@ const initials = computed(() => (store.value.name || '؟').trim().slice(0, 1))
 .cats { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 8px; }
 .cats button { flex-shrink: 0; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer; }
 .cats button.on { background: var(--sa); border-color: var(--sa); color: #fff; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
-.item { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 14px; }
+.item { background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+.item:hover { transform: translateY(-4px); box-shadow: 0 18px 38px -22px rgba(15,23,42,.5); border-color: color-mix(in srgb, var(--sa) 45%, var(--line)); }
 .lay-modern .item { box-shadow: 0 10px 26px -18px rgba(15,23,42,.4); }
-.item.in { border-color: var(--sa); }
-.img { height: 110px; background: var(--bg) center / cover; display: grid; place-items: center; color: #cbd5e1; font-size: 30px; }
-.lay-modern .img { height: 140px; }
-.ibody { padding: 10px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
-.ibody b { font-size: 14px; }
-.price { color: var(--sa); font-weight: 800; }
-.left { color: #d97706; }
+.item.in { border-color: var(--sa); box-shadow: 0 0 0 1px var(--sa) inset; }
+.img { position: relative; height: 180px; background: var(--bg) center / cover; display: grid; place-items: center; color: #cbd5e1; font-size: 32px; overflow: hidden; }
+.img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,23,42,.04), transparent 30%); pointer-events: none; }
+.img .ph { opacity: .55; }
+.lay-modern .img { height: 200px; }
+.img .stock { position: absolute; top: 8px; inset-inline-start: 8px; z-index: 1; background: color-mix(in srgb, #d97706 92%, #000); color: #fff; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; box-shadow: 0 4px 10px rgba(0,0,0,.2); }
+.ibody { padding: 12px; display: flex; flex-direction: column; gap: 5px; flex: 1; }
+.cat { font-size: 11px; font-weight: 800; color: var(--sa); letter-spacing: .2px; }
+.nm { font-size: 14.5px; font-weight: 700; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.price { color: var(--sa); font-weight: 800; font-size: 15px; margin-top: 2px; }
+.price small { color: var(--muted); font-weight: 600; font-size: 12px; }
 .sbtn { border: 0; background: var(--sa); color: #fff; border-radius: 12px; padding: 10px 14px; font: inherit; font-weight: 700; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; justify-content: center; text-decoration: none; }
 .sbtn.sm { padding: 6px 10px; font-size: 13px; margin-top: auto; }
 .sbtn.big { width: 100%; padding: 14px; font-size: 16px; }
