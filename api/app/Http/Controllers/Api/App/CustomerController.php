@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class CustomerController extends Controller
 {
@@ -42,7 +43,7 @@ class CustomerController extends Controller
     public function update(Request $request, int $id): JsonResponse
     {
         $c = Customer::findOrFail($id);
-        $c->update($this->validated($request));
+        $c->update($this->validated($request, $id));
 
         return response()->json($c->fresh());
     }
@@ -60,9 +61,9 @@ class CustomerController extends Controller
         return response()->json(['ok' => true]);
     }
 
-    private function validated(Request $request): array
+    private function validated(Request $request, ?int $id = null): array
     {
-        return $request->validate([
+        $data = $request->validate([
             'name' => ['required', 'string', 'max:150'],
             'customer_type' => ['nullable', 'in:individual,company'],
             'code' => ['nullable', 'string', 'max:40'],
@@ -90,5 +91,38 @@ class CustomerController extends Controller
             'notes' => ['nullable', 'string'],
             'is_active' => ['boolean'],
         ]);
+        $this->ensureUnique($data, $id);
+
+        return $data;
+    }
+
+    /**
+     * Email and mobile number must not repeat for another customer of the same
+     * tenant. Phone is matched on its digits (last 9), so «0501…», «+966501…»
+     * and «00966501…» are treated as the same number. Queries are tenant-scoped
+     * automatically via BelongsToTenant.
+     */
+    private function ensureUnique(array $data, ?int $id): void
+    {
+        $errors = [];
+        if (! empty($data['email'])) {
+            $taken = Customer::when($id, fn ($q) => $q->where('id', '!=', $id))
+                ->whereRaw('LOWER(email) = ?', [mb_strtolower(trim($data['email']))])->exists();
+            if ($taken) {
+                $errors['email'] = ['هذا البريد الإلكتروني مسجّل لعميل آخر.'];
+            }
+        }
+        $digits = preg_replace('/\D/', '', $data['phone'] ?? '');
+        if (strlen($digits) >= 7) {
+            $taken = Customer::when($id, fn ($q) => $q->where('id', '!=', $id))
+                ->whereRaw("REPLACE(REPLACE(REPLACE(COALESCE(phone,''),'+',''),' ',''),'-','') LIKE ?", ['%'.substr($digits, -9)])
+                ->exists();
+            if ($taken) {
+                $errors['phone'] = ['رقم الجوال مسجّل لعميل آخر.'];
+            }
+        }
+        if ($errors) {
+            throw ValidationException::withMessages($errors);
+        }
     }
 }
