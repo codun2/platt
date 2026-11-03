@@ -173,8 +173,8 @@ const initials = computed(() => (store.value.name || '؟').trim().slice(0, 1))
                 </div>
                 <div class="grid">
                   <article v-for="i in shown" :key="i.id" class="item" :class="{ in: cart[i.id] }">
-                    <div class="img" :style="i.image ? { backgroundImage: `url(${i.image})` } : {}">
-                      <i v-if="!i.image" class="ti ti-photo ph" />
+                    <div class="img" :class="{ 'no-img': !i.image }" :style="i.image ? { backgroundImage: `url(${i.image})` } : {}">
+                      <i v-if="!i.image" class="ti ti-shopping-bag ph" />
                       <span v-if="i.left !== null && i.left <= 5" class="stock">{{ tt(`متبقٍ ${i.left}`, `${i.left} left`) }}</span>
                     </div>
                     <div class="ibody">
@@ -276,6 +276,9 @@ const initials = computed(() => (store.value.name || '؟').trim().slice(0, 1))
 .item.in { border-color: var(--sa); box-shadow: 0 0 0 1px var(--sa) inset; }
 .img { position: relative; height: 180px; background: var(--bg) center / cover; display: grid; place-items: center; color: #cbd5e1; font-size: 32px; overflow: hidden; }
 .img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,23,42,.04), transparent 30%); pointer-events: none; }
+/* Imageless products get an elegant accent-tinted tile instead of an empty gray box. */
+.img.no-img { background: linear-gradient(135deg, color-mix(in srgb, var(--sa) 15%, var(--card)), color-mix(in srgb, var(--sa) 4%, var(--card))); }
+.img.no-img .ph { font-size: 42px; color: color-mix(in srgb, var(--sa) 55%, #cbd5e1); opacity: .7; }
 .img .ph { opacity: .55; }
 .lay-modern .img { height: 200px; }
 .img .stock { position: absolute; top: 8px; inset-inline-start: 8px; z-index: 1; background: color-mix(in srgb, #d97706 92%, #000); color: #fff; font-size: 11px; font-weight: 800; padding: 3px 9px; border-radius: 999px; box-shadow: 0 4px 10px rgba(0,0,0,.2); }
