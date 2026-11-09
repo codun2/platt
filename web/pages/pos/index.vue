@@ -264,9 +264,12 @@ function printLast() {
 @media print { .print-only { display: block; } .pos-receipt { max-width: 80mm; margin: 0 auto; font-size: 12px; } .pos-receipt hr { border: 0; border-top: 1px dashed #999; } }
 .pos { display: grid; grid-template-columns: 1fr 380px; gap: 16px; min-height: calc(100vh - 160px); }
 @media (max-width: 900px) { .pos { grid-template-columns: 1fr; } }
-/* Touch-friendly category chips above the grid (replaces the old dropdown). */
-.pos-cats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-.pos-cat { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 9px 16px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: border-color .12s, background .12s, color .12s; }
+/* Touch-friendly category chips: one horizontal row, swipe to scroll (no pile-up). */
+.pos-cats { display: flex; flex-wrap: nowrap; gap: 8px; margin-bottom: 12px; overflow-x: auto; overflow-y: hidden; padding-bottom: 6px; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; overscroll-behavior-x: contain; }
+.pos-cats::-webkit-scrollbar { height: 6px; }
+.pos-cats::-webkit-scrollbar-thumb { background: var(--line); border-radius: 999px; }
+.pos-cats::-webkit-scrollbar-track { background: transparent; }
+.pos-cat { flex: 0 0 auto; scroll-snap-align: start; border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 9px 16px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: border-color .12s, background .12s, color .12s; }
 .pos-cat:hover { border-color: color-mix(in srgb, var(--primary) 45%, var(--line)); }
 .pos-cat.on { background: var(--primary); border-color: var(--primary); color: #fff; }
 .pos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
