@@ -263,6 +263,10 @@ function printLast() {
 .print-only { display: none; }
 @media print { .print-only { display: block; } .pos-receipt { max-width: 80mm; margin: 0 auto; font-size: 12px; } .pos-receipt hr { border: 0; border-top: 1px dashed #999; } }
 .pos { display: grid; grid-template-columns: 1fr 380px; gap: 16px; min-height: calc(100vh - 160px); }
+/* Let the items column shrink so the one-row category strip scrolls inside it
+   instead of widening the whole page. */
+.pos-left { min-width: 0; }
+.pos-cats { min-width: 0; }
 @media (max-width: 900px) { .pos { grid-template-columns: 1fr; } }
 /* Touch-friendly category chips: one horizontal row, swipe to scroll (no pile-up). */
 .pos-cats { display: flex; flex-wrap: nowrap; gap: 8px; margin-bottom: 12px; overflow-x: auto; overflow-y: hidden; padding-bottom: 6px; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; overscroll-behavior-x: contain; }
