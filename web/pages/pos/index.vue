@@ -172,7 +172,10 @@ function printLast() {
     <div class="pos-left card">
       <div class="row" style="margin-bottom:10px">
         <input v-model="q" :placeholder="tt('ابحث عن صنف ثم اضغط Enter','Search an item then Enter')" autofocus style="flex:1;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font-size:15px" @keyup.enter="onEnter" @input="loadItems" />
-        <select v-model="cat" style="padding:8px 12px;border:1px solid var(--line);border-radius:10px" @change="loadItems"><option value="">{{ tt('كل التصنيفات','All categories') }}</option><option v-for="c in meta.categories" :key="c.id" :value="c.id">{{ c.name }}</option></select>
+      </div>
+      <div v-if="meta.categories.length" class="pos-cats">
+        <button type="button" class="pos-cat" :class="{ on: !cat }" @click="cat = ''; loadItems()">{{ tt('الكل','All') }}</button>
+        <button v-for="c in meta.categories" :key="c.id" type="button" class="pos-cat" :class="{ on: String(cat) === String(c.id) }" @click="cat = c.id; loadItems()">{{ c.name }}</button>
       </div>
       <div class="pos-grid">
         <div v-for="i in items" :key="i.id" class="pos-item" :class="{ out: i.track_stock && Number(i.stock || 0) <= 0 }" @click="add(i)">
@@ -261,6 +264,11 @@ function printLast() {
 @media print { .print-only { display: block; } .pos-receipt { max-width: 80mm; margin: 0 auto; font-size: 12px; } .pos-receipt hr { border: 0; border-top: 1px dashed #999; } }
 .pos { display: grid; grid-template-columns: 1fr 380px; gap: 16px; min-height: calc(100vh - 160px); }
 @media (max-width: 900px) { .pos { grid-template-columns: 1fr; } }
+/* Touch-friendly category chips above the grid (replaces the old dropdown). */
+.pos-cats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.pos-cat { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 9px 16px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: border-color .12s, background .12s, color .12s; }
+.pos-cat:hover { border-color: color-mix(in srgb, var(--primary) 45%, var(--line)); }
+.pos-cat.on { background: var(--primary); border-color: var(--primary); color: #fff; }
 .pos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 .pos-item { border: 1px solid var(--line); border-radius: 12px; padding: 12px; cursor: pointer; display: flex; flex-direction: column; gap: 4px; min-height: 90px; }
 .pos-item:hover { border-color: var(--primary); background: var(--primary-50); }
